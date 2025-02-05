@@ -1,3 +1,5 @@
+//app-sidebar.tsx
+
 "use client";
 
 import * as React from "react";
@@ -14,6 +16,8 @@ import {
   Tag,
   Code,
   ChartLine,
+  Pen,
+  X,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
 
@@ -27,7 +31,8 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
-
+import { Button } from "./button";
+import MessageForm from "../mail/compose-mail";
 // This is sample data that matches the screenshot
 
 const data = {
@@ -146,19 +151,102 @@ const data = {
   ],
 };
 
+// export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+//   const [isFormVisible, setIsFormVisible] = React.useState(false);
+
+//   const handleComposeClick = () => {
+//     setIsFormVisible(!isFormVisible); // Toggle form visibility
+//   };
+//   return (
+//     <Sidebar collapsible="icon" {...props}>
+//       <SidebarHeader className="flex flex-col gap-6">
+//         <TeamSwitcher teams={data.teams} />
+//         <Button
+//           onClick={handleComposeClick}
+//           className="flex flex-row items-center bg-blue-100 hover:bg-blue-200 gap-3 transition-all duration-200 ease-in-out transform hover:scale-105 text-[14px]"
+//         >
+//           <Pen /> <span>Compose</span>
+//         </Button>
+
+//         {/* Conditionally render the MessageForm */}
+//         {isFormVisible && (
+//           <div className="mt-4">
+//             <MessageForm />
+//           </div>
+//         )}
+//       </SidebarHeader>
+
+//       <SidebarContent>
+//         <NavMain items={data.navMain} />
+//       </SidebarContent>
+//       <SidebarFooter>
+//         <NavUser user={data.user} />
+//       </SidebarFooter>
+//       <SidebarRail />
+//     </Sidebar>
+//   );
+// }
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [isFormVisible, setIsFormVisible] = React.useState(false);
+
+  const handleComposeClick = () => {
+    setIsFormVisible(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormVisible(false);
+  };
+
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader className="flex flex-col gap-6">
+          <TeamSwitcher teams={data.teams} />
+          <Button
+            onClick={handleComposeClick}
+            className="flex flex-row items-center bg-blue-100 hover:bg-blue-200 gap-3 transition-all duration-200 ease-in-out transform hover:scale-105 text-[14px]"
+          >
+            <Pen /> <span>Compose</span>
+          </Button>
+        </SidebarHeader>
+
+        <SidebarContent>
+          <NavMain items={data.navMain} />
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+
+      {/* Modal Overlay */}
+      {isFormVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={handleCloseForm}
+          />
+
+          {/* Modal Content */}
+          <div className="relative z-50 w-full max-w-lg mx-4 justify-between">
+            <div className=" rounded-lg shadow-lg">
+              {/* Close button */}
+              <Button
+                onClick={handleCloseForm}
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-2"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+
+              <MessageForm />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
