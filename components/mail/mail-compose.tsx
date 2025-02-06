@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -212,43 +218,42 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 <Input type="file" className="hidden" multiple onChange={handleAttachment} />
               </label>
               {attachments.length > 0 && (
-                <div className="relative w-full" ref={dropdownRef}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-center"
-                    onClick={() => setShowDropdown(!showDropdown)}
-                  >
-                    {attachments.length} Attachment
-                    {attachments.length > 1 ? "s" : ""}
-                  </Button>
-
-                  {showDropdown && (
-                    <div className="absolute z-10 mt-1 max-h-40 w-full rounded-md border border-input bg-background shadow-lg">
-                      <ScrollArea className="h-40">
-                        <div className="p-2">
-                          {attachments.map((file, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full text-center">
+                      {attachments.length} Attachment{attachments.length > 1 ? "s" : ""}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  {/* Wrap the dropdown content in a ScrollArea */}
+                  <DropdownMenuContent className="w-full p-0">
+                    <ScrollArea className="h-40 w-full">
+                      <div className="p-2">
+                        {attachments.map((file, index) => (
+                          <DropdownMenuItem
+                            key={index}
+                            className="flex items-center justify-between"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span className="truncate text-sm">
+                              {file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                // Prevent the dropdown from closing when clicking the remove button.
+                                e.stopPropagation();
+                                removeAttachment(index);
+                              }}
                             >
-                              <span className="w-[calc(100%-2rem)] truncate text-sm">
-                                {file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeAttachment(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
-                    </div>
-                  )}
-                </div>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
