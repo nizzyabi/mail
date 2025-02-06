@@ -1,44 +1,40 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { SidebarMenuButton } from "@/components/ui/sidebar"
-import { Check } from "lucide-react"
+import { Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import * as React from "react";
 
 export function ModeToggle() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme } = useTheme();
+
+  const themes = [
+    { value: "light", icon: Sun, label: "Light" },
+    { value: "dark", icon: Moon, label: "Dark" },
+    { value: "system", icon: Monitor, label: "System" },
+  ];
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SidebarMenuButton className="focus-visible:ring-0 focus-visible:ring-offset-0">
-          <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => setTheme("light")} className="flex items-center justify-between">
-          <span>Light</span>
-          {theme === "light" && <Check className="ml-2 size-4" />}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")} className="flex items-center justify-between">
-          <span>Dark</span>
-          {theme === "dark" && <Check className="ml-2 size-4" />}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")} className="flex items-center justify-between">
-          <span>System</span>
-          {theme === "system" && <Check className="ml-2 size-4" />}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+    <fieldset className="flex size-6 rounded-full ring-1 ring-border">
+      <legend className="sr-only">Select a display theme:</legend>
+      {themes.map(({ value, icon: Icon, label }) => (
+        <span key={value} className="h-full">
+          <input
+            type="radio"
+            id={`theme-${value}`}
+            value={value}
+            checked={theme === value}
+            onChange={() => setTheme(value)}
+            className="peer sr-only"
+          />
+          <label
+            htmlFor={`theme-${value}`}
+            className="flex size-6 cursor-pointer items-center justify-center rounded-full transition-all duration-100 peer-checked:text-accent-foreground peer-checked:ring-1 peer-checked:ring-border peer-hover:text-accent-foreground peer-disabled:cursor-not-allowed"
+          >
+            <span className="sr-only">{label}</span>
+            <Icon className="size-4" />
+          </label>
+        </span>
+      ))}
+    </fieldset>
+  );
 }

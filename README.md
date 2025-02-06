@@ -1,3 +1,57 @@
+# Mail0.io 🚀
+
+An Open-Source Gmail Alternative for the Future of Email
+
+## What is Mail0.io?
+
+Mail0.io is an open-source email solution that gives users the power to **self-host** their own email servers while also integrating external services like Gmail and other email providers. Our goal is to put **control, privacy, and customization** back into the hands of users—whether they choose to host their email independently or manage multiple inboxes from a single, customizable platform.
+
+## Why Mail0.io?
+
+Most email services today are either **closed-source**, **data-hungry**, or **too complex to self-host**. Mail0.io is different:
+
+✅ **Fully Open-Source** – No hidden agendas, no walled gardens. 100% transparency.  
+🔒 **Data Privacy First** – Your emails, your data. No tracking, no selling, no middlemen.  
+⚙️ **Self-Hosting Freedom** – Run your own email server with ease.  
+📬 **Unified Inbox** – Connect multiple email providers like Gmail, Outlook, and more.  
+🎨 **Customizable UI & Features** – Tailor your email experience the way you want it.  
+🚀 **Developer-Friendly** – Built with extensibility and integrations in mind.
+
+## Our Mission
+
+We believe email should be:
+
+1. **Yours** – You control where your data is stored.
+2. **Flexible** – Use it however you want—self-hosted or connected to third-party providers.
+3. **Open** – Transparent development, open collaboration, and community-driven innovation.
+4. **User-Friendly** – No need for technical expertise to get started.
+
+## Roadmap 🛤️
+
+We're in the early stages of development, and we’re shaping the future of Mail0.io **together with the community**. Some key areas we will focus on:
+
+- **Core Email Server** – A lightweight, reliable self-hosted email server.
+- **Email Client** – A sleek, customizable web app for managing emails.
+- **Gmail & External Email Integration** – Support for linking third-party email services.
+- **Privacy-Focused Features** – Encryption, tracking protection, and secure authentication.
+- **Developer API** – Extensible tools for building integrations and automations.
+
+## Join the Movement 🚀
+
+Mail0.io is not just another email app—it's a **vision** for a better, more open, and user-controlled email ecosystem. If you believe in **privacy**, **open-source software**, and **giving users control**, we’d love for you to join us!
+
+📢 **Follow our progress** – Stay updated on GitHub as we build Mail0.io.  
+💡 **Contribute** – Share your ideas, suggest features, and help shape the project.  
+🤝 **Community-driven** – Our goal is to create an email solution **for the people, by the people**.
+
+### Stay Tuned!
+
+We’re just getting started. If you’re excited about a future where **email belongs to users, not corporations**, let’s make it happen together.
+
+---
+
+🤍 **Mail0.io – Email, Reimagined.**
+
 ## Getting Started
 
 First, install the dependencies:
