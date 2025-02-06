@@ -35,6 +35,8 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const editorRef = React.useRef<HTMLDivElement>(null);
 
@@ -86,6 +88,22 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     }
     editorRef.current.focus();
   };
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -211,7 +229,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                       const fileInput = e.currentTarget
                         .nextElementSibling as HTMLInputElement;
                       fileInput?.click();
-                    }}
+                     }}
                   >
                     <Paperclip className="mr-2 h-4 w-4" />
                     Attach files
@@ -225,22 +243,32 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 </label>
               </div>
               {attachments.length > 0 && (
-                <div className="space-y-2">
-                  {attachments.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-md border p-2"
-                    >
-                      <span className="text-sm">{file.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeAttachment(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                <div className="relative" ref={dropdownRef}>
+                <div
+                  className="cursor-pointer rounded-md border p-2 text-center text-sm"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                >
+                  {attachments.length} Attachment{attachments.length > 1 ? "s" : ""}
+                </div>
+                  {showDropdown && (
+                    <div className="absolute z-10 mt-1 w-48 max-h-40 overflow-y-auto rounded-md border border-input bg-background shadow-lg">
+                      {attachments.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                        >
+                          <span className="text-sm truncate">{file.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeAttachment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
