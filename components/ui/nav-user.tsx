@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { LogOut, Settings, User } from "lucide-react";
 import { ModeToggle } from "@/components/theme/mode-toggle";
+import { LogOut, Settings, User } from "lucide-react";
+import * as React from "react";
 
 import {
   DropdownMenu,
@@ -42,11 +42,11 @@ export function NavUser({ user }: NavUserProps) {
               <Image
                 src={user.avatar || "/placeholder.svg"}
                 alt={user.name}
-                className="size-8 rounded-lg shrink-0"
+                className="size-8 shrink-0 rounded-lg"
                 width={32}
                 height={32}
               />
-              <div className="flex flex-col gap-1 leading-none ml-1 min-w-0">
+              <div className="ml-1 flex min-w-0 flex-col gap-1 leading-none">
                 <span className="font-semibold">{user.name}</span>
                 <span className="truncate">{user.email}</span>
               </div>

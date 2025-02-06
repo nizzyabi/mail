@@ -1,16 +1,12 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps } from "react";
 
-import { type SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { type SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function SidebarToggle({className}: ComponentProps<typeof SidebarTrigger>) {
+export function SidebarToggle({ className }: ComponentProps<typeof SidebarTrigger>) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -19,7 +15,7 @@ export function SidebarToggle({className}: ComponentProps<typeof SidebarTrigger>
         <Button
           onClick={toggleSidebar}
           variant="outline"
-          className={cn("md:px-2 md:h-fit", className)}
+          className={cn("md:h-fit md:px-2", className)}
         >
           <Menu size={16} />
         </Button>

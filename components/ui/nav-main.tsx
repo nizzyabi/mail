@@ -1,13 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown } from "lucide-react";
+import * as React from "react";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -18,24 +13,25 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface NavMainProps {
   items: {
-    title: string
+    title: string;
     items: {
-      title: string
-      url: string
-      icon?: React.ComponentType<{ className?: string }>
-      isActive?: boolean
-      badge?: number
+      title: string;
+      url: string;
+      icon?: React.ComponentType<{ className?: string }>;
+      isActive?: boolean;
+      badge?: number;
       items?: {
-        title: string
-        url: string
-        badge?: number
-      }[]
-    }[]
-  }[]
+        title: string;
+        url: string;
+        badge?: number;
+      }[];
+    }[];
+  }[];
 }
 
 export function NavMain({ items }: NavMainProps) {
@@ -54,9 +50,7 @@ export function NavMain({ items }: NavMainProps) {
                         {item.icon && <item.icon className="mr-2 size-4" />}
                         <span className="flex-1">{item.title}</span>
                         {item.badge !== undefined && (
-                          <span className="ml-auto mr-2 text-muted-foreground">
-                            {item.badge}
-                          </span>
+                          <span className="ml-auto mr-2 text-muted-foreground">{item.badge}</span>
                         )}
                         {item.items && (
                           <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -72,9 +66,7 @@ export function NavMain({ items }: NavMainProps) {
                                 <a href={subItem.url} className="flex w-full justify-between">
                                   <span>{subItem.title}</span>
                                   {subItem.badge !== undefined && (
-                                    <span className="text-muted-foreground">
-                                      {subItem.badge}
-                                    </span>
+                                    <span className="text-muted-foreground">{subItem.badge}</span>
                                   )}
                                 </a>
                               </SidebarMenuSubButton>
@@ -91,5 +83,5 @@ export function NavMain({ items }: NavMainProps) {
         </SidebarGroup>
       ))}
     </>
-  )
+  );
 }

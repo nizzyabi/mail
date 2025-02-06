@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
-import { Mail } from "@/components/mail/mail";
 import { accounts, mails } from "@/components/mail/data";
+import { Mail } from "@/components/mail/mail";
 
 export default async function MailPage() {
   const cookieStore = await cookies();

@@ -14,11 +14,11 @@ import { formatDate } from "@/utils/format-date"
 interface MailListProps {
   items: Mail[],
   isCompact: boolean,
-  onMailClick: () => void
+  onMailClick: () => void;
 }
 
 export function MailList({ items, isCompact, onMailClick }: MailListProps) {
-  const [mail, setMail] = useMail()
+  const [mail, setMail] = useMail();
 
   const tags = useAtomValue(tagsAtom)
   const activeTags = tags.filter(tag => tag.checked)
@@ -27,9 +27,9 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
     setMail({
       ...mail,
       selected: mail.id,
-    })
-    onMailClick()
-  }
+    });
+    onMailClick();
+  };
 
   return (
     <ScrollArea className="h-[calc(100vh-13rem-1px)] mt-4" type="auto">
@@ -98,7 +98,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
         ))}
       </div>
     </ScrollArea>
-  )
+  );
 }
 
 // things were turning into a ?:?:?: fest had to dip out
