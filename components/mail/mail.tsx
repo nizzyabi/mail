@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search } from "lucide-react";
+import { AlignVerticalSpaceAround, Search } from "lucide-react";
 import { useState } from "react";
 import * as React from "react";
 
@@ -11,8 +11,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MailList } from "@/components/mail/mail-list";
 import { Separator } from "@/components/ui/separator";
 import { useMail } from "@/components/mail/use-mail";
+import { Button } from "@/components/ui/button";
+
+// Filters imports
+import { useFilteredMails } from "@/hooks/use-filtered-mails";
+import { tagsAtom } from "@/components/mail/use-tags";
 import { type Mail } from "@/components/mail/data";
+import Filters from "@/components/mail/filters";
 import { Input } from "@/components/ui/input";
+import { useAtomValue } from "jotai";
 
 interface MailProps {
   accounts: {
@@ -29,6 +36,12 @@ interface MailProps {
 
 export function Mail({ mails }: MailProps) {
   const [mail] = useMail();
+  const [isCompact, setIsCompact] = React.useState(false);
+  const tags = useAtomValue(tagsAtom);
+  const activeTags = tags.filter((tag) => tag.checked);
+
+  const filteredMails = useFilteredMails(mails, activeTags);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -72,21 +85,49 @@ export function Mail({ mails }: MailProps) {
                 </div>
               </form>
             </div>
+            <Separator />
+
+            {/* Filters sections */}
+            <div className="flex items-center justify-between px-4 py-2">
+              <Filters />
+              <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
+                <AlignVerticalSpaceAround />
+              </Button>
+            </div>
+
+            <Separator />
+
             <TabsContent value="all" className="m-0">
-              <MailList items={mails} onMailClick={() => setIsDialogOpen(true)} />
+              {filteredMails.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  No messages found | Clear filters to see more results
+                </div>
+              ) : (
+                <MailList
+                  items={filteredMails}
+                  isCompact={isCompact}
+                  onMailClick={() => setIsDialogOpen(true)}
+                />
+              )}
             </TabsContent>
+
             <TabsContent value="unread" className="m-0">
-              <MailList
-                items={mails.filter((item) => !item.read)}
-                onMailClick={() => setIsDialogOpen(true)}
-              />
+              {filteredMails.filter((item) => !item.read).length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+              ) : (
+                <MailList
+                  items={filteredMails.filter((item) => !item.read)}
+                  isCompact={isCompact}
+                  onMailClick={() => setIsDialogOpen(true)}
+                />
+              )}
             </TabsContent>
           </Tabs>
         </div>
 
         {/* Desktop Mail Display */}
         <div className="hidden flex-1 overflow-y-auto md:block">
-          <MailDisplay mail={mails.find((item) => item.id === mail.selected) || null} />
+          <MailDisplay mail={filteredMails.find((item) => item.id === mail.selected) || null} />
         </div>
 
         {/* Mobile Dialog */}
