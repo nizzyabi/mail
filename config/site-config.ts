@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 
-const TITLE = 'MAIL';
+const TITLE = 'Mail0';
 const DESCRIPTION =
   'An Open Source Gmail Alternative.';
 
-const BASE_URL = 'https://mail.nizzy.dev';
+const BASE_URL = 'https://mail0.io';
 
 export const siteConfig: Metadata = {
   title: TITLE,
@@ -12,7 +12,7 @@ export const siteConfig: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
-  applicationName: 'Mail',
+  applicationName: 'Mail0',
   creator: 'Open Source Developers',
 
   category: 'AU',
@@ -20,7 +20,7 @@ export const siteConfig: Metadata = {
     canonical: BASE_URL,
   },
   keywords: [
-    'MAIL',
+    'Mail',
     'Email',
     'Open Source',
     'Email Client',

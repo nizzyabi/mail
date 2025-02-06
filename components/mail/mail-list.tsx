@@ -19,7 +19,7 @@ export function MailList({ items, isCompact }: MailListProps) {
   const [mail, setMail] = useMail()
 
   return (
-    <ScrollArea className="h-[calc(100vh-140px)] mt-4" type="auto">
+    <ScrollArea className="h-[calc(100vh-8rem-1px)] mt-4" type="auto">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <div
