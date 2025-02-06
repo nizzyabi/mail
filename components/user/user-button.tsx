@@ -7,5 +7,5 @@ export function UserButton() {
       <Settings className="h-[1.2rem] w-[1.2rem]" />
       <span>Account Settings</span>
     </Button>
-  )
+  );
 }

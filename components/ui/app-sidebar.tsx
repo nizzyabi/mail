@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Inbox,
   FileText,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
 import { Button } from "@/components/ui/button";
+import * as React from "react";
 
 import {
   Sidebar,
@@ -26,12 +26,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import { useSidebar } from "@/components/ui/sidebar";
 import { AccountSwitcher } from "./account-switcher";
 import { MailCompose } from "../mail/mail-compose";
-import { useSidebar } from "@/components/ui/sidebar";
 import { SidebarToggle } from "./sidebar-toggle";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
 // This is sample data that matches the screenshot
 
@@ -157,15 +157,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <>
-      {isMobile && (
-        <SidebarToggle className="fixed left-4 top-4 z-40 md:hidden" />
-      )}
+      {isMobile && <SidebarToggle className="fixed left-4 top-4 z-40 md:hidden" />}
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <AccountSwitcher accounts={data.accounts} />
         </SidebarHeader>
         <SidebarContent>
-          <Button className="w-fit mt-2 mx-3.5" onClick={() => setComposeOpen(true)}>
+          <Button className="mx-3.5 mt-2 w-fit" onClick={() => setComposeOpen(true)}>
             <Pencil className="size-4" />
             Compose
           </Button>
