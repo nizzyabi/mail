@@ -10,6 +10,7 @@ import { BellOff } from "lucide-react"
 
 import { useAtomValue } from "jotai"
 import { tagsAtom, Tag } from "./use-tags"
+import { formatDate } from "@/utils/format-date"
 
 interface MailListProps {
   items: Mail[],
@@ -49,7 +50,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
               <div className="flex items-center">
                 <div className={cn(
                   "flex gap-2",
-                  isCompact && mail.selected !== item.id ? "items-center" : "flex-wrap"
+                  isCompact && mail.selected !== item.id ? "items-center" : "flex-wrap flex-col"
                 )}>
                   <div className="flex items-center gap-2 w-32 2xl:w-40 ">
                     <div className={cn(item.read ? 'font-normal' : 'font-bold')}>{item.name}</div>
@@ -62,9 +63,9 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
                   </div>
 
                   <div className={cn(
-                    'text-xs',
+                    'text-xs max-w-32 truncate md:max-w-full',
                     item.read ? 'font-normal' : 'font-bold',
-                    isCompact && mail.selected !== item.id ? 'truncate' : 'w-full'
+                    isCompact && mail.selected !== item.id ? 'truncate' : 'max-w-full'
                   )}>
                     {item.subject}
                   </div>
@@ -72,7 +73,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
 
                 <div
                   className={cn(
-                    "ml-auto text-xs text-right whitespace-break-spaces",
+                    "ml-auto text-xs text-right whitespace-nowrap",
                     mail.selected === item.id
                       ? "text-foreground"
                       : "text-muted-foreground"

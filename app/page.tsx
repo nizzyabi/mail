@@ -13,7 +13,7 @@ export default async function MailPage() {
 
   return (
     <div className="bg-white dark:bg-background w-full">
-      <div className="hidden flex-col md:flex dark:text-gray-100">
+      <div className="md:flex flex-col dark:text-gray-100">
         <Mail
           accounts={accounts}
           mails={mails}
