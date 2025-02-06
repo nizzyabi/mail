@@ -33,7 +33,24 @@ interface MailComposeProps {
 export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [attachments, setAttachments] = React.useState<File[]>([]);
   const [messageContent, setMessageContent] = React.useState("");
+  const [toInput, setToInput] = React.useState(replyTo?.email || "");
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+
   const editorRef = React.useRef<HTMLDivElement>(null);
+
+  const pastEmails = [
+    "alice@example.com",
+    "bob@example.com",
+    "carol@example.com",
+    "david@example.com",
+    "eve@example.com",
+  ];
+
+  const filteredSuggestions = toInput
+    ? pastEmails.filter((email) =>
+        email.toLowerCase().includes(toInput.toLowerCase())
+      )
+    : [];
 
   const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -78,11 +95,33 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
         </DialogHeader>
         <div className="grid py-4">
           <div className="grid gap-2">
-            <Input
-              placeholder="To"
-              defaultValue={replyTo?.email || ""}
-              className="border-0 focus-visible:ring-0 rounded-none"
-            />
+            <div className="relative">
+              <Input
+                placeholder="To"
+                value={toInput}
+                onChange={(e) => {
+                  setToInput(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                className="border-0 focus-visible:ring-0 rounded-none"
+              />
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <ul className="absolute top-full left-0 right-0 z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
+                  {filteredSuggestions.map((email, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        setToInput(email);
+                        setShowSuggestions(false);
+                      }}
+                      className="cursor-pointer p-2 hover:bg-muted"
+                    >
+                      {email}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <Separator className="w-[95%] mx-auto" />
             <Input
               placeholder="Subject"
@@ -208,7 +247,6 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
           </div>
         </div>
         <div className="flex items-center justify-between">
-          
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
               Save as draft
