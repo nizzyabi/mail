@@ -11,7 +11,14 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +37,8 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const editorRef = React.useRef<HTMLDivElement>(null);
 
@@ -79,6 +88,19 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     }
     editorRef.current.focus();
   };
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -133,6 +155,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             aria-multiline="true"
           />
 
+          {/* Formatting Toolbar */}
           <div className="mx-auto mt-4 flex w-full items-center justify-between">
             <div className="flex gap-2 p-1">
               <Button variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
@@ -173,43 +196,69 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 <ImageIcon className="h-4 w-4" />
               </Button>
             </div>
-            <div className="mr-5 space-y-4">
-              <div className="flex items-center">
-                <label className="mx-auto w-[95%] cursor-pointer">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
-                      fileInput?.click();
-                    }}
-                  >
-                    <Paperclip className="mr-2 h-4 w-4" />
-                    Attach files
-                  </Button>
-                  <Input type="file" className="hidden" multiple onChange={handleAttachment} />
-                </label>
-              </div>
+          </div>
+
+          {/* Attach Files Section */}
+          <div className="mx-auto mt-4 flex w-[95%] flex-col gap-4">
+            <div className="flex gap-2">
+              <label className="w-full cursor-pointer">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                    fileInput?.click();
+                  }}
+                >
+                  <Paperclip className="mr-2 h-4 w-4" />
+                  Attach files
+                </Button>
+                <Input type="file" className="hidden" multiple onChange={handleAttachment} />
+              </label>
               {attachments.length > 0 && (
-                <div className="space-y-2">
-                  {attachments.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-md border p-2"
-                    >
-                      <span className="text-sm">{file.name}</span>
-                      <Button variant="ghost" size="icon" onClick={() => removeAttachment(index)}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full text-center">
+                      {attachments.length} Attachment{attachments.length > 1 ? "s" : ""}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  {/* Wrap the dropdown content in a ScrollArea */}
+                  <DropdownMenuContent className="w-full p-0">
+                    <ScrollArea className="h-40 w-full">
+                      <div className="p-2">
+                        {attachments.map((file, index) => (
+                          <DropdownMenuItem
+                            key={index}
+                            className="flex items-center justify-between"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span className="truncate text-sm">
+                              {file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                // Prevent the dropdown from closing when clicking the remove button.
+                                e.stopPropagation();
+                                removeAttachment(index);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
               Save as draft
