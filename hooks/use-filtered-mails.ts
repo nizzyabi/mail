@@ -1,6 +1,6 @@
-import { Mail } from '@/components/mail/data';
-import { Tag } from '@/components/mail/use-tags';
-import { useMemo } from 'react';
+import { Tag } from "@/components/mail/use-tags";
+import { Mail } from "@/components/mail/data";
+import { useMemo } from "react";
 
 /**
  * Custom hook for filtering mails based on active tags
@@ -12,7 +12,7 @@ export const useFilteredMails = (mails: Mail[], activeTags: Tag[]) => {
   // Create a lookup object for active tags
   const activeTagLookup = useMemo(() => {
     const lookup: Record<string, boolean> = {};
-    activeTags.forEach(tag => {
+    activeTags.forEach((tag) => {
       lookup[tag.label.toLowerCase()] = true;
     });
     return lookup;
@@ -22,8 +22,8 @@ export const useFilteredMails = (mails: Mail[], activeTags: Tag[]) => {
   const filteredMails = useMemo(() => {
     if (activeTags.length === 0) return mails;
 
-    return mails.filter(mail =>
-      mail.labels.some(label => activeTagLookup[label.toLowerCase()])
+    return mails.filter((mail) =>
+      mail.labels.some((label) => activeTagLookup[label.toLowerCase()]),
     );
   }, [mails, activeTagLookup, activeTags.length]);
 

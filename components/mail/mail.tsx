@@ -6,20 +6,20 @@ import { useState } from "react";
 import * as React from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MailList } from "@/components/mail/mail-list";
 import { MailDisplay } from "@/components/mail/mail-display";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import { MailList } from "@/components/mail/mail-list";
 import { Separator } from "@/components/ui/separator";
 import { useMail } from "@/components/mail/use-mail";
+import { Button } from "@/components/ui/button";
 
 // Filters imports
-import { useAtomValue } from "jotai"
-import Filters from "@/components/mail/filters";
-import { tagsAtom } from "@/components/mail/use-tags"
 import { useFilteredMails } from "@/hooks/use-filtered-mails";
+import { tagsAtom } from "@/components/mail/use-tags";
 import { type Mail } from "@/components/mail/data";
+import Filters from "@/components/mail/filters";
 import { Input } from "@/components/ui/input";
+import { useAtomValue } from "jotai";
 
 interface MailProps {
   accounts: {
@@ -36,9 +36,9 @@ interface MailProps {
 
 export function Mail({ mails }: MailProps) {
   const [mail] = useMail();
-  const [isCompact, setIsCompact] = React.useState(false)
-  const tags = useAtomValue(tagsAtom)
-  const activeTags = tags.filter(tag => tag.checked)
+  const [isCompact, setIsCompact] = React.useState(false);
+  const tags = useAtomValue(tagsAtom);
+  const activeTags = tags.filter((tag) => tag.checked);
 
   const filteredMails = useFilteredMails(mails, activeTags);
 
@@ -88,7 +88,7 @@ export function Mail({ mails }: MailProps) {
             <Separator />
 
             {/* Filters sections */}
-            <div className="flex justify-between items-center px-4 py-2">
+            <div className="flex items-center justify-between px-4 py-2">
               <Filters />
               <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
                 <AlignVerticalSpaceAround />
@@ -96,30 +96,32 @@ export function Mail({ mails }: MailProps) {
             </div>
 
             <Separator />
-            
+
             <TabsContent value="all" className="m-0">
               {filteredMails.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
                   No messages found | Clear filters to see more results
                 </div>
               ) : (
-                <MailList items={filteredMails} isCompact={isCompact} onMailClick={() => setIsDialogOpen(true)} />
+                <MailList
+                  items={filteredMails}
+                  isCompact={isCompact}
+                  onMailClick={() => setIsDialogOpen(true)}
+                />
               )}
             </TabsContent>
 
             <TabsContent value="unread" className="m-0">
               {filteredMails.filter((item) => !item.read).length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  No unread messages
-                </div>
+                <div className="p-8 text-center text-muted-foreground">No unread messages</div>
               ) : (
                 <MailList
-                items={filteredMails.filter((item) => !item.read)}isCompact={isCompact} 
-                onMailClick={() => setIsDialogOpen(true)}
-              />
+                  items={filteredMails.filter((item) => !item.read)}
+                  isCompact={isCompact}
+                  onMailClick={() => setIsDialogOpen(true)}
+                />
               )}
             </TabsContent>
-
           </Tabs>
         </div>
 

@@ -171,9 +171,9 @@ export const mails = [
     read: false,
     labels: ["personal"],
   },
-]
+];
 
-export type Mail = (typeof mails)[number]
+export type Mail = (typeof mails)[number];
 
 export const accounts = [
   {
@@ -212,9 +212,9 @@ export const accounts = [
       </svg>
     ),
   },
-]
+];
 
-export type Account = (typeof accounts)[number]
+export type Account = (typeof accounts)[number];
 
 export const contacts = [
   {
@@ -297,6 +297,6 @@ export const contacts = [
     name: "Scarlett Adams",
     email: "scarlett.adams@example.com",
   },
-]
+];
 
-export type Contact = (typeof contacts)[number]
+export type Contact = (typeof contacts)[number];
