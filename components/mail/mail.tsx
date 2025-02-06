@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  AlignVerticalSpaceAround,
   Search,
 } from "lucide-react";
 
@@ -13,6 +14,8 @@ import { MailDisplay } from "@/components/mail/mail-display";
 import { MailList } from "@/components/mail/mail-list";
 import { type Mail } from "@/components/mail/data";
 import { useMail } from "@/components/mail/use-mail";
+import { Badge } from "../ui/badge";
+
 
 interface MailProps {
   accounts: {
@@ -29,107 +32,13 @@ interface MailProps {
 
 export function Mail({ mails }: MailProps) {
   const [mail] = useMail();
+  const [isCompact, setIsCompact] = React.useState(false)
+  
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex h-screen bg-">
-        {/* Left Sidebar */}
-        {/* <div className={cn(
-          "flex flex-col w-[240px] border-r",
-          isCollapsed && "w-[50px] transition-all duration-300 ease-in-out"
-        )}>
-          <div className={cn(
-            "flex h-[52px] mt-1 items-center justify-center",
-            isCollapsed ? "h-[52px]" : "px-2"
-          )}>
-            <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
-          </div>
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Inbox",
-                label: "128",
-                icon: Inbox,
-                variant: "default",
-              },
-              {
-                title: "Drafts",
-                label: "9",
-                icon: File,
-                variant: "ghost",
-              },
-              {
-                title: "Sent",
-                label: "",
-                icon: Send,
-                variant: "ghost",
-              },
-              {
-                title: "Junk",
-                label: "23",
-                icon: ArchiveX,
-                variant: "ghost",
-              },
-              {
-                title: "Trash",
-                label: "",
-                icon: Trash2,
-                variant: "ghost",
-              },
-              {
-                title: "Archive",
-                label: "",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Social",
-                label: "972",
-                icon: Users2,
-                variant: "ghost",
-              },
-              {
-                title: "Updates",
-                label: "342",
-                icon: AlertCircle,
-                variant: "ghost",
-              },
-              {
-                title: "Forums",
-                label: "128",
-                icon: MessagesSquare,
-                variant: "ghost",
-              },
-              {
-                title: "Shopping",
-                label: "8",
-                icon: ShoppingCart,
-                variant: "ghost",
-              },
-              {
-                title: "Promotions",
-                label: "21",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-          <div className="flex-1" />
-          <div className="mt-auto flex flex-col justify-center items-center gap-4 mb-3">
-            <Separator />
-            <ModeToggle />
-          </div>
-        </div> */}
-
+      <div className="flex h-screen">
         {/* Middle Panel */}
-        <div className="flex-1 border-r overflow-y-auto hide-scrollbar">
+        <div className="flex-1 border-r overflow-y-auto">
           <Tabs defaultValue="all">
             <div className="flex items-center px-4 py-2">
               <h1 className="text-xl font-bold">Inbox</h1>
@@ -157,11 +66,27 @@ export function Mail({ mails }: MailProps) {
                 </div>
               </form>
             </div>
+            <Separator />
+            {/* hide this when we scroll in the mail list */}
+            <div className="flex justify-between items-center px-4 py-2">
+              <div>
+                <Badge>
+                  work
+                </Badge>
+              </div>
+
+              <button onClick={() => setIsCompact(!isCompact)}>
+                <AlignVerticalSpaceAround />
+              </button>
+            </div>
+
+            <Separator />
+
             <TabsContent value="all" className="m-0">
-              <MailList items={mails} />
+              <MailList items={mails} isCompact={isCompact} />
             </TabsContent>
             <TabsContent value="unread" className="m-0">
-              <MailList items={mails.filter((item) => !item.read)} />
+              <MailList items={mails.filter((item) => !item.read)} isCompact={isCompact} />
             </TabsContent>
           </Tabs>
         </div>
@@ -173,6 +98,7 @@ export function Mail({ mails }: MailProps) {
           />
         </div>
       </div>
+
     </TooltipProvider>
   );
 }
