@@ -108,7 +108,7 @@ export function Mail({ mails }: MailProps) {
             <TabsContent value="all" className="m-0">
               {filteredMails.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
-                  No messages found
+                  No messages found | Clear filters to see more results
                 </div>
               ) : (
                 <MailList 
@@ -130,7 +130,6 @@ export function Mail({ mails }: MailProps) {
               />
               )}
             </TabsContent>
-
 
           </Tabs>
         </div>

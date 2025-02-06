@@ -43,12 +43,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
               isCompact && mail.selected !== item.id && item.read ? 'gap-0' : 'gap-2',
               item.read && mail.selected !== item.id ? ' opacity-70 hover:opacity-100' : 'opacity-100'
             )}
-            onClick={() =>
-              setMail({
-                ...mail,
-                selected: item.id,
-              })
-            }
+            onClick={() => handleMailClick(item)}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">
