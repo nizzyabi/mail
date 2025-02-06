@@ -12,7 +12,7 @@ export default async function MailPage() {
   const defaultCollapsed = collapsed ? JSON.parse(collapsed.value) : undefined;
 
   return (
-    <div className="bg-white dark:bg-background">
+    <div className="bg-white dark:bg-background w-full">
       <div className="hidden flex-col md:flex dark:text-gray-100">
         <Mail
           accounts={accounts}

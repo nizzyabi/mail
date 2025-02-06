@@ -8,18 +8,22 @@ import { Mail } from "@/components/mail/data"
 import { useMail } from "@/components/mail/use-mail"
 import { BellOff } from "lucide-react"
 
+import { useAtomValue } from "jotai"
+import { tagsAtom, Tag } from "./use-tags"
 
 interface MailListProps {
   items: Mail[],
   isCompact: boolean,
 }
 
-
 export function MailList({ items, isCompact }: MailListProps) {
   const [mail, setMail] = useMail()
 
+  const tags = useAtomValue(tagsAtom)
+  const activeTags = tags.filter(tag => tag.checked)
+
   return (
-    <ScrollArea className="h-[calc(100vh-8rem-1px)] mt-4" type="auto">
+    <ScrollArea className="h-[calc(100vh-13rem-1px)] mt-4" type="auto">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <div
@@ -38,9 +42,7 @@ export function MailList({ items, isCompact }: MailListProps) {
             }
           >
             <div className="flex w-full flex-col gap-1">
-
               <div className="flex items-center">
-
                 <div className={cn(
                   "flex gap-2",
                   isCompact && mail.selected !== item.id ? "items-center" : "flex-wrap"
@@ -64,7 +66,6 @@ export function MailList({ items, isCompact }: MailListProps) {
                   </div>
                 </div>
 
-
                 <div
                   className={cn(
                     "ml-auto text-xs",
@@ -77,46 +78,84 @@ export function MailList({ items, isCompact }: MailListProps) {
                     addSuffix: true,
                   })}
                 </div>
-
               </div>
-
             </div>
 
             <div className={cn("line-clamp-2 text-xs text-muted-foreground transition-all select-none", isCompact && mail.selected !== item.id ? 'h-0' : ' h-8')}>
               {item.text.substring(0, 300)}
             </div>
 
-            {item.labels.length ? (
-              <div className={cn("flex items-center gap-2 select-none", isCompact && mail.selected !== item.id ? 'hidden' : 'flex')}>
-                {item.labels.map((label) => (
-                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
-
-
+            <MailLabels
+              labels={item.labels}
+              activeTags={activeTags}
+              isCompact={isCompact}
+              isSelected={mail.selected === item.id}
+            />
 
           </div>
-
-
         ))}
       </div>
     </ScrollArea>
   )
 }
 
-function getBadgeVariantFromLabel(
+// things were turning into a ?:?:?: fest had to dip out
+const MailBadge = ({ label, isActive }: { label: string; isActive?: boolean }) => {
+  return (
+    <Badge
+      variant={isActive ? "default" : getDefaultBadgeStyle(label)}
+    >
+      {label}
+    </Badge>
+  )
+}
+
+function MailLabels({
+  labels,
+  activeTags,
+  isCompact,
+  isSelected
+}: {
+  labels: string[]
+  activeTags: Tag[]
+  isCompact: boolean
+  isSelected: boolean
+}) {
+  if (!labels.length) return null
+
+  const activeLabels = labels.filter(label =>
+    activeTags.some(tag => tag.label.toLowerCase() === label.toLowerCase())
+  )
+
+  return (
+    <div className={cn(
+      "flex items-center gap-2 select-none",
+      isCompact && !isSelected && "hidden"
+    )}>
+      {activeTags.length > 0 ? (
+        activeLabels.map(label => (
+          <MailBadge key={label} label={label} isActive />
+        ))
+      ) : (
+        labels.map(label => (
+          <MailBadge key={label} label={label} />
+        ))
+      )}
+    </div>
+  )
+}
+
+
+function getDefaultBadgeStyle(
   label: string
 ): ComponentProps<typeof Badge>["variant"] {
-  if (["work"].includes(label.toLowerCase())) {
-    return "default"
+  switch (label.toLowerCase()) {
+    case "work":
+      return "default"
+    case "personal":
+      return "outline"
+    default:
+      return "secondary"
   }
-
-  if (["personal"].includes(label.toLowerCase())) {
-    return "outline"
-  }
-
-  return "secondary"
 }
+

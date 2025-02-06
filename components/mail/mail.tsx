@@ -10,12 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { MailDisplay } from "@/components/mail/mail-display";
 import { MailList } from "@/components/mail/mail-list";
+import { MailDisplay } from "@/components/mail/mail-display";
+import { Button } from "@/components/ui/button";
 import { type Mail } from "@/components/mail/data";
 import { useMail } from "@/components/mail/use-mail";
-import { Badge } from "../ui/badge";
 
+// Filters imports
+import { useAtomValue } from "jotai"
+import Filters from "@/components/mail/filters";
+import { tagsAtom } from "@/components/mail/use-tags"
+import { useFilteredMails } from "@/hooks/use-filtered-mails";
 
 interface MailProps {
   accounts: {
@@ -33,7 +38,11 @@ interface MailProps {
 export function Mail({ mails }: MailProps) {
   const [mail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false)
-  
+  const tags = useAtomValue(tagsAtom)
+  const activeTags = tags.filter(tag => tag.checked)
+
+  const filteredMails = useFilteredMails(mails, activeTags);
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen">
@@ -43,16 +52,10 @@ export function Mail({ mails }: MailProps) {
             <div className="flex items-center px-4 py-2">
               <h1 className="text-xl font-bold">Inbox</h1>
               <TabsList className="ml-auto">
-                <TabsTrigger
-                  value="all"
-                  className="text-zinc-600 dark:text-zinc-200"
-                >
+                <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
                   All mail
                 </TabsTrigger>
-                <TabsTrigger
-                  value="unread"
-                  className="text-zinc-600 dark:text-zinc-200"
-                >
+                <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">
                   Unread
                 </TabsTrigger>
               </TabsList>
@@ -67,38 +70,48 @@ export function Mail({ mails }: MailProps) {
               </form>
             </div>
             <Separator />
-            {/* hide this when we scroll in the mail list */}
-            <div className="flex justify-between items-center px-4 py-2">
-              <div>
-                <Badge>
-                  work
-                </Badge>
-              </div>
 
-              <button onClick={() => setIsCompact(!isCompact)}>
+            {/* Filters sections */}
+            <div className="flex justify-between items-center px-4 py-2">
+              <Filters />
+              <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
                 <AlignVerticalSpaceAround />
-              </button>
+              </Button>
             </div>
 
             <Separator />
-
+            
             <TabsContent value="all" className="m-0">
-              <MailList items={mails} isCompact={isCompact} />
+              {filteredMails.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  No messages found
+                </div>
+              ) : (
+                <MailList items={filteredMails} isCompact={isCompact} />
+              )}
             </TabsContent>
+
             <TabsContent value="unread" className="m-0">
-              <MailList items={mails.filter((item) => !item.read)} isCompact={isCompact} />
+              {filteredMails.filter((item) => !item.read).length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  No unread messages
+                </div>
+              ) : (
+                <MailList items={filteredMails.filter((item) => !item.read)} isCompact={isCompact} />
+              )}
             </TabsContent>
+
+
           </Tabs>
         </div>
 
         {/* Right Panel */}
         <div className="flex-1 overflow-y-auto">
           <MailDisplay
-            mail={mails.find((item) => item.id === mail.selected) || null}
+            mail={filteredMails.find((item) => item.id === mail.selected) || null}
           />
         </div>
       </div>
-
     </TooltipProvider>
   );
 }
