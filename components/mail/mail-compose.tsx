@@ -37,10 +37,18 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [showDropdown, setShowDropdown] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const editorRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [dropdownWidth, setDropdownWidth] = React.useState<number>(0);
+
+  // Replace your effect with this:
+  React.useLayoutEffect(() => {
+    if (triggerRef.current) {
+      const { width } = triggerRef.current.getBoundingClientRect();
+      setDropdownWidth(width);
+    }
+  }, [attachments]);
 
   const pastEmails = [
     "alice@example.com",
@@ -88,19 +96,6 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     }
     editorRef.current.focus();
   };
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -198,64 +193,64 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             </div>
           </div>
 
-          {/* Attach Files Section */}
-          <div className="mx-auto mt-4 flex w-[95%] flex-col gap-4">
-            <div className="flex gap-2">
-              <label className="w-full cursor-pointer">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
-                    fileInput?.click();
-                  }}
-                >
-                  <Paperclip className="mr-2 h-4 w-4" />
-                  Attach files
-                </Button>
-                <Input type="file" className="hidden" multiple onChange={handleAttachment} />
-              </label>
-              {attachments.length > 0 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full text-center">
-                      {attachments.length} Attachment{attachments.length > 1 ? "s" : ""}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  {/* Wrap the dropdown content in a ScrollArea */}
-                  <DropdownMenuContent className="w-full p-0">
-                    <ScrollArea className="h-40 w-full">
-                      <div className="p-2">
-                        {attachments.map((file, index) => (
-                          <DropdownMenuItem
-                            key={index}
-                            className="flex items-center justify-between"
-                            onClick={(e) => e.stopPropagation()}
+          <div className="mx-auto mt-4 flex w-[95%] gap-2">
+            <label className="flex-1 cursor-pointer">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full" // This button fills its label container
+                onClick={(e) => {
+                  e.preventDefault();
+                  const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                  fileInput?.click();
+                }}
+              >
+                <Paperclip className="mr-2 h-4 w-4" />
+                Attach files
+              </Button>
+              <Input type="file" className="hidden" multiple onChange={handleAttachment} />
+            </label>
+            {attachments.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    ref={triggerRef}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-center" // Use flex-1 to fill available space
+                  >
+                    {attachments.length} Attachment{attachments.length > 1 ? "s" : ""}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent style={{ width: dropdownWidth }}>
+                  <ScrollArea className="h-40 w-full">
+                    <div className="p-2">
+                      {attachments.map((file, index) => (
+                        <DropdownMenuItem
+                          key={index}
+                          className="flex items-center justify-between"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="truncate text-sm">
+                            {file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeAttachment(index);
+                            }}
                           >
-                            <span className="truncate text-sm">
-                              {file.name.length > 20 ? `${file.name.slice(0, 20)}...` : file.name}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                // Prevent the dropdown from closing when clicking the remove button.
-                                e.stopPropagation();
-                                removeAttachment(index);
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuItem>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </div>
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between">
