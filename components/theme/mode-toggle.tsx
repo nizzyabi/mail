@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import * as React from "react";
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme();
@@ -14,7 +14,7 @@ export function ModeToggle() {
   ];
 
   return (
-    <fieldset className="ring-border flex size-6 rounded-full ring-1">
+    <fieldset className="flex size-6 rounded-full ring-1 ring-border">
       <legend className="sr-only">Select a display theme:</legend>
       {themes.map(({ value, icon: Icon, label }) => (
         <span key={value} className="h-full">
@@ -28,7 +28,7 @@ export function ModeToggle() {
           />
           <label
             htmlFor={`theme-${value}`}
-            className="peer-checked:text-accent-foreground peer-checked:ring-border peer-hover:text-accent-foreground flex size-6 cursor-pointer items-center justify-center rounded-full transition-all duration-100 peer-checked:ring-1 peer-disabled:cursor-not-allowed"
+            className="flex size-6 cursor-pointer items-center justify-center rounded-full transition-all duration-100 peer-checked:text-accent-foreground peer-checked:ring-1 peer-checked:ring-border peer-hover:text-accent-foreground peer-disabled:cursor-not-allowed"
           >
             <span className="sr-only">{label}</span>
             <Icon className="size-4" />

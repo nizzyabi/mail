@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
-import { Mail } from "@/components/mail/mail";
 import { accounts, mails } from "@/components/mail/data";
+import { Mail } from "@/components/mail/mail";
 
 export default async function MailPage() {
   const cookieStore = await cookies();
@@ -13,7 +13,7 @@ export default async function MailPage() {
 
   return (
     <div className="bg-white dark:bg-background">
-      <div className="flex-col flex dark:text-gray-100">
+      <div className="flex flex-col dark:text-gray-100">
         <Mail
           accounts={accounts}
           mails={mails}

@@ -1,15 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import * as React from "react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -47,10 +47,10 @@ export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground shrink-0">
+              <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground">
                 <selectedAccount.logo className="size-5" />
               </div>
-              <div className="flex flex-col gap-0.5 leading-none min-w-0">
+              <div className="flex min-w-0 flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{selectedAccount.name}</span>
                 <span className="truncate">{selectedAccount.email}</span>
               </div>
@@ -67,15 +67,12 @@ export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
       >
         <DropdownMenuLabel>Accounts</DropdownMenuLabel>
         {accounts.map((account, index) => (
-          <DropdownMenuItem
-            key={account.name}
-            onSelect={() => setSelectedAccount(account)}
-          >
+          <DropdownMenuItem key={account.name} onSelect={() => setSelectedAccount(account)}>
             <account.logo className="mr-2 size-4" />
             <span>{account.name}</span>
             <div className="ml-auto flex items-center gap-2">
               {account === selectedAccount && <Check className="size-4" />}
-              <span className="text-xs bg-muted rounded-md px-1">
+              <span className="rounded-md bg-muted px-1 text-xs">
                 ⌘<span className="font-mono">{index + 1}</span>
               </span>
             </div>

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as React from "react";
 import {
   X,
   Paperclip,
@@ -10,16 +9,12 @@ import {
   List,
   ListOrdered,
 } from "lucide-react";
+import * as React from "react";
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface MailComposeProps {
   open: boolean;
@@ -47,9 +42,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   ];
 
   const filteredSuggestions = toInput
-    ? pastEmails.filter((email) =>
-        email.toLowerCase().includes(toInput.toLowerCase())
-      )
+    ? pastEmails.filter((email) => email.toLowerCase().includes(toInput.toLowerCase()))
     : [];
 
   const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,10 +96,10 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                   setToInput(e.target.value);
                   setShowSuggestions(true);
                 }}
-                className="border-0 focus-visible:ring-0 rounded-none"
+                className="rounded-none border-0 focus-visible:ring-0"
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
-                <ul className="absolute top-full left-0 right-0 z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
+                <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
                   {filteredSuggestions.map((email, index) => (
                     <li
                       key={index}
@@ -122,59 +115,39 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 </ul>
               )}
             </div>
-            <Separator className="w-[95%] mx-auto" />
+            <Separator className="mx-auto w-[95%]" />
             <Input
               placeholder="Subject"
               defaultValue={replyTo?.subject ? `Re: ${replyTo.subject}` : ""}
-              className="border-0 focus-visible:ring-0 rounded-none"
+              className="rounded-none border-0 focus-visible:ring-0"
             />
           </div>
-          <Separator className="w-[95%] mx-auto" />
+          <Separator className="mx-auto w-[95%]" />
 
           <div
             ref={editorRef}
             contentEditable
-            className="mt-5 w-[95%] mx-auto min-h-[300px] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mx-auto mt-5 min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
             role="textbox"
             aria-multiline="true"
           />
 
-          <div className="flex items-center justify-between mt-4 w-full mx-auto">
+          <div className="mx-auto mt-4 flex w-full items-center justify-between">
             <div className="flex gap-2 p-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => insertFormat("bold")}
-              >
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
                 <Bold className="h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => insertFormat("italic")}
-              >
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("italic")}>
                 <Italic className="h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => insertFormat("list")}
-              >
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("list")}>
                 <List className="h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => insertFormat("ordered-list")}
-              >
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("ordered-list")}>
                 <ListOrdered className="h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => insertFormat("link")}
-              >
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
                 <Link2 className="h-4 w-4" />
               </Button>
               <Button
@@ -200,28 +173,22 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 <ImageIcon className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-4 mr-5">
+            <div className="mr-5 space-y-4">
               <div className="flex items-center">
-                <label className="cursor-pointer w-[95%] mx-auto">
+                <label className="mx-auto w-[95%] cursor-pointer">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={(e) => {
                       e.preventDefault();
-                      const fileInput = e.currentTarget
-                        .nextElementSibling as HTMLInputElement;
+                      const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
                       fileInput?.click();
                     }}
                   >
                     <Paperclip className="mr-2 h-4 w-4" />
                     Attach files
                   </Button>
-                  <Input
-                    type="file"
-                    className="hidden"
-                    multiple
-                    onChange={handleAttachment}
-                  />
+                  <Input type="file" className="hidden" multiple onChange={handleAttachment} />
                 </label>
               </div>
               {attachments.length > 0 && (
@@ -232,11 +199,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                       className="flex items-center justify-between rounded-md border p-2"
                     >
                       <span className="text-sm">{file.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeAttachment(index)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => removeAttachment(index)}>
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
