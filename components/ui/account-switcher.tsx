@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import {
   Dialog,
@@ -36,7 +37,8 @@ interface AccountSwitcherProps {
 export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
   const [selectedAccount, setSelectedAccount] = React.useState(accounts[0]);
 
-  const { isMobile } = useSidebar();
+  const { isMobile, state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   return (
     <DropdownMenu>
@@ -47,7 +49,10 @@ export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground shrink-0">
+              <div className={cn(
+                "flex aspect-square size-10 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground shrink-0",
+                collapsed && "w-full"
+              )}>
                 <selectedAccount.logo className="size-5" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none min-w-0">
