@@ -5,6 +5,13 @@ import {
   AlignVerticalSpaceAround,
   Search,
 } from "lucide-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -43,14 +50,31 @@ export function Mail({ mails }: MailProps) {
 
   const filteredMails = useFilteredMails(mails, activeTags);
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile on mount and when window resizes
+  React.useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is the 'md' breakpoint
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  // Only show dialog if we're on mobile
+  const showDialog = isDialogOpen && isMobile;
+
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex h-screen">
-        {/* Middle Panel */}
-        <div className="flex-1 border-r overflow-y-auto">
+      <div className="flex h-screen ">
+        <div className="flex-1 border-r overflow-y-auto mt-2">
           <Tabs defaultValue="all">
-            <div className="flex items-center px-4 py-2">
-              <h1 className="text-xl font-bold">Inbox</h1>
+            <div className="flex items-center px-6 py-2">
+              <h1 className="text-xl font-bold hidden md:block">Inbox</h1>
               <TabsList className="ml-auto">
                 <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
                   All mail
@@ -60,11 +84,11 @@ export function Mail({ mails }: MailProps) {
                 </TabsTrigger>
               </TabsList>
             </div>
-            <Separator />
+            <Separator className="hidden md:block" />
             <div className="bg-background p-4 backdrop-blur supports-[backdrop-filter]:bg-background">
               <form>
                 <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search" className="pl-8" />
                 </div>
               </form>
@@ -87,7 +111,10 @@ export function Mail({ mails }: MailProps) {
                   No messages found
                 </div>
               ) : (
-                <MailList items={filteredMails} isCompact={isCompact} />
+                <MailList 
+                items={filteredMails} isCompact={isCompact} 
+                onMailClick={() => setIsDialogOpen(true)} 
+              />
               )}
             </TabsContent>
 
@@ -97,7 +124,10 @@ export function Mail({ mails }: MailProps) {
                   No unread messages
                 </div>
               ) : (
-                <MailList items={filteredMails.filter((item) => !item.read)} isCompact={isCompact} />
+                <MailList 
+                items={filteredMails.filter((item) => !item.read)} isCompact={isCompact} 
+                onMailClick={() => setIsDialogOpen(true)}
+              />
               )}
             </TabsContent>
 
@@ -105,12 +135,24 @@ export function Mail({ mails }: MailProps) {
           </Tabs>
         </div>
 
-        {/* Right Panel */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Desktop Mail Display */}
+        <div className="flex-1 overflow-y-auto hidden md:block">
           <MailDisplay
             mail={filteredMails.find((item) => item.id === mail.selected) || null}
           />
         </div>
+
+        {/* Mobile Dialog */}
+        <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[100vw] h-[100vh] p-0 border-none">
+            <DialogHeader className="hidden">
+              <DialogTitle></DialogTitle>
+            </DialogHeader>
+            <MailDisplay
+              mail={mails.find((item) => item.id === mail.selected) || null}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   );

@@ -14,13 +14,22 @@ import { tagsAtom, Tag } from "./use-tags"
 interface MailListProps {
   items: Mail[],
   isCompact: boolean,
+  onMailClick: () => void
 }
 
-export function MailList({ items, isCompact }: MailListProps) {
+export function MailList({ items, isCompact, onMailClick }: MailListProps) {
   const [mail, setMail] = useMail()
 
   const tags = useAtomValue(tagsAtom)
   const activeTags = tags.filter(tag => tag.checked)
+
+  const handleMailClick = (mail: Mail) => {
+    setMail({
+      ...mail,
+      selected: mail.id,
+    })
+    onMailClick()
+  }
 
   return (
     <ScrollArea className="h-[calc(100vh-13rem-1px)] mt-4" type="auto">

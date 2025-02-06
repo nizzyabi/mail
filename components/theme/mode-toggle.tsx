@@ -9,8 +9,8 @@ export function ModeToggle() {
 
   const themes = [
     { value: "light", icon: Sun, label: "Light" },
-    { value: "system", icon: Monitor, label: "System" },
     { value: "dark", icon: Moon, label: "Dark" },
+    { value: "system", icon: Monitor, label: "System" },
   ];
 
   return (
