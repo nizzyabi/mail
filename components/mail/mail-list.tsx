@@ -1,5 +1,4 @@
 import { ComponentProps } from "react"
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +9,7 @@ import { BellOff } from "lucide-react"
 
 import { useAtomValue } from "jotai"
 import { tagsAtom, Tag } from "./use-tags"
+import { formatDate } from "@/utils/format-date"
 
 interface MailListProps {
   items: Mail[],
@@ -78,9 +78,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
                       : "text-muted-foreground"
                   )}
                 >
-                  {formatDistanceToNow(new Date(item.date), {
-                    addSuffix: true,
-                  })}
+                  {formatDate(item.date)}
                 </div>
               </div>
             </div>
