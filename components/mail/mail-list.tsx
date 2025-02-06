@@ -10,7 +10,6 @@ import { BellOff } from "lucide-react"
 
 import { useAtomValue } from "jotai"
 import { tagsAtom, Tag } from "./use-tags"
-import { formatDate } from "@/utils/format-date"
 
 interface MailListProps {
   items: Mail[],
