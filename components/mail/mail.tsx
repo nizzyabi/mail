@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search } from "lucide-react";
+import { AlignVerticalSpaceAround, Search } from "lucide-react";
 import { useState } from "react";
 import * as React from "react";
 
