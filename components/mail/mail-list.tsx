@@ -51,7 +51,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
                   "flex gap-2",
                   isCompact && mail.selected !== item.id ? "items-center" : "flex-wrap"
                 )}>
-                  <div className="flex items-center gap-2 w-40">
+                  <div className="flex items-center gap-2 w-32 2xl:w-40 ">
                     <div className={cn(item.read ? 'font-normal' : 'font-bold')}>{item.name}</div>
                     {item.muted && (
                       <BellOff className="h-4 w-4 text-muted-foreground" />
@@ -72,7 +72,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
 
                 <div
                   className={cn(
-                    "ml-auto text-xs",
+                    "ml-auto text-xs text-right whitespace-break-spaces",
                     mail.selected === item.id
                       ? "text-foreground"
                       : "text-muted-foreground"
