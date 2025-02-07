@@ -15,9 +15,11 @@ import {
   ChartLine,
   Pencil,
 } from "lucide-react";
+import { User, Account, NavSection, SidebarData } from "@/types/types";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 import {
   Sidebar,
@@ -25,6 +27,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { AccountSwitcher } from "./account-switcher";
@@ -32,37 +37,6 @@ import { MailCompose } from "../mail/mail-compose";
 import { SidebarToggle } from "./sidebar-toggle";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
-
-interface Account {
-  name: string;
-  logo: React.ComponentType<{ className?: string }>;
-  email: string;
-}
-
-interface NavItem {
-  title: string;
-  url: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  isActive?: boolean;
-  badge?: number;
-}
-
-interface NavSection {
-  title: string;
-  items: NavItem[];
-}
-
-interface SidebarData {
-  user: User;
-  accounts: Account[];
-  navMain: NavSection[];
-}
 
 const data: SidebarData = {
   user: {
@@ -193,18 +167,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Memoized compose button component
   const ComposeButton = React.memo(function ComposeButton() {
     return (
-      <Button
-        className={cn(
-          collapsed ? "h-9 w-9 p-0" : "h-9 inline-flex gap-2",
-          "items-center justify-center"
-        )}
-        variant={collapsed ? "default" : "default"}
-        onClick={handleComposeClick}
-        aria-label="Compose new email"
-      >
-        <Pencil className="size-4" aria-hidden="true" />
-        {!collapsed && <span>Compose</span>}
-      </Button>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            className="m-2 w-fit bg-primary px-3 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
+            onClick={handleComposeClick}
+          >
+            <Pencil className="size-4" />
+            <span>Compose</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     );
   });
 
@@ -214,24 +187,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <AccountSwitcher accounts={data.accounts} />
+          <ComposeButton />
         </SidebarHeader>
         <SidebarContent>
-          <div 
-            className={cn(
-              collapsed ? "px-1.5" : "px-4",
-              "relative z-10 mt-2"
-            )}
-          >
-            <ComposeButton />
-          </div>
           <NavMain items={data.navMain} />
         </SidebarContent>
         <SidebarFooter>
           <NavUser user={data.user} />
         </SidebarFooter>
         <SidebarRail />
-        <MailCompose 
-          open={composeOpen} 
+        <MailCompose
+          open={composeOpen}
           onClose={() => setComposeOpen(false)}
           aria-label="Compose email dialog"
         />

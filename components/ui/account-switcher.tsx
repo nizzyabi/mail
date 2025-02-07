@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Account } from "@/types/types";
 import { cn } from "@/lib/utils";
 
 import {
@@ -24,13 +25,10 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import React from "react";
 
 interface AccountSwitcherProps {
-  accounts: {
-    name: string;
-    logo: React.ComponentType<{ className?: string }>;
-    email: string;
-  }[];
+  accounts: Account[];
 }
 
 export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
@@ -48,10 +46,12 @@ export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className={cn(
-                "flex aspect-square size-10 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground shrink-0",
-                collapsed && "w-full"
-              )}>
+              <div
+                className={cn(
+                  "flex aspect-square size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sidebar-primary-foreground",
+                  collapsed && "w-full",
+                )}
+              >
                 <selectedAccount.logo className="size-5" />
               </div>
               <div className="flex min-w-0 flex-col gap-0.5 leading-none">
