@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TooltipProvider } from "../ui/tooltip";
+import { getCookie } from "@/utils/cookies";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
@@ -56,9 +57,12 @@ export const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
 
+    const sidebarCookie = getCookie(SIDEBAR_COOKIE_NAME);
+    // validate string === true because cookie value is returned as a string.
+    const isDefaultOpen = sidebarCookie ? sidebarCookie === "true" : defaultOpen;
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen);
+    const [_open, _setOpen] = React.useState(isDefaultOpen);
     const open = openProp ?? _open;
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
