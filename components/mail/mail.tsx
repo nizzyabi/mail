@@ -137,7 +137,7 @@ export function Mail({ mails }: MailProps) {
             className="hidden md:block"
           >
             {/* Desktop Mail Display */}
-            <div className="hidden flex-1 overflow-y-auto md:block">
+            <div className="hidden h-full flex-1 overflow-y-auto md:block">
               <MailDisplay mail={filteredMails.find((item) => item.id === mail.selected) || null} />
             </div>
           </ResizablePanel>
