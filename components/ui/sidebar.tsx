@@ -15,11 +15,6 @@ import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  collapsible?: "icon" | boolean;
-  collapsed?: boolean;
-}
-
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -34,7 +29,6 @@ const Sidebar = React.forwardRef<
       side = "left",
       variant = "sidebar",
       collapsible = "offcanvas",
-      collapsed = false,
       className,
       children,
       ...props
