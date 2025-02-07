@@ -5,6 +5,7 @@ import { AlignVerticalSpaceAround, Search } from "lucide-react";
 import { useState } from "react";
 import * as React from "react";
 
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MailDisplay } from "@/components/mail/mail-display";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -63,72 +64,84 @@ export function Mail({ mails }: MailProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen">
-        <div className="mt-2 flex-1 overflow-y-auto border-r">
-          <Tabs defaultValue="all">
-            <div className="flex items-center px-6 py-2">
-              <h1 className="hidden text-xl font-bold md:block">Inbox</h1>
-              <TabsList className="ml-auto">
-                <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
-                  All mail
-                </TabsTrigger>
-                <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">
-                  Unread
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <Separator className="hidden md:block" />
-            <div className="bg-background p-4 backdrop-blur supports-[backdrop-filter]:bg-background">
-              <form>
-                <div className="relative">
-                  <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search" className="pl-8" />
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={isMobile ? 100 : 25} minSize={isMobile ? 100 : 25}>
+            <div className="mt-2 flex-1 overflow-y-auto border-r">
+              <Tabs defaultValue="all">
+                <div className="flex items-center px-6 py-2">
+                  <h1 className="hidden text-xl font-bold md:block">Inbox</h1>
+                  <TabsList className="ml-auto">
+                    <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
+                      All mail
+                    </TabsTrigger>
+                    <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">
+                      Unread
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
-              </form>
-            </div>
-            <Separator />
-
-            {/* Filters sections */}
-            <div className="flex items-center justify-between px-4 py-2">
-              <Filters />
-              <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
-                <AlignVerticalSpaceAround />
-              </Button>
-            </div>
-
-            <Separator />
-
-            <TabsContent value="all" className="m-0">
-              {filteredMails.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  No messages found | Clear filters to see more results
+                <Separator className="hidden md:block" />
+                <div className="bg-background p-4 backdrop-blur supports-[backdrop-filter]:bg-background">
+                  <form>
+                    <div className="relative">
+                      <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Search" className="pl-8" />
+                    </div>
+                  </form>
                 </div>
-              ) : (
-                <MailList
-                  items={filteredMails}
-                  isCompact={isCompact}
-                  onMailClick={() => setIsDialogOpen(true)}
-                />
-              )}
-            </TabsContent>
+                <Separator />
 
-            <TabsContent value="unread" className="m-0">
-              {filteredMails.filter((item) => !item.read).length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">No unread messages</div>
-              ) : (
-                <MailList
-                  items={filteredMails.filter((item) => !item.read)}
-                  isCompact={isCompact}
-                  onMailClick={() => setIsDialogOpen(true)}
-                />
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
+                {/* Filters sections */}
+                <div className="flex items-center justify-between px-4 py-2">
+                  <Filters />
+                  <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
+                    <AlignVerticalSpaceAround />
+                  </Button>
+                </div>
 
-        {/* Desktop Mail Display */}
-        <div className="hidden flex-1 overflow-y-auto md:block">
-          <MailDisplay mail={filteredMails.find((item) => item.id === mail.selected) || null} />
-        </div>
+                <Separator />
+
+                <TabsContent value="all" className="m-0">
+                  {filteredMails.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">
+                      No messages found | Clear filters to see more results
+                    </div>
+                  ) : (
+                    <MailList
+                      items={filteredMails}
+                      isCompact={isCompact}
+                      onMailClick={() => setIsDialogOpen(true)}
+                    />
+                  )}
+                </TabsContent>
+
+                <TabsContent value="unread" className="m-0">
+                  {filteredMails.filter((item) => !item.read).length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                  ) : (
+                    <MailList
+                      items={filteredMails.filter((item) => !item.read)}
+                      isCompact={isCompact}
+                      onMailClick={() => setIsDialogOpen(true)}
+                    />
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+          </ResizablePanel>
+
+          {!isMobile && <ResizableHandle withHandle />}
+
+          <ResizablePanel
+            defaultSize={isMobile ? 0 : 75}
+            minSize={isMobile ? 0 : 25}
+            className="hidden md:block"
+          >
+            {/* Desktop Mail Display */}
+            <div className="hidden flex-1 overflow-y-auto md:block">
+              <MailDisplay mail={filteredMails.find((item) => item.id === mail.selected) || null} />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
 
         {/* Mobile Dialog */}
         <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
