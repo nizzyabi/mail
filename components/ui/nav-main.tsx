@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
-import { BASE_URL } from "@/lib/constants";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
@@ -38,10 +37,11 @@ interface NavMainProps {
 export function NavMain({ items }: NavMainProps) {
   const pathname = usePathname();
 
-  // Function to check if a URL matches the current path
   const isUrlActive = (url: string) => {
-    const fullUrl = `http://localhost:3000${url}`;
-    return pathname === url;
+    //remove trailing slashes
+    const cleanPath = pathname?.replace(/\/$/, "") || "";
+    const cleanUrl = url.replace(/\/$/, "");
+    return cleanPath === cleanUrl;
   };
 
   return (
@@ -55,7 +55,7 @@ export function NavMain({ items }: NavMainProps) {
                 <Collapsible key={item.title}>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <Link href={`${BASE_URL}${item.url}`}>
+                      <Link href={item.url}>
                         <SidebarMenuButton isActive={isUrlActive(item.url)}>
                           {item.icon && <item.icon className="mr-2 size-4" />}
                           <span className="flex-1">{item.title}</span>
