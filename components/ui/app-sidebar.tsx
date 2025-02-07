@@ -15,10 +15,8 @@ import {
   ChartLine,
   Pencil,
 } from "lucide-react";
-import { User, Account, NavSection, SidebarData } from "@/types/types";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { SidebarData } from "@/types/types";
 import React from "react";
 
 import {
@@ -158,7 +156,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [composeOpen, setComposeOpen] = React.useState(false);
   const sidebarContext = useSidebar();
   const { isMobile } = sidebarContext;
-  const collapsed = sidebarContext.state === "collapsed";
 
   const handleComposeClick = React.useCallback(() => {
     setComposeOpen(true);
