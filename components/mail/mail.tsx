@@ -64,40 +64,39 @@ export function Mail({ mails }: MailProps) {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex h-screen">
+      <div className="flex h-dvh">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={isMobile ? 100 : 25} minSize={isMobile ? 100 : 25}>
             <div className="flex-1 overflow-y-auto border-r">
               <Tabs defaultValue="all">
-                <div className="flex items-center px-6 py-2">
+                <div className="flex items-center justify-between p-4">
                   <SidebarToggle className="block md:hidden" />
                   <h1 className="hidden text-xl font-bold md:block">Inbox</h1>
-                  <TabsList className="ml-auto">
-                    <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
-                      All mail
-                    </TabsTrigger>
-                    <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">
-                      Unread
-                    </TabsTrigger>
-                  </TabsList>
+                  <div className="flex items-center space-x-1.5">
+                    <Button variant="ghost" size="icon" onClick={() => setIsCompact(!isCompact)}>
+                      <AlignVerticalSpaceAround />
+                    </Button>
+                    <TabsList>
+                      <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">
+                        All mail
+                      </TabsTrigger>
+                      <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">
+                        Unread
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
                 </div>
-                <Separator className="hidden md:block" />
-                <div className="bg-background p-4 backdrop-blur supports-[backdrop-filter]:bg-background">
-                  <form>
-                    <div className="relative">
+                {/* <Separator className="hidden md:block" /> */}
+                <div className="bg-background backdrop-blur supports-[backdrop-filter]:bg-background">
+                  <form className="flex space-x-1.5 p-4 pt-0">
+                    <div className="relative flex-1">
                       <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
                       <Input placeholder="Search" className="pl-8" />
                     </div>
+                    <div>
+                      <Filters />
+                    </div>
                   </form>
-                </div>
-                <Separator />
-
-                {/* Filters sections */}
-                <div className="flex items-center justify-between px-4 py-2">
-                  <Filters />
-                  <Button variant="ghost" size="sm" onClick={() => setIsCompact(!isCompact)}>
-                    <AlignVerticalSpaceAround />
-                  </Button>
                 </div>
 
                 <Separator />

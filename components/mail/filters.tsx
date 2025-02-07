@@ -9,8 +9,8 @@ import {
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { tagsAtom, type Tag } from "./use-tags";
+import { Filter, X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
 import { useAtom } from "jotai";
 import React from "react";
 
@@ -38,11 +38,11 @@ export default function Filters() {
   );
 
   return (
-    <div className="flex items-center justify-between">
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm">
-            Tags
+          <Button variant="outline" size="icon">
+            <Filter></Filter>
           </Button>
         </DropdownMenuTrigger>
 
@@ -90,6 +90,6 @@ export default function Filters() {
           </>
         )}
       </div>
-    </div>
+    </>
   );
 }
