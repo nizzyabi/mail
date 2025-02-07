@@ -83,7 +83,7 @@ Before running the application, you'll need to set up several services and envir
 
 2. **Better Auth Setup**
 
-   - Sign up for [Better Auth](https://betterauth.io)
+   - Sign up for [Better Auth](https://www.better-auth.com/)
    - Create a new project and get your API keys
    - Add to `.env`:
 
