@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Inbox,
   FileText,
@@ -27,12 +26,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import { useSidebar } from "@/components/ui/sidebar";
 import { AccountSwitcher } from "./account-switcher";
 import { MailCompose } from "../mail/mail-compose";
-import { useSidebar } from "@/components/ui/sidebar";
 import { SidebarToggle } from "./sidebar-toggle";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
 interface User {
   name: string;
@@ -211,9 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <>
-      {isMobile && (
-        <SidebarToggle className="fixed left-4 top-4 z-40 md:hidden" />
-      )}
+      {isMobile && <SidebarToggle className="fixed left-4 top-4 z-40 md:hidden" />}
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <AccountSwitcher accounts={data.accounts} />
