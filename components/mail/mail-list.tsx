@@ -40,7 +40,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
             className={cn(
               "flex cursor-pointer flex-col items-start rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
               mail.selected === item.id && "bg-muted hover:opacity-100",
-              isCompact && mail.selected !== item.id && item.read ? "gap-0" : "gap-2",
+              isCompact && mail.selected !== item.id ? "gap-0" : "gap-2",
               item.read && mail.selected !== item.id
                 ? "opacity-70 hover:opacity-100"
                 : "opacity-100",
