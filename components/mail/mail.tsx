@@ -131,18 +131,22 @@ export function Mail({ mails }: MailProps) {
             </div>
           </ResizablePanel>
 
-          {!isMobile && <ResizableHandle withHandle />}
+          {!isMobile && mail.selected && <ResizableHandle withHandle />}
 
-          <ResizablePanel
-            defaultSize={isMobile ? 0 : 75}
-            minSize={isMobile ? 0 : 25}
-            className="hidden md:block"
-          >
-            {/* Desktop Mail Display */}
-            <div className="hidden h-full flex-1 overflow-y-auto md:block">
-              <MailDisplay mail={filteredMails.find((item) => item.id === mail.selected) || null} />
-            </div>
-          </ResizablePanel>
+          {mail.selected && (
+            <ResizablePanel
+              defaultSize={isMobile ? 0 : 75}
+              minSize={isMobile ? 0 : 25}
+              className="hidden md:block"
+            >
+              {/* Desktop Mail Display */}
+              <div className="hidden h-full flex-1 overflow-y-auto md:block">
+                <MailDisplay
+                  mail={filteredMails.find((item) => item.id === mail.selected) || null}
+                />
+              </div>
+            </ResizablePanel>
+          )}
         </ResizablePanelGroup>
 
         {/* Mobile Dialog */}
