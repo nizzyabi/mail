@@ -12,6 +12,7 @@ import {
 import * as React from "react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +80,96 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
         break;
     }
     editorRef.current.focus();
+  };
+
+  const MAX_VISIBLE_ATTACHMENTS = 3;
+  const hasHiddenAttachments = attachments.length > MAX_VISIBLE_ATTACHMENTS;
+
+  const renderAttachments = () => {
+    if (attachments.length === 0) return null;
+
+    return (
+      <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
+        {/* Show first 3 attachments */}
+        {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
+          <Badge key={index} variant="secondary">
+            {file.name}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+              onClick={(e) => {
+                e.preventDefault();
+                removeAttachment(index);
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </Badge>
+        ))}
+
+        {/* Show popover for remaining attachments */}
+        {hasHiddenAttachments && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                +{attachments.length - MAX_VISIBLE_ATTACHMENTS} more...
+              </Badge>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-80 touch-auto"
+              align="start"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              <div className="space-y-2">
+                <div className="px-1">
+                  <h4 className="font-medium leading-none">Attachments</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {attachments.length} files attached
+                  </p>
+                </div>
+                <Separator />
+                <div
+                  className="h-[200px] touch-auto overflow-y-auto overscroll-contain px-1 py-1"
+                  onWheel={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                  }}
+                >
+                  <div className="space-y-1">
+                    {attachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <Paperclip className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate text-sm">{file.name}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 flex-shrink-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeAttachment(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -173,26 +264,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             role="textbox"
             aria-multiline="true"
           />
-          {attachments.length > 0 && (
-            <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
-              {attachments.map((file, index) => (
-                <Badge key={index} variant="secondary">
-                  {file.name}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      removeAttachment(index);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-          )}
+          {renderAttachments()}
 
           <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
             <label className="cursor-pointer">
