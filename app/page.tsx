@@ -1,7 +1,8 @@
 "use client";
 
-import { Discord, GitHub, Twitter, YouTube } from "@/components/icons/icons";
+import { Discord, GitHub, Mail0, Twitter, YouTube } from "@/components/icons/icons";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export default function BetaSignup() {
     <div className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
       <div className="flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Early Access</h3>
+          <Mail0 className="h-14 w-14" />
           <p className="text-sm text-gray-500 dark:text-zinc-400">
             Enter your email to get access once we launch ❤️
           </p>
@@ -105,12 +106,14 @@ export default function BetaSignup() {
             </div>
           </div>
         </form>
-        <p className="text-center text-sm text-gray-500 dark:text-zinc-400">
-          Are you developing?{" "}
-          <Link href="/mail" className="underline">
-            Go here
+        <div className="flex flex-row items-center justify-center gap-2">
+          <Link
+            href="/mail"
+            className="flex flex-row items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
+          >
+            Are you developing? <ArrowRight className="h-4 w-4" />
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
