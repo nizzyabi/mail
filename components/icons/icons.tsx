@@ -69,15 +69,3 @@ export const YouTube = ({ className }: { className?: string }) => (
     />
   </svg>
 );
-
-export const Mail0 = ({ className }: { className?: string }) => (
-  <svg role="img" viewBox="0 0 35 37" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <title>Mail</title>
-    <path
-      d="M1.334 12.224H4.437V13.326L6.264 12.224H7.772L9.048 14.08L12.122 12.224H13.572L16.095 15.936V28H12.992V16.458L12.064 15.066H10.933L10.295 15.791V19.967H7.192V16.458L6.264 15.066H5.075L4.437 15.791V28H1.334V12.224ZM20.7987 12.314H27.2667L29.1367 15.13V25.976L27.2227 28H20.7547L18.8407 25.162V14.316L20.7987 12.314ZM21.1947 15.02V21.818L26.7827 16.032V15.548L26.0567 14.492H21.6787L21.1947 15.02ZM21.1947 24.788L21.8987 25.822H26.2767L26.7827 25.272V18.848L21.1947 24.656V24.788Z"
-      fill="var(--icon-color)"
-    />
-    <path d="M29 10H35" stroke="#FF5151" />
-    <path d="M32 13L32 7" stroke="#FF5151" />
-  </svg>
-);
