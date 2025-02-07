@@ -66,7 +66,7 @@ export function Mail({ mails }: MailProps) {
     <TooltipProvider delayDuration={0}>
       <div className="flex h-dvh">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={isMobile ? 100 : 25} minSize={isMobile ? 100 : 25}>
+          <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
             <div className="flex-1 overflow-y-auto border-r">
               <Tabs defaultValue="all">
                 <div className="flex items-center justify-between p-4">
