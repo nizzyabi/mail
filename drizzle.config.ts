@@ -6,5 +6,6 @@ export default {
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
+  out: "./db/migrations",
   tablesFilter: ["mail0_*"],
 } satisfies Config;
