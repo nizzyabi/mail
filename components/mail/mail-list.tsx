@@ -32,8 +32,8 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
   };
 
   return (
-    <ScrollArea className="mt-4 h-[calc(100vh-13rem-1px)]" type="auto">
-      <div className="flex flex-col gap-2 p-4 pt-0">
+    <ScrollArea className="h-[calc(100dvh-8rem-1px)]" type="auto">
+      <div className="mt-4 flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <div
             key={item.id}
