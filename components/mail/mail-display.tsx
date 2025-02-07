@@ -201,16 +201,16 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
-          <div className="p-4">
-            <form className="space-y-1 rounded-3xl border bg-secondary p-3">
-              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+          <div className="box-border p-4">
+            <form className="space-y-1 overflow-x-auto rounded-3xl border bg-secondary p-3">
+              <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
                 <Reply className="h-4 w-4"></Reply>
-                <span>
+                <p className="truncate">
                   {mail.name} ({mail.email})
-                </span>
+                </p>
               </div>
               <Textarea
-                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 md:text-base"
+                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
                 placeholder="Message…"
                 rows={3}
               ></Textarea>
