@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -14,7 +13,6 @@ import {
 import {
   Pencil,
   Tag,
-  Folder,
   MailCheck,
   MailPlus,
   CircleHelp,
