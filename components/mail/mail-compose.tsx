@@ -25,6 +25,7 @@ interface MailComposeProps {
   };
 }
 
+import { Badge } from "../ui/badge";
 export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [attachments, setAttachments] = React.useState<File[]>([]);
   const [messageContent, setMessageContent] = React.useState("");
@@ -132,6 +133,26 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             role="textbox"
             aria-multiline="true"
           />
+          {attachments.length > 0 && (
+            <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
+              {attachments.map((file, index) => (
+                <Badge key={index} variant="secondary">
+                  {file.name}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeAttachment(index);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </Badge>
+              ))}
+            </div>
+          )}
 
           <div className="mx-auto mt-4 flex w-full items-center justify-between">
             <div className="flex gap-2 p-1">
@@ -173,7 +194,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                 <ImageIcon className="h-4 w-4" />
               </Button>
             </div>
-            <div className="mr-5 space-y-4">
+            <div className="mr-5">
               <div className="flex items-center">
                 <label className="mx-auto w-[95%] cursor-pointer">
                   <Button
@@ -191,21 +212,6 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                   <Input type="file" className="hidden" multiple onChange={handleAttachment} />
                 </label>
               </div>
-              {attachments.length > 0 && (
-                <div className="space-y-2">
-                  {attachments.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-md border p-2"
-                    >
-                      <span className="text-sm">{file.name}</span>
-                      <Button variant="ghost" size="icon" onClick={() => removeAttachment(index)}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>
