@@ -1,11 +1,9 @@
 import {
   Archive,
   ArchiveX,
-  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
-  Plus,
   Reply,
   ReplyAll,
   Trash2,
@@ -17,14 +15,19 @@ import { useState, useEffect } from "react";
 import { addDays } from "date-fns/addDays";
 import { format } from "date-fns/format";
 
-import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
+import { ReplyComposer } from "@/components/mail/reply-compose";
 import { Mail } from "@/components/mail/data";
 
 interface MailDisplayProps {
@@ -33,10 +36,8 @@ interface MailDisplayProps {
 
 export function MailDisplay({ mail }: MailDisplayProps) {
   const today = new Date();
-  // Create local state for the muted flag.
   const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
 
-  // Update the muted state when the mail prop changes.
   useEffect(() => {
     if (mail) {
       setIsMuted(mail.muted);
@@ -181,7 +182,6 @@ export function MailDisplay({ mail }: MailDisplayProps) {
               </Avatar>
               <div className="grid gap-1">
                 <div className="font-semibold">{mail.name}</div>
-                {/* Display the subject with the muted icon if isMuted is true */}
                 <div className="line-clamp-1 flex items-center text-xs">
                   {mail.subject}
                   {isMuted && <BellOff className="ml-2 h-4 w-4 text-muted-foreground" />}
@@ -199,40 +199,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
-          <div className="box-border p-4">
-            <form className="space-y-1 overflow-x-auto rounded-xl border bg-secondary p-3">
-              <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
-                <Reply className="h-4 w-4"></Reply>
-                <p className="truncate">
-                  {mail.name} ({mail.email})
-                </p>
-              </div>
-              <Textarea
-                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
-                placeholder="Message…"
-                rows={3}
-              ></Textarea>
-              <div className="flex justify-between">
-                <div className="flex space-x-1.5">
-                  <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
-                    <span>Send</span>
-                    <ArrowUp></ArrowUp>
-                  </Button>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="sm" variant="ghost" className="h-9 w-9 hover:bg-primary/10">
-                        <Plus></Plus>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Add an attachment</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex space-x-1"></div>
-              </div>
-            </form>
-          </div>
+          <ReplyComposer name={mail.name} email={mail.email} />
         </div>
       ) : (
         <div className="p-8 text-center text-muted-foreground">No message selected</div>
