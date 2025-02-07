@@ -37,7 +37,7 @@ interface MailProps {
 }
 
 export function Mail({ mails }: MailProps) {
-  const [mail] = useMail();
+  const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
@@ -61,6 +61,13 @@ export function Mail({ mails }: MailProps) {
 
   // Only show dialog if we're on mobile
   const showDialog = isDialogOpen && isMobile;
+
+  const onMobileDialogClose = () => {
+    setIsDialogOpen(false);
+    setMail({
+      selected: null,
+    });
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -149,7 +156,7 @@ export function Mail({ mails }: MailProps) {
         </ResizablePanelGroup>
 
         {/* Mobile Dialog */}
-        <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
+        <Dialog open={showDialog} onOpenChange={() => onMobileDialogClose()}>
           <DialogContent className="h-[100vh] border-none p-0 sm:max-w-[100vw]">
             <DialogHeader className="hidden">
               <DialogTitle></DialogTitle>
