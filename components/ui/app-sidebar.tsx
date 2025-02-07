@@ -64,36 +64,35 @@ const data: SidebarData = {
       items: [
         {
           title: "Inbox",
-          url: "#",
+          url: "/mail",
           icon: Inbox,
-          isActive: true,
           badge: 128,
         },
         {
           title: "Drafts",
-          url: "#",
+          url: "/draft",
           icon: FileText,
           badge: 9,
         },
         {
           title: "Sent",
-          url: "#",
+          url: "/sent",
           icon: SendHorizontal,
         },
         {
           title: "Junk",
-          url: "#",
+          url: "/junk",
           icon: Trash2,
           badge: 23,
         },
         {
           title: "Trash",
-          url: "#",
+          url: "/trash",
           icon: Trash2,
         },
         {
           title: "Archive",
-          url: "#",
+          url: "/archive",
           icon: Archive,
         },
       ],

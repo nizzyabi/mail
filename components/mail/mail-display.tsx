@@ -25,9 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Mail } from "@/components/mail/data";
-import { Label } from "@/components/ui/label";
 
 interface MailDisplayProps {
   mail: Mail | null;
