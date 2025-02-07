@@ -57,12 +57,9 @@ export const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
 
-    const sidebarCookie = getCookie(SIDEBAR_COOKIE_NAME);
-    // validate string === true because cookie value is returned as a string.
-    const isDefaultOpen = sidebarCookie ? sidebarCookie === "true" : defaultOpen;
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(isDefaultOpen);
+    const [_open, _setOpen] = React.useState(defaultOpen);
     const open = openProp ?? _open;
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -83,6 +80,13 @@ export const SidebarProvider = React.forwardRef<
     const toggleSidebar = React.useCallback(() => {
       return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
     }, [isMobile, setOpen, setOpenMobile]);
+
+    React.useEffect(() => {
+      // In nextjs, browser apis are guarded so we need to do this in a use effect to not get an error that document is not defined.
+      const sidebarCookie = getCookie(SIDEBAR_COOKIE_NAME);
+      const isDefaultOpen = sidebarCookie ? sidebarCookie === "true" : defaultOpen;
+      _setOpen(isDefaultOpen);
+    }, []);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
