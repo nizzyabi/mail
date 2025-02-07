@@ -1,8 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
-
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -11,10 +8,15 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { usePathname } from "next/navigation";
+import { BASE_URL } from "@/lib/constants";
+import { ChevronDown } from "lucide-react";
+import * as React from "react";
+import Link from "next/link";
 
 interface NavMainProps {
   items: {
@@ -23,7 +25,6 @@ interface NavMainProps {
       title: string;
       url: string;
       icon?: React.ComponentType<{ className?: string }>;
-      isActive?: boolean;
       badge?: number;
       items?: {
         title: string;
@@ -35,6 +36,14 @@ interface NavMainProps {
 }
 
 export function NavMain({ items }: NavMainProps) {
+  const pathname = usePathname();
+
+  // Function to check if a URL matches the current path
+  const isUrlActive = (url: string) => {
+    const fullUrl = `http://localhost:3000${url}`;
+    return pathname === url;
+  };
+
   return (
     <>
       {items.map((group) => (
@@ -46,16 +55,18 @@ export function NavMain({ items }: NavMainProps) {
                 <Collapsible key={item.title}>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive={item.isActive}>
-                        {item.icon && <item.icon className="mr-2 size-4" />}
-                        <span className="flex-1">{item.title}</span>
-                        {item.badge !== undefined && (
-                          <span className="ml-auto mr-2 text-muted-foreground">{item.badge}</span>
-                        )}
-                        {item.items && (
-                          <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                        )}
-                      </SidebarMenuButton>
+                      <Link href={`${BASE_URL}${item.url}`}>
+                        <SidebarMenuButton isActive={isUrlActive(item.url)}>
+                          {item.icon && <item.icon className="mr-2 size-4" />}
+                          <span className="flex-1">{item.title}</span>
+                          {item.badge !== undefined && (
+                            <span className="ml-auto mr-2 text-muted-foreground">{item.badge}</span>
+                          )}
+                          {item.items && (
+                            <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          )}
+                        </SidebarMenuButton>
+                      </Link>
                     </CollapsibleTrigger>
                     {item.items && (
                       <CollapsibleContent>
@@ -63,12 +74,17 @@ export function NavMain({ items }: NavMainProps) {
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <a href={subItem.url} className="flex w-full justify-between">
+                                <Link
+                                  href={subItem.url}
+                                  className={`flex w-full justify-between ${
+                                    isUrlActive(subItem.url) ? "text-primary" : ""
+                                  }`}
+                                >
                                   <span>{subItem.title}</span>
                                   {subItem.badge !== undefined && (
                                     <span className="text-muted-foreground">{subItem.badge}</span>
                                   )}
-                                </a>
+                                </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
