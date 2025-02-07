@@ -16,7 +16,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import { SidebarData } from "@/types/types";
+import { SidebarData } from "@/types";
 import React from "react";
 
 import {

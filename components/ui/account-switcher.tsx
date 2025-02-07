@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { Account } from "@/types/types";
+import { Account } from "@/types";
 import { cn } from "@/lib/utils";
 
 import {
