@@ -216,22 +216,13 @@ export function MailDisplay({ mail }: MailDisplayProps) {
               ></Textarea>
               <div className="flex justify-between">
                 <div className="flex space-x-1.5">
-                  <Button
-                    size="sm"
-                    className="rounded-full"
-                    type="submit"
-                    onClick={(e) => e.preventDefault()}
-                  >
+                  <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
                     <span>Send</span>
                     <ArrowUp></ArrowUp>
                   </Button>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-9 w-9 rounded-full hover:bg-background/80"
-                      >
+                      <Button size="sm" variant="ghost" className="h-9 w-9 hover:bg-primary/10">
                         <Plus></Plus>
                       </Button>
                     </TooltipTrigger>
