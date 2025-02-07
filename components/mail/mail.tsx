@@ -89,11 +89,13 @@ export function Mail({ mails }: MailProps) {
 
                 <div className="bg-background backdrop-blur supports-[backdrop-filter]:bg-background">
                   <form className="flex space-x-1.5 p-4 pt-0">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Search" className="pl-8" />
-                    </div>
-                    <div>
+                    <div className="flex w-full items-center space-x-3 rounded-md border p-2 px-3">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        className="w-full flex-1 border-none bg-background outline-none"
+                        placeholder="Search"
+                      />
                       <Filters />
                     </div>
                   </form>
