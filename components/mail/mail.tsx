@@ -149,7 +149,7 @@ export function Mail({ mails }: MailProps) {
         <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
           <DialogContent className="h-[100vh] border-none p-0 sm:max-w-[100vw]">
             <DialogHeader className="hidden">
-              <DialogTitle></DialogTitle>
+              <DialogTitle className="sr-only">Mobile dialog</DialogTitle>
             </DialogHeader>
             <MailDisplay mail={mails.find((item) => item.id === mail.selected) || null} />
           </DialogContent>
