@@ -1,9 +1,11 @@
 import {
   Archive,
   ArchiveX,
+  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
+  Plus,
   Reply,
   ReplyAll,
   Trash2,
@@ -199,26 +201,46 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
-          <Separator className="mt-auto" />
           <div className="p-4">
-            <form>
-              <div className="grid gap-4">
-                <Textarea className="p-4" placeholder={`Reply ${mail.name}...`} />
-                <div className="flex items-center">
-                  <Label htmlFor="mute" className="flex items-center gap-2 text-xs font-normal">
-                    {/* Bind the switch to our local muted state */}
-                    <Switch
-                      id="mute"
-                      aria-label="Mute thread"
-                      checked={isMuted}
-                      onCheckedChange={(checked: boolean) => setIsMuted(checked)}
-                    />{" "}
-                    Mute this thread
-                  </Label>
-                  <Button onClick={(e) => e.preventDefault()} size="sm" className="ml-auto">
-                    Send
+            <form className="space-y-1 rounded-3xl border bg-secondary p-3">
+              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                <Reply className="h-4 w-4"></Reply>
+                <span>
+                  {mail.name} ({mail.email})
+                </span>
+              </div>
+              <Textarea
+                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 md:text-base"
+                placeholder="Message…"
+                rows={3}
+              ></Textarea>
+              <div className="flex justify-between">
+                <div className="flex space-x-1.5">
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    type="submit"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <span>Send</span>
+                    <ArrowUp></ArrowUp>
                   </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 w-9 rounded-full hover:bg-background/80"
+                      >
+                        <Plus></Plus>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add an attachment</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
+                <div className="flex space-x-1"></div>
               </div>
             </form>
           </div>
