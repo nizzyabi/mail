@@ -1,6 +1,6 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowUp, ChevronDown, Plus, Reply } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowUp, Plus, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ReplyComposerProps {
@@ -32,10 +32,14 @@ export function ReplyComposer({ name, email }: ReplyComposerProps) {
           rows={3}
         />
         <div className="flex justify-between">
-          <div className="flex space-x-1.5">
+          <div className="flex items-center space-x-1.5">
             <Button size="sm" type="submit">
               <span>Send</span>
               <ArrowUp />
+            </Button>
+            <Button size="sm" variant="ghost" className="bg-primary/10 hover:bg-primary/5">
+              <span>View attachments</span>
+              <ChevronDown />
             </Button>
             <Tooltip>
               <TooltipTrigger asChild>
