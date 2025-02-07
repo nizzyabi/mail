@@ -23,11 +23,18 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
 
-  const handleMailClick = (mail: Mail) => {
-    setMail({
-      ...mail,
-      selected: mail.id,
-    });
+  const handleMailClick = (selectedMail: Mail) => {
+    if (mail.selected === selectedMail.id) {
+      setMail({
+        selected: null,
+      });
+    } else {
+      setMail({
+        ...mail,
+        selected: selectedMail.id,
+      });
+    }
+
     onMailClick();
   };
 
