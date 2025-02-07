@@ -221,6 +221,11 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                   {mail.name} ({mail.email})
                 </p>
               </div>
+              <Textarea
+                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
+                placeholder="Message…"
+                rows={3}
+              ></Textarea>
               {/* Attachment Display */}
               {attachments.length > 0 && (
                 <div className="box-border py-4">
@@ -244,11 +249,6 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                   </div>
                 </div>
               )}
-              <Textarea
-                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
-                placeholder="Message…"
-                rows={3}
-              ></Textarea>
               <div className="flex justify-between">
                 <div className="flex space-x-1.5">
                   <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
