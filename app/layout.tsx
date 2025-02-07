@@ -1,3 +1,4 @@
+import { CommandMenu } from "@/components/ui/command-menu";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/providers/providers";
@@ -28,6 +29,7 @@ export default function RootLayout({
         <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AppSidebar />
           {children}
+          <CommandMenu />
         </Providers>
       </body>
     </html>
