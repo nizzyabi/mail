@@ -8,9 +8,19 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Pencil, Tag, Folder, MailCheck, MailPlus, CircleHelp } from "lucide-react";
+import {
+  Pencil,
+  Tag,
+  Folder,
+  MailCheck,
+  MailPlus,
+  CircleHelp,
+  FolderPlus,
+  ArrowUpRight,
+} from "lucide-react";
 import { MailCompose } from "@/components/mail/mail-compose"; // Import MailCompose component
 import { useState, useEffect } from "react";
 
@@ -40,54 +50,59 @@ export const CommandMenu = () => {
     <>
       {/* Command Menu */}
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command className="rounded-lg border shadow-md md:min-w-[450px]">
-          <CommandInput
-            placeholder="Type a command or search..."
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "c") {
-                e.preventDefault();
+        <CommandInput
+          placeholder="Type a command or search..."
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "c") {
+              e.preventDefault();
+              setComposeOpen(true);
+              setOpen(false); // Close the command menu
+            }
+          }}
+        />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup>
+            <CommandItem
+              onSelect={() => {
                 setComposeOpen(true);
                 setOpen(false); // Close the command menu
-              }
-            }}
-          />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  setComposeOpen(true);
-                  setOpen(false); // Close the command menu
-                }}
-              >
-                <Pencil />
-                <span>Compose message</span>
-                <CommandShortcut>⌘C</CommandShortcut>
-              </CommandItem>
-              <CommandItem>
-                <Tag />
-                <span>Create label</span>
-              </CommandItem>
-              <CommandItem>
-                <Folder />
-                <span>Create folder</span>
-              </CommandItem>
-              <CommandItem>
-                <MailCheck />
-                <span>Mark inbox as read</span>
-              </CommandItem>
-              <CommandItem>
-                <MailPlus />
-                <span>Import mail</span>
-              </CommandItem>
-              <CommandItem>
-                <CircleHelp />
-                <span>Help with shortcuts</span>
-                <CommandShortcut>⌘?</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
+              }}
+            >
+              <Pencil size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Compose message</span>
+              <CommandShortcut>⌘C</CommandShortcut>
+            </CommandItem>
+            <CommandItem>
+              <Tag size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Create label</span>
+            </CommandItem>
+            <CommandItem>
+              <FolderPlus size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Create folder</span>
+            </CommandItem>
+            <CommandItem>
+              <MailCheck size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Mark inbox as read</span>
+            </CommandItem>
+            <CommandItem>
+              <MailPlus size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Import mail</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Help">
+            <CommandItem>
+              <CircleHelp size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Help with shortcuts</span>
+              <CommandShortcut>⌘?</CommandShortcut>
+            </CommandItem>
+            <CommandItem>
+              <ArrowUpRight size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              <span>Go to docs</span>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
       </CommandDialog>
 
       {/* Compose Message Dialog */}
