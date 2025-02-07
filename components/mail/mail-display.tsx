@@ -202,7 +202,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
           <div className="box-border p-4">
-            <form className="space-y-1 overflow-x-auto rounded-3xl border bg-secondary p-3">
+            <form className="space-y-1 overflow-x-auto rounded-xl border bg-secondary p-3">
               <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
                 <Reply className="h-4 w-4"></Reply>
                 <p className="truncate">
