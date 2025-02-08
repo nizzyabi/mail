@@ -39,7 +39,6 @@
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.39.2",
-    "framer-motion": "^12.4.1",
     "husky": "^9.1.7",
     "jotai": "^2.11.3",
     "lint-staged": "^15.4.3",
