@@ -189,27 +189,6 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             aria-multiline="true"
             tabIndex={3}
           />
-          {attachments.length > 0 && (
-            <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
-              {attachments.map((file, index) => (
-                <Badge key={index} variant="secondary">
-                  {file.name}
-                  <Button
-                    tabIndex={4}
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      removeAttachment(index);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-          )}
           {renderAttachments()}
 
           <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
