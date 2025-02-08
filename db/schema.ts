@@ -22,13 +22,12 @@ export const session = createTable("session", {
   id: text().primaryKey(),
   expiresAt: timestamp().notNull(),
   token: text().notNull().unique(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
   ipAddress: text(),
   userAgent: text(),
   userId: text()
     .notNull()
     .references(() => user.id),
+  ...timestamps,
 });
 
 export const account = createTable("account", {
