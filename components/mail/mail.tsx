@@ -20,7 +20,6 @@ import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
 import Filters from "@/components/mail/filters";
-import { Input } from "@/components/ui/input";
 import { useAtomValue } from "jotai";
 
 interface MailProps {
