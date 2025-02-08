@@ -10,6 +10,8 @@ import {
   ReplyAll,
   Trash2,
   BellOff,
+  X,
+  Lock,
 } from "lucide-react";
 import { nextSaturday } from "date-fns/nextSaturday";
 import { addHours } from "date-fns/addHours";
@@ -26,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
+import { Badge } from "../ui/badge";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -35,6 +38,27 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   const today = new Date();
   // Create local state for the muted flag.
   const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
+  const [attachments, setAttachments] = useState<File[]>([]);
+
+  const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAttachments([...attachments, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
+  };
+
+  const truncateFileName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name;
+    const extIndex = name.lastIndexOf(".");
+    if (extIndex !== -1 && name.length - extIndex <= 5) {
+      // Preserve file extension if possible
+      return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
+    }
+    return `${name.slice(0, maxLength)}...`;
+  };
 
   // Update the muted state when the mail prop changes.
   useEffect(() => {
@@ -180,15 +204,51 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
-                <div className="font-semibold">{mail.name}</div>
+                <div className="font-semibold">
+                  {mail.name} <span className="text-muted-foreground">&lt;{mail.email}&gt;</span>
+                </div>
                 {/* Display the subject with the muted icon if isMuted is true */}
                 <div className="line-clamp-1 flex items-center text-xs">
                   {mail.subject}
                   {isMuted && <BellOff className="ml-2 h-4 w-4 text-muted-foreground" />}
                 </div>
-                <div className="line-clamp-1 text-xs">
-                  <span className="font-medium">Reply-To:</span> {mail.email}
-                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <span className="cursor-pointer text-xs underline">Details</span>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[320px] space-y-2" align="start">
+                    {/* TODO: Content is currently dummy and uses mail.email for all of them. need to add other values to email type */}
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">From:</span> {mail.email}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">Reply-To:</span>{" "}
+                      {mail.email}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">To:</span> {mail.email}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">Cc:</span> {mail.email}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">Date:</span>{" "}
+                      {format(new Date(mail.date), "PPpp")}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">Mailed-By:</span>{" "}
+                      {mail.email}
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-medium text-muted-foreground">Signed-By:</span>{" "}
+                      {mail.email}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs">
+                      <span className="font-medium text-muted-foreground">Security:</span>{" "}
+                      <Lock className="h-3 w-3" /> {mail.email}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             {mail.date && (
@@ -199,10 +259,11 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
+          {/* Reply Form */}
           <div className="box-border p-4">
             <form className="space-y-1 overflow-x-auto rounded-xl border bg-secondary p-3">
               <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
-                <Reply className="h-4 w-4"></Reply>
+                <Reply className="h-4 w-4" />
                 <p className="truncate">
                   {mail.name} ({mail.email})
                 </p>
@@ -212,22 +273,64 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 placeholder="Message…"
                 rows={3}
               ></Textarea>
+              {/* Attachment Display */}
+              {attachments.length > 0 && (
+                <div className="box-border py-4">
+                  <div className="flex flex-wrap gap-2">
+                    {attachments.map((file, index) => (
+                      <Badge key={index} variant="default">
+                        {truncateFileName(file.name)}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            removeAttachment(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="flex justify-between">
                 <div className="flex space-x-1.5">
                   <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
                     <span>Send</span>
-                    <ArrowUp></ArrowUp>
+                    <ArrowUp />
                   </Button>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" variant="ghost" className="h-9 w-9 hover:bg-primary/10">
-                        <Plus></Plus>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 w-9 hover:bg-primary/10"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const fileInput = document.getElementById(
+                            "attachment-input",
+                          ) as HTMLInputElement;
+                          if (fileInput) fileInput.click();
+                        }}
+                      >
+                        <Plus />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Add an attachment</p>
                     </TooltipContent>
                   </Tooltip>
+                  {/* Hidden File Input */}
+                  <input
+                    id="attachment-input"
+                    type="file"
+                    className="hidden"
+                    multiple
+                    onChange={handleAttachment}
+                  />
                 </div>
                 <div className="flex space-x-1"></div>
               </div>

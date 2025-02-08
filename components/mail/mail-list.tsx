@@ -40,12 +40,12 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
 
   return (
     <ScrollArea className="h-[calc(100dvh-8rem-1px)]" type="auto">
-      <div className="mt-4 flex flex-col gap-2 p-4 pt-0">
+      <div className="flex flex-col pt-0">
         {items.map((item) => (
           <div
             key={item.id}
             className={cn(
-              "flex cursor-pointer flex-col items-start rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
+              "flex cursor-pointer flex-col items-start border-b p-4 text-left text-sm transition-all hover:bg-accent",
               mail.selected === item.id && "bg-muted hover:opacity-100",
               isCompact && mail.selected !== item.id ? "gap-0" : "gap-2",
               item.read && mail.selected !== item.id

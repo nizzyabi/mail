@@ -36,7 +36,7 @@ export default function BetaSignup() {
   };
 
   return (
-    <div className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
+    <div className="flex h-dvh w-screen items-center justify-center bg-background pt-12 md:pt-0">
       <div className="flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
           <h3 className="text-xl font-semibold dark:text-zinc-50">Early Access</h3>
@@ -44,7 +44,7 @@ export default function BetaSignup() {
             Enter your email to get access once we launch ❤️
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-4 px-4 sm:px-16">
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4 px-9 sm:px-16">
           <div>
             <label
               htmlFor="email"
