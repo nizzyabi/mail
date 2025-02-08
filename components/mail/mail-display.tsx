@@ -47,7 +47,7 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
     if (e.target.files) {
       setIsUploading(true);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 500));
         setAttachments([...attachments, ...Array.from(e.target.files)]);
       } finally {
         setIsUploading(false);

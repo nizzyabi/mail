@@ -14,19 +14,14 @@ import {
   Tag,
   Code,
   ChartLine,
-  SquarePen,
-  Search,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
 import { SidebarData } from "@/types";
 import React from "react";
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-// import { AccountSwitcher } from "./account-switcher";
-import { MailCompose } from "../mail/mail-compose";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { Button } from "./button";
 
 const data: SidebarData = {
   // TODO: Dynamically render user data based on auth info
@@ -64,29 +59,29 @@ const data: SidebarData = {
         },
         {
           title: "Drafts",
-          url: "/under-construction/draft",
+          url: "/draft",
           icon: FileText,
           badge: 9,
         },
         {
           title: "Sent",
-          url: "/under-construction/sent",
+          url: "/mail/under-construction/sent",
           icon: SendHorizontal,
         },
         {
           title: "Junk",
-          url: "/under-construction/junk",
+          url: "/mail/under-construction/junk",
           icon: ArchiveX,
           badge: 23,
         },
         {
           title: "Trash",
-          url: "/under-construction/trash",
+          url: "/mail/under-construction/trash",
           icon: Trash2,
         },
         {
           title: "Archive",
-          url: "/under-construction/archive",
+          url: "/mail/under-construction/archive",
           icon: Archive,
         },
       ],
@@ -96,31 +91,31 @@ const data: SidebarData = {
       items: [
         {
           title: "Social",
-          url: "#",
+          url: "/mail/under-construction/social",
           icon: Users2,
           badge: 972,
         },
         {
           title: "Updates",
-          url: "#",
+          url: "/mail/under-construction/updates",
           icon: Bell,
           badge: 342,
         },
         {
           title: "Forums",
-          url: "#",
+          url: "/mail/under-construction/forums",
           icon: MessageSquare,
           badge: 128,
         },
         {
           title: "Shopping",
-          url: "#",
+          url: "/mail/under-construction/shopping",
           icon: ShoppingCart,
           badge: 8,
         },
         {
           title: "Promotions",
-          url: "#",
+          url: "/mail/under-construction/promotions",
           icon: Tag,
           badge: 21,
         },
@@ -131,12 +126,12 @@ const data: SidebarData = {
       items: [
         {
           title: "Analytics",
-          url: "#",
+          url: "/mail/under-construction/analytics",
           icon: ChartLine,
         },
         {
           title: "Developers",
-          url: "#",
+          url: "/mail/under-construction/developers",
           icon: Code,
         },
       ],
@@ -145,45 +140,17 @@ const data: SidebarData = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [composeOpen, setComposeOpen] = React.useState(false);
-
-  const handleComposeClick = React.useCallback(() => {
-    setComposeOpen(true);
-  }, []);
-
-  // Memoized compose button component
-  const ComposeButton = React.memo(function ComposeButton() {
-    return (
-      <Button onClick={handleComposeClick} variant="ghost" className="md:h-fit md:px-2">
-        <SquarePen />
-      </Button>
-    );
-  });
-
   return (
     <>
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader className="mt-2 flex items-center justify-between gap-2">
-          <div className="flex w-full items-center gap-2">
-            <NavUser />
-            <div className="flex items-center">
-              <ComposeButton />
-              <Button variant="ghost" className="h-fit px-2">
-                <Search />
-              </Button>
-            </div>
-          </div>
+          <NavUser />
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} />
         </SidebarContent>
         <SidebarRail />
       </Sidebar>
-      <MailCompose
-        open={composeOpen}
-        onClose={() => setComposeOpen(false)}
-        aria-label="Compose email dialog"
-      />
     </>
   );
 }
