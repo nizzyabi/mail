@@ -1,7 +1,6 @@
 "use client";
 
-import { ModeToggle } from "@/components/theme/mode-toggle";
-import { LogOut, Settings, User } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import * as React from "react";
 
 import {
@@ -10,13 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -24,7 +22,6 @@ import Image from "next/image";
 export function NavUser() {
   const { data: session } = useSession();
   const router = useRouter();
-  const { isMobile } = useSidebar();
 
   return (
     <DropdownMenu>
@@ -32,20 +29,18 @@ export function NavUser() {
         <SidebarMenuItem>
           {session && (
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
+              <SidebarMenuButton className="w-fit">
                 <Image
                   src={session.user.image || "/placeholder.svg"}
                   alt={session.user.name}
-                  className="size-8 shrink-0 rounded-lg"
+                  className="size-6 shrink-0 rounded"
                   width={32}
                   height={32}
                 />
-                <div className="ml-1 flex min-w-0 flex-col gap-1 leading-none">
-                  <span className="font-semibold">{session.user.name}</span>
-                  <span className="truncate">{session.user.email}</span>
+                <div className="flex min-w-0 flex-col gap-1 leading-none">
+                  <span className="flex items-center gap-1 font-semibold">
+                    {session.user.name} <ChevronDown className="size-3 text-muted-foreground" />
+                  </span>
                 </div>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -53,29 +48,35 @@ export function NavUser() {
         </SidebarMenuItem>
       </SidebarMenu>
       <DropdownMenuContent
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-64"
+        className="ml-2 w-[--radix-dropdown-menu-trigger-width] min-w-52 font-medium"
         align="end"
-        side={isMobile ? "bottom" : "right"}
-        sideOffset={4}
+        side={"bottom"}
+        sideOffset={1}
       >
-        <DropdownMenuItem>
-          <User className="mr-2 size-4" />
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="mr-2 size-4" />
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="flex items-center justify-between focus:bg-inherit"
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Theme
-          <ModeToggle />
-        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center justify-between">
+            Switch account
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent className="ml-1">
+              {session && (
+                <DropdownMenuItem>
+                  <Image
+                    src={session?.user.image || "/placeholder.svg"}
+                    alt={session?.user.name}
+                    className="size-4 shrink-0 rounded-lg"
+                    width={16}
+                    height={16}
+                  />
+                  {session?.user.email}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Add another account</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <button
@@ -88,9 +89,7 @@ export function NavUser() {
                 },
               });
             }}
-            className="flex items-center"
           >
-            <LogOut className="mr-2 size-4" />
             Log out
           </button>
         </DropdownMenuItem>

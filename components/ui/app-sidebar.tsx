@@ -1,194 +1,331 @@
-"use client";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  Inbox,
-  FileText,
-  SendHorizontal,
-  Trash2,
-  Archive,
-  Users2,
-  Bell,
-  ArchiveX,
-  MessageSquare,
-  ShoppingCart,
-  Tag,
-  Code,
-  ChartLine,
-  Pencil,
+  X,
+  Paperclip,
+  Image as ImageIcon,
+  Link2,
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
 } from "lucide-react";
-import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import React, { Suspense } from "react";
-import { SidebarData } from "@/types";
+import * as React from "react";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
-import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-// import { AccountSwitcher } from "./account-switcher";
-import { MailCompose } from "../mail/mail-compose";
-import { SidebarToggle } from "./sidebar-toggle";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-const data: SidebarData = {
-  // TODO: Dynamically render user data based on auth info
-  user: {
-    name: "nizzy",
-    email: "nizabizaher@gmail.com",
-    avatar: "/profile.jpg",
-  },
-  accounts: [
-    {
-      name: "Gmail",
-      logo: Gmail,
-      email: "nizabizaher@gmail.com",
-    },
-    {
-      name: "Hotmail",
-      logo: Vercel,
-      email: "nizabizaher@hotmail.com",
-    },
-    {
-      name: "Outlook",
-      logo: Outlook,
-      email: "nizabizaher@microsoft.com",
-    },
-  ],
-  navMain: [
-    {
-      title: "Mail",
-      items: [
-        {
-          title: "Inbox",
-          url: "/mail",
-          icon: Inbox,
-          badge: 128,
-        },
-        {
-          title: "Drafts",
-          url: "/under-construction/draft",
-          icon: FileText,
-          badge: 9,
-        },
-        {
-          title: "Sent",
-          url: "/under-construction/sent",
-          icon: SendHorizontal,
-        },
-        {
-          title: "Junk",
-          url: "/under-construction/junk",
-          icon: ArchiveX,
-          badge: 23,
-        },
-        {
-          title: "Trash",
-          url: "/under-construction/trash",
-          icon: Trash2,
-        },
-        {
-          title: "Archive",
-          url: "/under-construction/archive",
-          icon: Archive,
-        },
-      ],
-    },
-    {
-      title: "Categories",
-      items: [
-        {
-          title: "Social",
-          url: "#",
-          icon: Users2,
-          badge: 972,
-        },
-        {
-          title: "Updates",
-          url: "#",
-          icon: Bell,
-          badge: 342,
-        },
-        {
-          title: "Forums",
-          url: "#",
-          icon: MessageSquare,
-          badge: 128,
-        },
-        {
-          title: "Shopping",
-          url: "#",
-          icon: ShoppingCart,
-          badge: 8,
-        },
-        {
-          title: "Promotions",
-          url: "#",
-          icon: Tag,
-          badge: 21,
-        },
-      ],
-    },
-    {
-      title: "Advanced",
-      items: [
-        {
-          title: "Analytics",
-          url: "#",
-          icon: ChartLine,
-        },
-        {
-          title: "Developers",
-          url: "#",
-          icon: Code,
-        },
-      ],
-    },
-  ],
-};
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  return (
-    <>
-      <Sidebar collapsible="icon" {...props}>
-        <SidebarHeader className="mt-1">
-          {/* <AccountSwitcher accounts={data.accounts} /> */}
-          <SidebarToggle className="hidden w-fit md:block" />
-          <Suspense>
-            <ComposeButton />
-          </Suspense>
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain items={data.navMain} />
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser />
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
-    </>
-  );
+interface MailComposeProps {
+  open: boolean;
+  onClose: () => void;
+  replyTo?: {
+    email: string;
+    subject: string;
+  };
 }
 
-function ComposeButton() {
-  const { open } = useOpenComposeModal();
+import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
+import { Badge } from "../ui/badge";
+
+export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
+  const [attachments, setAttachments] = React.useState<File[]>([]);
+  const [messageContent, setMessageContent] = React.useState("");
+  const [toInput, setToInput] = React.useState(replyTo?.email || "");
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
+
+  const editorRef = React.useRef<HTMLDivElement>(null);
+
+  const pastEmails = [
+    "alice@example.com",
+    "bob@example.com",
+    "carol@example.com",
+    "david@example.com",
+    "eve@example.com",
+  ];
+
+  const filteredSuggestions = toInput
+    ? pastEmails.filter((email) => email.toLowerCase().includes(toInput.toLowerCase()))
+    : [];
+
+  const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAttachments([...attachments, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
+  };
+
+  const insertFormat = (format: string) => {
+    if (!editorRef.current) return;
+    document.execCommand("styleWithCSS", false, "true");
+
+    switch (format) {
+      case "bold":
+        document.execCommand("bold", false);
+        break;
+      case "italic":
+        document.execCommand("italic", false);
+        break;
+      case "list":
+        document.execCommand("insertUnorderedList", false);
+        break;
+      case "ordered-list":
+        document.execCommand("insertOrderedList", false);
+        break;
+      case "link":
+        const url = prompt("Enter URL:");
+        if (url) document.execCommand("createLink", false, url);
+        break;
+    }
+    editorRef.current.focus();
+  };
+
+  const MAX_VISIBLE_ATTACHMENTS = 3;
+  const hasHiddenAttachments = attachments.length > MAX_VISIBLE_ATTACHMENTS;
+
+  const truncateFileName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name;
+    const extIndex = name.lastIndexOf(".");
+    if (extIndex !== -1 && name.length - extIndex <= 5) {
+      // Preserve file extension if possible
+      return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
+    }
+    return `${name.slice(0, maxLength)}...`;
+  };
+
+  const renderAttachments = () => {
+    if (attachments.length === 0) return null;
+
+    return (
+      <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
+        {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
+          <Badge key={index} variant="secondary">
+            {truncateFileName(file.name)}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+              onClick={(e) => {
+                e.preventDefault();
+                removeAttachment(index);
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </Badge>
+        ))}
+
+        {hasHiddenAttachments && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                +{attachments.length - MAX_VISIBLE_ATTACHMENTS} more...
+              </Badge>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-80 touch-auto"
+              align="start"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              <div className="space-y-2">
+                <div className="px-1">
+                  <h4 className="font-medium leading-none">Attachments</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {attachments.length} files attached
+                  </p>
+                </div>
+                <Separator />
+                <div
+                  className="h-[200px] touch-auto overflow-y-auto overscroll-contain px-1 py-1"
+                  onWheel={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                  }}
+                >
+                  <div className="space-y-1">
+                    {attachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <Paperclip className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate text-sm">{truncateFileName(file.name)}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 flex-shrink-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeAttachment(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
-          onClick={open}
-        >
-          <Pencil className="size-4" />
-          <span>Compose</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <Dialog open={open} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>New Message</DialogTitle>
+        </DialogHeader>
+        <div className="grid py-4">
+          <div className="grid gap-2">
+            <div className="relative">
+              <Input
+                tabIndex={1}
+                placeholder="To"
+                value={toInput}
+                onChange={(e) => {
+                  setToInput(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                className="rounded-none border-0 focus-visible:ring-0"
+              />
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
+                  {filteredSuggestions.map((email, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        setToInput(email);
+                        setShowSuggestions(false);
+                      }}
+                      className="cursor-pointer p-2 hover:bg-muted"
+                    >
+                      {email}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Separator className="mx-auto w-[95%]" />
+            <Input
+              placeholder="Subject"
+              defaultValue={replyTo?.subject ? `Re: ${replyTo.subject}` : ""}
+              onChange={(e) => setSubject(e.target.value)}
+              className="rounded-none border-0 focus-visible:ring-0"
+              tabIndex={2}
+            />
+          </div>
+          <Separator className="mx-auto w-[95%]" />
+
+          <div className="flex justify-end p-2">
+            <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
+              <Bold className="h-4 w-4" />
+            </Button>
+            <Button
+              tabIndex={-1}
+              variant="ghost"
+              size="icon"
+              onClick={() => insertFormat("italic")}
+            >
+              <Italic className="h-4 w-4" />
+            </Button>
+            <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("list")}>
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              tabIndex={-1}
+              variant="ghost"
+              size="icon"
+              onClick={() => insertFormat("ordered-list")}
+            >
+              <ListOrdered className="h-4 w-4" />
+            </Button>
+            <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("link")}>
+              <Link2 className="h-4 w-4" />
+            </Button>
+            <Button
+              tabIndex={-1}
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "image/*";
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      insertFormat(`![${file.name}](${reader.result})`);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                };
+                input.click();
+              }}
+            >
+              <ImageIcon className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div
+            ref={editorRef}
+            contentEditable
+            className="mx-auto min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
+            role="textbox"
+            aria-multiline="true"
+            tabIndex={3}
+          />
+          {renderAttachments()}
+
+          <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
+            <label className="cursor-pointer">
+              <Button
+                tabIndex={4}
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                  fileInput?.click();
+                }}
+              >
+                <Paperclip className="mr-2 h-4 w-4" />
+                Attach files
+              </Button>
+              <Input type="file" className="hidden" multiple onChange={handleAttachment} />
+            </label>
+
+            <div className="flex gap-2">
+              <Button tabIndex={5} variant="outline" onClick={onClose}>
+                Save as draft
+              </Button>
+              <Button
+                tabIndex={6}
+                onClick={() => {
+                  // TODO: Implement send functionality
+                  onClose();
+                }}
+              >
+                Send
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
