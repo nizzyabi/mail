@@ -210,6 +210,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
               ))}
             </div>
           )}
+          {renderAttachments()}
 
           <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
             <label className="cursor-pointer">
