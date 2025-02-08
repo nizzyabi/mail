@@ -49,6 +49,16 @@ export function MailDisplay({ mail }: MailDisplayProps) {
     setAttachments(attachments.filter((_, i) => i !== index));
   };
 
+  const truncateFileName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name;
+    const extIndex = name.lastIndexOf(".");
+    if (extIndex !== -1 && name.length - extIndex <= 5) {
+      // Preserve file extension if possible
+      return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
+    }
+    return `${name.slice(0, maxLength)}...`;
+  };
+
   // Update the muted state when the mail prop changes.
   useEffect(() => {
     if (mail) {
@@ -232,7 +242,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                   <div className="flex flex-wrap gap-2">
                     {attachments.map((file, index) => (
                       <Badge key={index} variant="default">
-                        {file.name}
+                        {truncateFileName(file.name)}
                         <Button
                           variant="ghost"
                           size="icon"
