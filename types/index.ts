@@ -1,5 +1,4 @@
-import { MessageKeys, NamespaceKeys, NestedKeyOf } from "next-intl";
-import { Messages } from "@/global";
+import { MessageKeys, NestedKeyOf } from "next-intl";
 
 export interface User {
   name: string;
@@ -32,5 +31,5 @@ export interface SidebarData {
   navMain: NavSection[];
 }
 
-// Define `MessageKeys` for the `useMessages()` hook of `next-intl`
+// Type to use to have completion for localization keys
 export type MessageKey = MessageKeys<IntlMessages, NestedKeyOf<IntlMessages>>;
