@@ -36,7 +36,12 @@ export default function ResponsiveModal({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <div className="hide-scrollbar max-h-[85vh] overflow-y-auto">{children}</div>
+        <VisuallyHidden>
+          <DrawerHeader>
+            <DrawerTitle>Title</DrawerTitle>
+          </DrawerHeader>
+        </VisuallyHidden>
+        <div className="hide-scrollbar overflow-y-auto">{children}</div>
       </DrawerContent>
     </Drawer>
   );

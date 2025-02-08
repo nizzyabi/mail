@@ -9,7 +9,6 @@ import {
   List,
   ListOrdered,
 } from "lucide-react";
-import * as React from "react";
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -24,15 +23,31 @@ interface MailComposeProps {
 }
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
+import { compressText, decompressText } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
+import { useQueryState } from "nuqs";
 import { Badge } from "../ui/badge";
-export function MailCompose({ replyTo, onClose }: MailComposeProps) {
-  const [attachments, setAttachments] = React.useState<File[]>([]);
-  const [messageContent, setMessageContent] = React.useState("");
-  const [toInput, setToInput] = React.useState(replyTo?.email || "");
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
 
-  const editorRef = React.useRef<HTMLDivElement>(null);
+export function MailCompose({ replyTo, onClose }: MailComposeProps) {
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [messageContent, setMessageContent] = useQueryState("body", {
+    defaultValue: undefined,
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value!),
+  });
+  const [toInput, setToInput] = useState(replyTo?.email || "");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const [subject, setSubject] = useQueryState("subject", {
+    defaultValue: undefined,
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value!),
+  });
+  const { isOpen } = useOpenComposeModal();
+  console.log({ isOpen });
+
+  const editorRef = useRef<HTMLTextAreaElement>(null);
 
   const pastEmails = [
     "alice@example.com",
@@ -81,6 +96,13 @@ export function MailCompose({ replyTo, onClose }: MailComposeProps) {
     editorRef.current.focus();
   };
 
+  useEffect(() => {
+    if (!isOpen) {
+      setSubject(null);
+      setMessageContent(null);
+    }
+  }, [isOpen, setMessageContent, setSubject]);
+
   return (
     <Card className="h-full w-full border-none shadow-none">
       <CardHeader>
@@ -118,7 +140,7 @@ export function MailCompose({ replyTo, onClose }: MailComposeProps) {
           <Separator className="mx-auto w-[95%]" />
           <Input
             placeholder="Subject"
-            defaultValue={replyTo?.subject ? `Re: ${replyTo.subject}` : ""}
+            defaultValue={subject || ""}
             onChange={(e) => setSubject(e.target.value)}
             className="rounded-none border-0 focus-visible:ring-0"
           />
@@ -165,14 +187,14 @@ export function MailCompose({ replyTo, onClose }: MailComposeProps) {
           </Button>
         </div>
 
-        <div
+        <textarea
           ref={editorRef}
-          contentEditable
           className="mx-auto min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
-          role="textbox"
+          onChange={(event) => setMessageContent(event.target.value)}
+          value={messageContent || ""}
           aria-multiline="true"
         />
+
         {attachments.length > 0 && (
           <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
             {attachments.map((file, index) => (
@@ -193,7 +215,6 @@ export function MailCompose({ replyTo, onClose }: MailComposeProps) {
             ))}
           </div>
         )}
-
         <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
           <label className="cursor-pointer">
             <Button
