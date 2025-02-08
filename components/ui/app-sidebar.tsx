@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { useLocale, useTranslations } from "next-intl";
 // import { AccountSwitcher } from "./account-switcher";
 import { MailCompose } from "../mail/mail-compose";
 import { SidebarToggle } from "./sidebar-toggle";
@@ -61,72 +62,72 @@ const data: SidebarData = {
   ],
   navMain: [
     {
-      title: "Mail",
+      title: "Sidebar.Mail",
       items: [
         {
-          title: "Inbox",
+          title: "Sidebar.Inbox",
           url: "/mail",
           icon: Inbox,
           badge: 128,
         },
         {
-          title: "Drafts",
+          title: "Sidebar.Drafts",
           url: "/draft",
           icon: FileText,
           badge: 9,
         },
         {
-          title: "Sent",
+          title: "Sidebar.Sent",
           url: "/sent",
           icon: SendHorizontal,
         },
         {
-          title: "Junk",
+          title: "Sidebar.Junk",
           url: "/junk",
           icon: Trash2,
           badge: 23,
         },
         {
-          title: "Trash",
+          title: "Sidebar.Trash",
           url: "/trash",
           icon: Trash2,
         },
         {
-          title: "Archive",
+          title: "Sidebar.Archive",
           url: "/archive",
           icon: Archive,
         },
       ],
     },
     {
-      title: "Categories",
+      title: "Sidebar.Categories",
       items: [
         {
-          title: "Social",
+          title: "Sidebar.Social",
           url: "#",
           icon: Users2,
           badge: 972,
         },
         {
-          title: "Updates",
+          title: "Sidebar.Updates",
           url: "#",
           icon: Bell,
           badge: 342,
         },
         {
-          title: "Forums",
+          title: "Sidebar.Forums",
           url: "#",
           icon: MessageSquare,
           badge: 128,
         },
         {
-          title: "Shopping",
+          title: "Sidebar.Shopping",
           url: "#",
           icon: ShoppingCart,
           badge: 8,
         },
         {
-          title: "Promotions",
+          title: "Sidebar.Promotions",
           url: "#",
           icon: Tag,
           badge: 21,
@@ -134,15 +135,15 @@ const data: SidebarData = {
       ],
     },
     {
-      title: "Advanced",
+      title: "Sidebar.Advanced",
       items: [
         {
-          title: "Analytics",
+          title: "Sidebar.Analytics",
           url: "#",
           icon: ChartLine,
         },
         {
-          title: "Developers",
+          title: "Sidebar.Developers",
           url: "#",
           icon: Code,
         },
@@ -153,6 +154,9 @@ const data: SidebarData = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [composeOpen, setComposeOpen] = React.useState(false);
+
+  // can use with root object name ("Sidebar") or nothing
+  const t = useTranslations();
 
   const handleComposeClick = React.useCallback(() => {
     setComposeOpen(true);
@@ -168,7 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             onClick={handleComposeClick}
           >
             <Pencil className="size-4" />
-            <span>Compose</span>
+            <span>{t("Sidebar.Compose")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
