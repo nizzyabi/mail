@@ -208,32 +208,32 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                   </PopoverTrigger>
                   <PopoverContent className="w-[320px] space-y-2" align="start">
                     {/* TODO: Content is currently dummy and uses mail.email for all of them. need to add other values to email type */}
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">From:</span> {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">Reply-To:</span>{" "}
                       {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">To:</span> {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">Cc:</span> {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">Date:</span>{" "}
                       {format(new Date(mail.date), "PPpp")}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">Mailed-By:</span>{" "}
                       {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="text-xs">
                       <span className="font-medium text-muted-foreground">Signed-By:</span>{" "}
                       {mail.email}
                     </div>
-                    <div className="line-clamp-1 text-xs">
+                    <div className="flex items-center gap-1 text-xs">
                       <span className="font-medium text-muted-foreground">Security:</span>{" "}
                       <Lock className="h-3 w-3" /> {mail.email}
                     </div>
