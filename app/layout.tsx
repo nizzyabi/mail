@@ -1,4 +1,3 @@
-import { CommandMenu } from "@/components/ui/command-menu";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site-config";

@@ -24,7 +24,6 @@ import { SidebarData } from "@/types";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 // import { AccountSwitcher } from "./account-switcher";
-import { MailCompose } from "../mail/mail-compose";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { Button } from "./button";
