@@ -40,6 +40,8 @@
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.39.2",
+    "googleapis": "^144.0.0",
+    "he": "^1.2.0",
     "husky": "^9.1.7",
     "jotai": "^2.11.3",
     "lint-staged": "^15.4.3",
@@ -56,12 +58,14 @@
     "react-resizable-panels": "^2.1.7",
     "react-use": "^17.6.0",
     "sonner": "^1.7.4",
+    "swr": "^2.3.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
+    "@types/he": "^1.2.3",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",

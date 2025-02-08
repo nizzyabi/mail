@@ -17,41 +17,14 @@ import {
   SquarePen,
   Search,
 } from "lucide-react";
-import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import React, { Suspense } from "react";
-import { SidebarData } from "@/types";
-
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-// import { AccountSwitcher } from "./account-switcher";
+import React, { Suspense } from "react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { Button } from "./button";
 
-const data: SidebarData = {
-  // TODO: Dynamically render user data based on auth info
-  user: {
-    name: "nizzy",
-    email: "nizabizaher@gmail.com",
-    avatar: "/profile.jpg",
-  },
-  accounts: [
-    {
-      name: "Gmail",
-      logo: Gmail,
-      email: "nizabizaher@gmail.com",
-    },
-    {
-      name: "Hotmail",
-      logo: Vercel,
-      email: "nizabizaher@hotmail.com",
-    },
-    {
-      name: "Outlook",
-      logo: Outlook,
-      email: "nizabizaher@microsoft.com",
-    },
-  ],
+const data = {
   navMain: [
     {
       title: "",

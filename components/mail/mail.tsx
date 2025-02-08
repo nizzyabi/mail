@@ -24,6 +24,7 @@ import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { useThreads } from "@/hooks/use-threads";
 import { useAtomValue } from "jotai";
 
 interface MailProps {
@@ -40,6 +41,7 @@ interface MailProps {
 }
 
 export function Mail({ mails }: MailProps) {
+  const { data: threadsResponse, isLoading } = useThreads("inbox");
   const [mail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
@@ -49,6 +51,7 @@ export function Mail({ mails }: MailProps) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
 
   // Check if we're on mobile on mount and when window resizes
@@ -111,23 +114,11 @@ export function Mail({ mails }: MailProps) {
                 <Separator className="mt-2" />
 
                 <div className="h-[calc(93vh)]">
-                  {filterValue === "all" ? (
-                    filteredMails.length === 0 ? (
-                      <div className="p-8 text-center text-muted-foreground">
-                        No messages found | Clear filters to see more results
-                      </div>
-                    ) : (
-                      <MailList
-                        items={filteredMails}
-                        isCompact={isCompact}
-                        onMailClick={() => setIsDialogOpen(true)}
-                      />
-                    )
-                  ) : filteredMails.filter((item) => !item.read).length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                  {isLoading ? (
+                    <p>Loading</p>
                   ) : (
                     <MailList
-                      items={filteredMails.filter((item) => !item.read)}
+                      items={threadsResponse?.messages || []}
                       isCompact={isCompact}
                       onMailClick={() => setIsDialogOpen(true)}
                     />

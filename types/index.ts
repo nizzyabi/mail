@@ -28,3 +28,19 @@ export interface SidebarData {
   accounts: Account[];
   navMain: NavSection[];
 }
+
+export interface ParsedMessage {
+  id: string;
+  title: string;
+  tags: string[];
+  sender: {
+    name: string;
+    email: string;
+  };
+  receivedOn: string;
+  unread: boolean;
+}
+
+export interface InitialThread {
+  id: string;
+}

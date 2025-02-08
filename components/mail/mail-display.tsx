@@ -1,7 +1,6 @@
 import {
   Archive,
   ArchiveX,
-  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
