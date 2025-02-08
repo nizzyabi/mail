@@ -233,8 +233,10 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
               </div>
 
               <Textarea
-                className="min-h-[120px] resize-none rounded-md border-0 bg-background/50 p-3 text-sm focus:border-0 focus-visible:ring-1"
+                className="min-h-[120px] w-full resize-none border-0 bg-[#18181A] leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
                 placeholder="Write your reply..."
+                spellCheck={true}
+                autoFocus
               />
 
               {/* Attachments section */}
