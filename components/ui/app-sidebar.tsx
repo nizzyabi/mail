@@ -16,22 +16,20 @@ import {
   Pencil,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
+import React, { Suspense } from "react";
 import { SidebarData } from "@/types";
-import React from "react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-// import { AccountSwitcher } from "./account-switcher";
-import { MailCompose } from "../mail/mail-compose";
 import { SidebarToggle } from "./sidebar-toggle";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -153,25 +151,6 @@ const data: SidebarData = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { open } = useOpenComposeModal();
-
-  // Memoized compose button component
-  const ComposeButton = React.memo(function ComposeButton() {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
-            onClick={open}
-          >
-            <Pencil className="size-4" />
-            <span>Compose</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  });
-
   return (
     <>
       <Sidebar collapsible="icon" {...props}>
@@ -179,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {/* <AccountSwitcher accounts={data.accounts} /> */}
           <SidebarToggle className="hidden w-fit md:block" />
           <ComposeButton />
-        </SidebarHeader>
+        </SidebarHeader>{" "}
         <SidebarContent>
           <NavMain items={data.navMain} />
         </SidebarContent>
@@ -189,5 +168,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarRail />
       </Sidebar>
     </>
+  );
+}
+
+export function ComposeButton() {
+  const { open } = useOpenComposeModal();
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
+          onClick={open}
+        >
+          <Pencil className="size-4" />
+          <span>Compose</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }

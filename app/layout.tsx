@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site-config";
 import { CommandMenu } from "@/components/ui/command-menu";
 
 import MailComposeModal from "@/components/mail/mail-compose-modal";
+import { Suspense } from "react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,7 +34,9 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <NuqsAdapter>
-            <MailComposeModal />
+            <Suspense>
+              <MailComposeModal />
+            </Suspense>
             {children}
           </NuqsAdapter>
         </Providers>
