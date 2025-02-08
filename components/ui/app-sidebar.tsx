@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 // import { AccountSwitcher } from "./account-switcher";
 import { MailCompose } from "../mail/mail-compose";
 import { SidebarToggle } from "./sidebar-toggle";
@@ -152,11 +153,7 @@ const data: SidebarData = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [composeOpen, setComposeOpen] = React.useState(false);
-
-  const handleComposeClick = React.useCallback(() => {
-    setComposeOpen(true);
-  }, []);
+  const { open } = useOpenComposeModal();
 
   // Memoized compose button component
   const ComposeButton = React.memo(function ComposeButton() {
@@ -165,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenuItem>
           <SidebarMenuButton
             className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
-            onClick={handleComposeClick}
+            onClick={open}
           >
             <Pencil className="size-4" />
             <span>Compose</span>
@@ -191,11 +188,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <MailCompose
-        open={composeOpen}
-        onClose={() => setComposeOpen(false)}
-        aria-label="Compose email dialog"
-      />
     </>
   );
 }

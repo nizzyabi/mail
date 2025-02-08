@@ -1,9 +1,14 @@
-import { CommandMenu } from "@/components/ui/command-menu";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Providers } from "@/providers/providers";
-import { siteConfig } from "@/config/site-config";
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+
+import { Providers } from "@/providers/providers";
+import { siteConfig } from "@/config/site-config";
+
+import { CommandMenu } from "@/components/ui/command-menu";
+
+import MailComposeModal from "@/components/mail/mail-compose-modal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,8 +32,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-          <CommandMenu />
+          <NuqsAdapter>
+            <MailComposeModal />
+            {children}
+          </NuqsAdapter>
         </Providers>
         <Toaster position="top-center" />
       </body>
