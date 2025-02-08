@@ -12,7 +12,6 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { MessageKeys, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
@@ -22,7 +21,7 @@ import Link from "next/link";
 
 interface NavMainProps {
   items: {
-    title: MessageKey;
+    title: MessageKey | "";
     items: {
       title: MessageKey;
       url: string;
@@ -52,8 +51,8 @@ export function NavMain({ items }: NavMainProps) {
   return (
     <>
       {items.map((group) => (
-        <SidebarGroup key={t(group.title)}>
-          <SidebarGroupLabel>{t(group.title)}</SidebarGroupLabel>
+        <SidebarGroup key={group.title ? t(group.title) : ""}>
+          {group.title && <SidebarGroupLabel>{t(group.title)}</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {group.items.map((item) => (
@@ -61,7 +60,10 @@ export function NavMain({ items }: NavMainProps) {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <Link href={item.url}>
-                        <SidebarMenuButton isActive={isUrlActive(item.url)}>
+                        <SidebarMenuButton
+                          isActive={isUrlActive(item.url)}
+                          className={isUrlActive(item.url) ? "bg-accent" : ""}
+                        >
                           {item.icon && <item.icon className="mr-2 size-4" />}
                           <span className="flex-1">{t(item.title)}</span>
                           {item.badge !== undefined && (

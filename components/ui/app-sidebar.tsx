@@ -8,34 +8,26 @@ import {
   Archive,
   Users2,
   Bell,
+  ArchiveX,
   MessageSquare,
   ShoppingCart,
   Tag,
   Code,
   ChartLine,
-  Pencil,
+  SquarePen,
+  Search,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
+import React, { Suspense } from "react";
 import { SidebarData } from "@/types";
-import React from "react";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
-import { useLocale, useTranslations } from "next-intl";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 // import { AccountSwitcher } from "./account-switcher";
-import { MailCompose } from "../mail/mail-compose";
-import { SidebarToggle } from "./sidebar-toggle";
 import { useTranslations } from "next-intl";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { Button } from "./button";
 
 const data: SidebarData = {
   // TODO: Dynamically render user data based on auth info
@@ -63,7 +55,7 @@ const data: SidebarData = {
   ],
   navMain: [
     {
-      title: "Sidebar.Mail",
+      title: "",
       items: [
         {
           title: "Sidebar.Inbox",
@@ -73,29 +65,29 @@ const data: SidebarData = {
         },
         {
           title: "Sidebar.Drafts",
-          url: "/draft",
+          url: "/mail/under-construction/drafts",
           icon: FileText,
           badge: 9,
         },
         {
           title: "Sidebar.Sent",
-          url: "/sent",
+          url: "/mail/under-construction/sent",
           icon: SendHorizontal,
         },
         {
           title: "Sidebar.Junk",
-          url: "/junk",
-          icon: Trash2,
+          url: "/mail/under-construction/junk",
+          icon: ArchiveX,
           badge: 23,
         },
         {
           title: "Sidebar.Trash",
-          url: "/trash",
+          url: "/mail/under-construction/trash",
           icon: Trash2,
         },
         {
           title: "Sidebar.Archive",
-          url: "/archive",
+          url: "/mail/under-construction/archive",
           icon: Archive,
         },
       ],
@@ -105,31 +97,31 @@ const data: SidebarData = {
       items: [
         {
           title: "Sidebar.Social",
-          url: "#",
+          url: "/mail/under-construction/social",
           icon: Users2,
           badge: 972,
         },
         {
           title: "Sidebar.Updates",
-          url: "#",
+          url: "/mail/under-construction/updates",
           icon: Bell,
           badge: 342,
         },
         {
           title: "Sidebar.Forums",
-          url: "#",
+          url: "/mail/under-construction/forums",
           icon: MessageSquare,
           badge: 128,
         },
         {
           title: "Sidebar.Shopping",
-          url: "#",
+          url: "/mail/under-construction/shopping",
           icon: ShoppingCart,
           badge: 8,
         },
         {
           title: "Sidebar.Promotions",
-          url: "#",
+          url: "/mail/under-construction/promotions",
           icon: Tag,
           badge: 21,
         },
@@ -140,12 +132,12 @@ const data: SidebarData = {
       items: [
         {
           title: "Sidebar.Analytics",
-          url: "#",
+          url: "/mail/under-construction/analytics",
           icon: ChartLine,
         },
         {
           title: "Sidebar.Developers",
-          url: "#",
+          url: "/mail/under-construction/developers",
           icon: Code,
         },
       ],
@@ -154,53 +146,37 @@ const data: SidebarData = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [composeOpen, setComposeOpen] = React.useState(false);
-
-  // can use with root object name ("Sidebar") or nothing
-  const t = useTranslations();
-
-  const handleComposeClick = React.useCallback(() => {
-    setComposeOpen(true);
-  }, []);
-
-  // Memoized compose button component
-  const ComposeButton = React.memo(function ComposeButton() {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
-            onClick={handleComposeClick}
-          >
-            <Pencil className="size-4" />
-            <span>{t("Sidebar.Compose")}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  });
-
   return (
     <>
       <Sidebar collapsible="icon" {...props}>
-        <SidebarHeader className="mt-1">
-          {/* <AccountSwitcher accounts={data.accounts} /> */}
-          <SidebarToggle className="hidden w-fit md:block" />
-          <ComposeButton />
+        <SidebarHeader className="mt-2 flex items-center justify-between gap-2">
+          <div className="flex w-full items-center gap-2">
+            <NavUser />
+            <div className="flex items-center">
+              <Suspense>
+                <ComposeButton />
+              </Suspense>
+              <Button variant="ghost" className="h-fit px-2">
+                <Search />
+              </Button>
+            </div>
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} />
         </SidebarContent>
-        <SidebarFooter>
-          <NavUser />
-        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <MailCompose
-        open={composeOpen}
-        onClose={() => setComposeOpen(false)}
-        aria-label="Compose email dialog"
-      />
     </>
+  );
+}
+
+function ComposeButton() {
+  const { open } = useOpenComposeModal();
+
+  return (
+    <Button onClick={open} variant="ghost" className="md:h-fit md:px-2">
+      <SquarePen />
+    </Button>
   );
 }

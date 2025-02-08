@@ -21,7 +21,7 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  title: MessageKey;
+  title: MessageKey | "";
   items: NavItem[];
 }
 

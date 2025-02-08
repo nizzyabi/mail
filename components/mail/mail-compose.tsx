@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   X,
   Paperclip,
@@ -11,13 +10,11 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface MailComposeProps {
-  open: boolean;
   onClose: () => void;
   replyTo?: {
     email: string;
@@ -25,15 +22,31 @@ interface MailComposeProps {
   };
 }
 
+import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
+import { compressText, decompressText } from "@/lib/utils";
+import { useQueryState } from "nuqs";
 import { Badge } from "../ui/badge";
-export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
+
+export function MailCompose({ onClose, replyTo }: MailComposeProps) {
+  const editorRef = React.useRef<HTMLTextAreaElement>(null);
   const [attachments, setAttachments] = React.useState<File[]>([]);
-  const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
 
-  const editorRef = React.useRef<HTMLDivElement>(null);
+  const [subject, setSubject] = useQueryState("subject", {
+    defaultValue: "",
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value),
+  });
+  const [messageContent, setMessageContent] = useQueryState("body", {
+    defaultValue: "",
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value),
+  });
+
+  const { isOpen } = useOpenComposeModal();
 
   const pastEmails = [
     "alice@example.com",
@@ -42,6 +55,13 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     "david@example.com",
     "eve@example.com",
   ];
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setMessageContent(null);
+      setSubject(null);
+    }
+  }, [isOpen, setMessageContent, setSubject]);
 
   const filteredSuggestions = toInput
     ? pastEmails.filter((email) => email.toLowerCase().includes(toInput.toLowerCase()))
@@ -82,153 +102,236 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     editorRef.current.focus();
   };
 
-  return (
-    <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>New Message</DialogTitle>
-        </DialogHeader>
-        <div className="grid py-4">
-          <div className="grid gap-2">
-            <div className="relative">
-              <Input
-                placeholder="To"
-                value={toInput}
-                onChange={(e) => {
-                  setToInput(e.target.value);
-                  setShowSuggestions(true);
-                }}
-                className="rounded-none border-0 focus-visible:ring-0"
-              />
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
-                  {filteredSuggestions.map((email, index) => (
-                    <li
-                      key={index}
-                      onClick={() => {
-                        setToInput(email);
-                        setShowSuggestions(false);
-                      }}
-                      className="cursor-pointer p-2 hover:bg-muted"
-                    >
-                      {email}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <Separator className="mx-auto w-[95%]" />
-            <Input
-              placeholder="Subject"
-              defaultValue={replyTo?.subject ? `Re: ${replyTo.subject}` : ""}
-              onChange={(e) => setSubject(e.target.value)}
-              className="rounded-none border-0 focus-visible:ring-0"
-            />
-          </div>
-          <Separator className="mx-auto w-[95%]" />
+  const MAX_VISIBLE_ATTACHMENTS = 3;
+  const hasHiddenAttachments = attachments.length > MAX_VISIBLE_ATTACHMENTS;
 
-          <div className="flex justify-end p-2">
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
-              <Bold className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("italic")}>
-              <Italic className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("list")}>
-              <List className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("ordered-list")}>
-              <ListOrdered className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
-              <Link2 className="h-4 w-4" />
-            </Button>
+  const truncateFileName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name;
+    const extIndex = name.lastIndexOf(".");
+    if (extIndex !== -1 && name.length - extIndex <= 5) {
+      // Preserve file extension if possible
+      return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
+    }
+    return `${name.slice(0, maxLength)}...`;
+  };
+
+  const renderAttachments = () => {
+    if (attachments.length === 0) return null;
+
+    return (
+      <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
+        {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
+          <Badge key={index} variant="secondary">
+            {truncateFileName(file.name)}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const input = document.createElement("input");
-                input.type = "file";
-                input.accept = "image/*";
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      insertFormat(`![${file.name}](${reader.result})`);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                };
-                input.click();
+              className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+              onClick={(e) => {
+                e.preventDefault();
+                removeAttachment(index);
               }}
             >
-              <ImageIcon className="h-4 w-4" />
+              <X className="h-4 w-4" />
+            </Button>
+          </Badge>
+        ))}
+
+        {hasHiddenAttachments && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                +{attachments.length - MAX_VISIBLE_ATTACHMENTS} more...
+              </Badge>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-80 touch-auto"
+              align="start"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              <div className="space-y-2">
+                <div className="px-1">
+                  <h4 className="font-medium leading-none">Attachments</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {attachments.length} files attached
+                  </p>
+                </div>
+                <Separator />
+                <div
+                  className="h-[200px] touch-auto overflow-y-auto overscroll-contain px-1 py-1"
+                  onWheel={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                  }}
+                >
+                  <div className="space-y-1">
+                    {attachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <Paperclip className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate text-sm">{truncateFileName(file.name)}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 flex-shrink-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeAttachment(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Card className="h-full w-full border-none shadow-none">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">New Message</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-2">
+          <div className="relative">
+            <Input
+              tabIndex={1}
+              placeholder="To"
+              value={toInput}
+              onChange={(e) => {
+                setToInput(e.target.value);
+                setShowSuggestions(true);
+              }}
+              className="rounded-none border-0 focus-visible:ring-0"
+            />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
+                {filteredSuggestions.map((email, index) => (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setToInput(email);
+                      setShowSuggestions(false);
+                    }}
+                    className="cursor-pointer p-2 hover:bg-muted"
+                  >
+                    {email}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Separator className="mx-auto w-[95%]" />
+          <Input
+            placeholder="Subject"
+            defaultValue={subject || ""}
+            onChange={(e) => setSubject(e.target.value)}
+            className="rounded-none border-0 focus-visible:ring-0"
+            tabIndex={2}
+          />
+        </div>
+        <Separator className="mx-auto w-[95%]" />
+        <div className="flex justify-end p-2">
+          <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
+            <Bold className="h-4 w-4" />
+          </Button>
+          <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("italic")}>
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("list")}>
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            tabIndex={-1}
+            variant="ghost"
+            size="icon"
+            onClick={() => insertFormat("ordered-list")}
+          >
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+          <Button tabIndex={-1} variant="ghost" size="icon" onClick={() => insertFormat("link")}>
+            <Link2 className="h-4 w-4" />
+          </Button>
+          <Button
+            tabIndex={-1}
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = "image/*";
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    insertFormat(`![${file.name}](${reader.result})`);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              };
+              input.click();
+            }}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
+        </div>
+        <textarea
+          ref={editorRef}
+          className="mx-auto min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          onChange={(event) => setMessageContent(event.target.value)}
+          value={messageContent || ""}
+          aria-multiline="true"
+        />
+        {renderAttachments()}
+        <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
+          <label className="cursor-pointer">
+            <Button
+              tabIndex={4}
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                fileInput?.click();
+              }}
+            >
+              <Paperclip className="mr-2 h-4 w-4" />
+              Attach files
+            </Button>
+            <Input type="file" className="hidden" multiple onChange={handleAttachment} />
+          </label>
+
+          <div className="flex gap-2">
+            <Button tabIndex={5} variant="outline" onClick={onClose}>
+              Save as draft
+            </Button>
+            <Button
+              tabIndex={6}
+              onClick={() => {
+                // TODO: Implement send functionality
+                onClose();
+              }}
+            >
+              Send
             </Button>
           </div>
-
-          <div
-            ref={editorRef}
-            contentEditable
-            className="mx-auto min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
-            role="textbox"
-            aria-multiline="true"
-          />
-          {attachments.length > 0 && (
-            <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
-              {attachments.map((file, index) => (
-                <Badge key={index} variant="secondary">
-                  {file.name}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      removeAttachment(index);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
-            <label className="cursor-pointer">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
-                  fileInput?.click();
-                }}
-              >
-                <Paperclip className="mr-2 h-4 w-4" />
-                Attach files
-              </Button>
-              <Input type="file" className="hidden" multiple onChange={handleAttachment} />
-            </label>
-
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose}>
-                Save as draft
-              </Button>
-              <Button
-                onClick={() => {
-                  // TODO: Implement send functionality
-                  onClose();
-                }}
-              >
-                Send
-              </Button>
-            </div>
-          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 }
