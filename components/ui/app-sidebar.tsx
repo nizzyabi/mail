@@ -64,7 +64,7 @@ const data: SidebarData = {
         },
         {
           title: "Drafts",
-          url: "/mail/under-construction/drafts",
+          url: "/draft",
           icon: FileText,
           badge: 9,
         },
