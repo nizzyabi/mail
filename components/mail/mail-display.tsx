@@ -1,7 +1,6 @@
 import {
   Archive,
   ArchiveX,
-  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
@@ -19,10 +18,10 @@ import { useState, useEffect } from "react";
 import { addDays } from "date-fns/addDays";
 import { format } from "date-fns/format";
 
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -301,20 +300,29 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 <div className="box-border py-4">
                   <div className="flex flex-wrap gap-2">
                     {attachments.map((file, index) => (
-                      <Badge key={index} variant="default">
-                        {truncateFileName(file.name)}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            removeAttachment(index);
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </Badge>
+                      <TooltipProvider key={index}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="default">
+                              {truncateFileName(file.name)}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  removeAttachment(index);
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="z-50">{file.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     ))}
                   </div>
                 </div>

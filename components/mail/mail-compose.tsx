@@ -22,6 +22,7 @@ interface MailComposeProps {
   };
 }
 
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
@@ -121,20 +122,29 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
     return (
       <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
         {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
-          <Badge key={index} variant="secondary">
-            {truncateFileName(file.name)}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-              onClick={(e) => {
-                e.preventDefault();
-                removeAttachment(index);
-              }}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </Badge>
+          <TooltipProvider key={index}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="secondary">
+                  {truncateFileName(file.name)}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeAttachment(index);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="bg-popover">
+                <p className="z-50">{file.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ))}
 
         {hasHiddenAttachments && (
