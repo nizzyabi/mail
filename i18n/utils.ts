@@ -13,6 +13,7 @@ export async function getUserLocale() {
   return _cookies.get(I18N_LOCALE_COOKIE_NAME)?.value || getBrowserLocale(browserLanguage);
 }
 
+// use this function to update user's locale and rehydrate with the new strings
 export async function setUserLocale(locale: Locale) {
   const _cookies = await cookies();
   _cookies.set(I18N_LOCALE_COOKIE_NAME, locale);

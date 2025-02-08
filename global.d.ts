@@ -7,5 +7,5 @@ declare global {
   interface IntlMessages extends Messages {}
 }
 
-// Define `MessageKeys` for the `useMessages()` hook of `next-intl`
+// Type to use to have completion for localization keys
 export type MessageKey = MessageKeys<IntlMessages, NestedKeyOf<IntlMessages>>;
