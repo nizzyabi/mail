@@ -25,7 +25,7 @@ interface MailComposeProps {
   };
 }
 
-import { Textarea } from "../ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { Badge } from "../ui/badge";
 export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [attachments, setAttachments] = React.useState<File[]>([]);
@@ -129,43 +129,44 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
           <Separator className="mx-auto w-[95%]" />
 
           <div className="flex justify-end p-2">
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("bold")}>
-              <Bold className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("italic")}>
-              <Italic className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("list")}>
-              <List className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("ordered-list")}>
-              <ListOrdered className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
-              <Link2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                const input = document.createElement("input");
-                input.type = "file";
-                input.accept = "image/*";
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      insertFormat(`![${file.name}](${reader.result})`);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                };
-                input.click();
-              }}
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
+            <ToggleGroup type="multiple">
+              <ToggleGroupItem value="bold" onClick={() => insertFormat("bold")}>
+                <Bold className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="italic" onClick={() => insertFormat("italic")}>
+                <Italic className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" onClick={() => insertFormat("list")}>
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="ordered-list" onClick={() => insertFormat("ordered-list")}>
+                <ListOrdered className="h-4 w-4" />
+              </ToggleGroupItem>
+              <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
+                <Link2 className="h-4 w-4" />
+              </Button>
+              <ToggleGroupItem
+                value="image"
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        insertFormat(`![${file.name}](${reader.result})`);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  };
+                  input.click();
+                }}
+              >
+                <ImageIcon className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           <div
