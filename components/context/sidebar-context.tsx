@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TooltipProvider } from "../ui/tooltip";
+import { getCookie } from "@/utils/cookies";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
@@ -79,6 +80,13 @@ export const SidebarProvider = React.forwardRef<
     const toggleSidebar = React.useCallback(() => {
       return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
     }, [isMobile, setOpen, setOpenMobile]);
+
+    React.useEffect(() => {
+      // In nextjs, browser apis are guarded so we need to do this in a use effect to not get an error that document is not defined.
+      const sidebarCookie = getCookie(SIDEBAR_COOKIE_NAME);
+      const isDefaultOpen = sidebarCookie ? sidebarCookie === "true" : defaultOpen;
+      _setOpen(isDefaultOpen);
+    }, [defaultOpen]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {

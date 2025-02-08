@@ -20,7 +20,6 @@ import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
 import Filters from "@/components/mail/filters";
-import { Input } from "@/components/ui/input";
 import { useAtomValue } from "jotai";
 
 interface MailProps {
@@ -65,8 +64,8 @@ export function Mail({ mails }: MailProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-dvh">
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={isMobile ? 100 : 25} minSize={isMobile ? 100 : 25}>
+        <ResizablePanelGroup direction="horizontal" autoSaveId={"mail-panel-layout"}>
+          <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
             <div className="flex-1 overflow-y-auto border-r">
               <Tabs defaultValue="all">
                 <div className="flex items-center justify-between p-4">
@@ -89,11 +88,13 @@ export function Mail({ mails }: MailProps) {
 
                 <div className="bg-background backdrop-blur supports-[backdrop-filter]:bg-background">
                   <form className="flex space-x-1.5 p-4 pt-0">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Search" className="pl-8" />
-                    </div>
-                    <div>
+                    <div className="flex w-full items-center space-x-3 rounded-md border p-2 px-3">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        className="w-full flex-1 border-none bg-background outline-none"
+                        placeholder="Search"
+                      />
                       <Filters />
                     </div>
                   </form>
