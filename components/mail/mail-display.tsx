@@ -319,7 +319,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="z-50">{file.name}</p>
+                            <p className="z-50">{truncateFileName(file.name, 100)}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

@@ -141,7 +141,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 </Badge>
               </TooltipTrigger>
               <TooltipContent className="bg-popover">
-                <p className="z-50">{file.name}</p>
+                <p className="z-50">{truncateFileName(file.name, 100)}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
