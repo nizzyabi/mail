@@ -1,17 +1,16 @@
 import {
   Archive,
   ArchiveX,
-  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
-  Plus,
   Reply,
   ReplyAll,
   Trash2,
   BellOff,
   X,
   Lock,
+  Paperclip,
 } from "lucide-react";
 import { nextSaturday } from "date-fns/nextSaturday";
 import { addHours } from "date-fns/addHours";
@@ -80,12 +79,12 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   }, [mail]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="mt-7 flex items-center p-2 md:mt-0">
-        <div className="flex items-center gap-2">
+    <div className="flex h-full flex-col pt-[6px]">
+      <div className="flex items-center md:mt-0">
+        <div className="mx-2 flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <Archive className="h-4 w-4" />
                 <span className="sr-only">Archive</span>
               </Button>
@@ -94,7 +93,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <ArchiveX className="h-4 w-4" />
                 <span className="sr-only">Move to junk</span>
               </Button>
@@ -103,7 +102,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Move to trash</span>
               </Button>
@@ -115,7 +114,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
             <Popover>
               <PopoverTrigger asChild>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" disabled={!mail}>
+                  <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                     <Clock className="h-4 w-4" />
                     <span className="sr-only">Snooze</span>
                   </Button>
@@ -125,25 +124,25 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 <div className="flex flex-col gap-2 border-r px-2 py-4">
                   <div className="px-4 text-sm font-medium">Snooze until</div>
                   <div className="grid min-w-[250px] gap-1">
-                    <Button variant="ghost" className="justify-start font-normal">
+                    <Button variant="ghost" className="justify-start font-normal md:h-fit md:px-2">
                       Later today{" "}
                       <span className="ml-auto text-muted-foreground">
                         {format(addHours(today, 4), "E, h:m b")}
                       </span>
                     </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
+                    <Button variant="ghost" className="justify-start font-normal md:h-fit md:px-2">
                       Tomorrow
                       <span className="ml-auto text-muted-foreground">
                         {format(addDays(today, 1), "E, h:m b")}
                       </span>
                     </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
+                    <Button variant="ghost" className="justify-start font-normal md:h-fit md:px-2">
                       This weekend
                       <span className="ml-auto text-muted-foreground">
                         {format(nextSaturday(today), "E, h:m b")}
                       </span>
                     </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
+                    <Button variant="ghost" className="justify-start font-normal md:h-fit md:px-2">
                       Next week
                       <span className="ml-auto text-muted-foreground">
                         {format(addDays(today, 7), "E, h:m b")}
@@ -159,7 +158,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         <div className="ml-auto flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <Reply className="h-4 w-4" />
                 <span className="sr-only">Reply</span>
               </Button>
@@ -168,7 +167,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <ReplyAll className="h-4 w-4" />
                 <span className="sr-only">Reply all</span>
               </Button>
@@ -177,7 +176,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <Forward className="h-4 w-4" />
                 <span className="sr-only">Forward</span>
               </Button>
@@ -189,7 +188,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                 <MoreVertical className="h-4 w-4" />
                 <span className="sr-only">More</span>
               </Button>
@@ -201,13 +200,18 @@ export function MailDisplay({ mail }: MailDisplayProps) {
               <DropdownMenuItem>Mute thread</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="ghost" size="icon" disabled={!mail} onClick={handleClose}>
+          <Button
+            variant="ghost"
+            className="mr-2 md:h-fit md:px-2"
+            disabled={!mail}
+            onClick={handleClose}
+          >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </Button>
         </div>
       </div>
-      <Separator />
+      <Separator className="mt-2" />
       {mail ? (
         <div className="flex flex-1 flex-col">
           <div className="flex items-start p-4">
@@ -318,7 +322,6 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 <div className="flex space-x-1.5">
                   <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
                     <span>Send</span>
-                    <ArrowUp />
                   </Button>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -334,7 +337,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                           if (fileInput) fileInput.click();
                         }}
                       >
-                        <Plus />
+                        <Paperclip />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>

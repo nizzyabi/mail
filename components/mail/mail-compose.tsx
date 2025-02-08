@@ -25,6 +25,7 @@ interface MailComposeProps {
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
+
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { compressText, decompressText } from "@/lib/utils";
 import { useQueryState } from "nuqs";
@@ -245,6 +246,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
             className="rounded-none border-0 focus-visible:ring-0"
             tabIndex={2}
           />
+
           <Separator className="mx-auto w-[95%]" />
           <div className="flex justify-end p-2">
             <ToggleGroup type="multiple">
@@ -263,8 +265,9 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
               <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
                 <Link2 className="h-4 w-4" />
               </Button>
-              <ToggleGroupItem
-                value="image"
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => {
                   const input = document.createElement("input");
                   input.type = "file";
@@ -283,7 +286,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 }}
               >
                 <ImageIcon className="h-4 w-4" />
-              </ToggleGroupItem>
+              </Button>
             </ToggleGroup>
           </div>
 
