@@ -1,3 +1,5 @@
+import { NamespaceKeys, NestedKeyOf } from "next-intl";
+
 export interface User {
   name: string;
   email: string;
@@ -11,7 +13,7 @@ export interface Account {
 }
 
 export interface NavItem {
-  title: string;
+  title: MessageKey;
   url: string;
   icon?: React.ComponentType<{ className?: string }>;
   isActive?: boolean;
@@ -19,7 +21,7 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  title: string;
+  title: MessageKey;
   items: NavItem[];
 }
 
@@ -28,3 +30,6 @@ export interface SidebarData {
   accounts: Account[];
   navMain: NavSection[];
 }
+
+// Define `MessageKeys` for the `useMessages()` hook of `next-intl`
+export type MessageKey = NestedKeyOf<IntlMessages>;
