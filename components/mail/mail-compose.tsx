@@ -32,6 +32,7 @@ import { Badge } from "../ui/badge";
 import { useAtom } from "jotai";
 
 export function MailCompose({ onClose, replyTo }: MailComposeProps) {
+  const [draftStates, setDraftStates] = useAtom(draftsAtom);
   const editorRef = React.useRef<HTMLTextAreaElement>(null);
   const [attachments, setAttachments] = React.useState<File[]>([]);
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
@@ -69,7 +70,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
       return [newDraft, ...drafts];
     });
   };
-
   React.useEffect(() => {
     if (!isOpen) {
       setMessageContent(null);
