@@ -264,24 +264,29 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
           <Separator className="mx-auto w-[95%]" />
           <div className="flex justify-end p-2">
             <ToggleGroup type="multiple">
-              <ToggleGroupItem value="bold" onClick={() => insertFormat("bold")}>
+              <ToggleGroupItem tabIndex={3} value="bold" onClick={() => insertFormat("bold")}>
                 <Bold className="h-4 w-4" />
               </ToggleGroupItem>
-              <ToggleGroupItem value="italic" onClick={() => insertFormat("italic")}>
+              <ToggleGroupItem tabIndex={4} value="italic" onClick={() => insertFormat("italic")}>
                 <Italic className="h-4 w-4" />
               </ToggleGroupItem>
-              <ToggleGroupItem value="list" onClick={() => insertFormat("list")}>
+              <ToggleGroupItem tabIndex={5} value="list" onClick={() => insertFormat("list")}>
                 <List className="h-4 w-4" />
               </ToggleGroupItem>
-              <ToggleGroupItem value="ordered-list" onClick={() => insertFormat("ordered-list")}>
+              <ToggleGroupItem
+                tabIndex={6}
+                value="ordered-list"
+                onClick={() => insertFormat("ordered-list")}
+              >
                 <ListOrdered className="h-4 w-4" />
               </ToggleGroupItem>
-              <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
+              <Button variant="ghost" size="icon" tabIndex={7} onClick={() => insertFormat("link")}>
                 <Link2 className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
+                tabIndex={8}
                 onClick={() => {
                   const input = document.createElement("input");
                   input.type = "file";
@@ -310,7 +315,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
             className="mx-auto min-h-[300px] w-[95%] resize-none overflow-y-auto rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             role="textbox"
             aria-multiline="true"
-            tabIndex={3}
+            tabIndex={9}
             style={{
               overflowWrap: "break-word",
               wordWrap: "break-word",
@@ -326,7 +331,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
           <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
             <label className="cursor-pointer">
               <Button
-                tabIndex={4}
+                tabIndex={10}
                 variant="outline"
                 size="sm"
                 onClick={(e) => {
@@ -343,7 +348,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
 
             <div className="flex gap-2">
               <Button
-                tabIndex={5}
+                tabIndex={11}
                 variant="outline"
                 onClick={() => {
                   handleDraft();
@@ -353,7 +358,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 Save as draft
               </Button>
               <Button
-                tabIndex={6}
+                tabIndex={12}
                 onClick={() => {
                   // TODO: Implement send functionality
                   onClose();
