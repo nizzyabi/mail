@@ -87,6 +87,16 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const MAX_VISIBLE_ATTACHMENTS = 3;
   const hasHiddenAttachments = attachments.length > MAX_VISIBLE_ATTACHMENTS;
 
+  const truncateFileName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name;
+    const extIndex = name.lastIndexOf(".");
+    if (extIndex !== -1 && name.length - extIndex <= 5) {
+      // Preserve file extension if possible
+      return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
+    }
+    return `${name.slice(0, maxLength)}...`;
+  };
+
   const renderAttachments = () => {
     if (attachments.length === 0) return null;
 
@@ -94,7 +104,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
       <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
         {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
           <Badge key={index} variant="secondary">
-            {file.name}
+            {truncateFileName(file.name)}
             <Button
               variant="ghost"
               size="icon"
@@ -146,7 +156,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
                       >
                         <div className="flex items-center gap-2 overflow-hidden">
                           <Paperclip className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate text-sm">{file.name}</span>
+                          <span className="truncate text-sm">{truncateFileName(file.name)}</span>
                         </div>
                         <Button
                           variant="ghost"
