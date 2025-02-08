@@ -1,5 +1,7 @@
 import { CommandMenu } from "@/components/ui/command-menu";
+import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site-config";
 import type { Metadata } from "next";
@@ -18,19 +20,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = siteConfig;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-          <CommandMenu />
-        </Providers>
-        <Toaster position="top-center" />
+        <NextIntlClientProvider messages={messages}>
+          <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            {children}
+            <CommandMenu />
+          </Providers>
+          <Toaster position="top-center" />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
