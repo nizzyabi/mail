@@ -94,7 +94,6 @@ export function AccountSwitcher({ accounts }: AccountSwitcherProps) {
             <DialogHeader>
               <DialogTitle>Add account</DialogTitle>
             </DialogHeader>
-            {/* Add team form would go here */}
           </DialogContent>
         </Dialog>
       </DropdownMenuContent>
