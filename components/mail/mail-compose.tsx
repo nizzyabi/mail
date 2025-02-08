@@ -34,7 +34,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
 
-  const editorRef = React.createRef<HTMLTextAreaElement>();
+  const editorRef = React.useRef<HTMLDivElement>(null);
 
   const pastEmails = [
     "alice@example.com",
@@ -168,11 +168,19 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             </Button>
           </div>
 
-          <Textarea
+          <div
             ref={editorRef}
-            onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
+            contentEditable
+            className="mx-auto min-h-[300px] w-[95%] resize-none overflow-y-auto rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            role="textbox"
             aria-multiline="true"
-            className="mx-auto min-h-[300px] w-[95%] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background [resize:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              overflowWrap: "break-word",
+              wordWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              maxWidth: "100%",
+            }}
+            onChange={() => setMessageContent(editorRef.current?.innerHTML || "")}
           />
 
           {attachments.length > 0 && (
