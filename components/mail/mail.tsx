@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlignVerticalSpaceAround, ListFilter } from "lucide-react";
+import { AlignVerticalSpaceAround, ListFilter, Search, SquarePen } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
 
@@ -20,11 +20,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
 import { useAtomValue } from "jotai";
+import { Input } from "../ui/input";
+import Filters from "./filters";
 
 interface MailProps {
   accounts: {
@@ -88,9 +91,18 @@ export function Mail({ mails }: MailProps) {
             <div className="flex-1 overflow-y-auto">
               <div>
                 <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2">
-                    <SidebarToggle />
-                    <h1 className="hidden font-semibold md:block">Inbox</h1>
+                  <div className="flex items-center gap-1">
+                    <SidebarToggle className="h-fit px-2" />
+                    <React.Suspense>
+                      <ComposeButton />
+                    </React.Suspense>
+                  </div>
+                  <div className="relative flex-1 px-4 md:max-w-[400px] md:px-8">
+                    <Search className="absolute left-6 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground md:left-10" />
+                    <Input
+                      placeholder="Search"
+                      className="h-7 w-full pl-7 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
                   </div>
                   <div className="flex items-center space-x-1.5">
                     <Button
@@ -115,6 +127,7 @@ export function Mail({ mails }: MailProps) {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    <Filters />
                   </div>
                 </div>
 
@@ -173,5 +186,14 @@ export function Mail({ mails }: MailProps) {
         </Dialog>
       </div>
     </TooltipProvider>
+  );
+}
+
+function ComposeButton() {
+  const { open } = useOpenComposeModal();
+  return (
+    <Button onClick={open} variant="ghost" className="h-fit px-2">
+      <SquarePen />
+    </Button>
   );
 }
