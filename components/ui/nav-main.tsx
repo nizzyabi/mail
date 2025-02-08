@@ -48,7 +48,7 @@ export function NavMain({ items }: NavMainProps) {
     <>
       {items.map((group) => (
         <SidebarGroup key={group.title}>
-          <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+          {group.title && <SidebarGroupLabel>{group.title}</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {group.items.map((item) => (
@@ -56,7 +56,10 @@ export function NavMain({ items }: NavMainProps) {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <Link href={item.url}>
-                        <SidebarMenuButton isActive={isUrlActive(item.url)}>
+                        <SidebarMenuButton
+                          isActive={isUrlActive(item.url)}
+                          className={isUrlActive(item.url) ? "bg-accent" : ""}
+                        >
                           {item.icon && <item.icon className="mr-2 size-4" />}
                           <span className="flex-1">{item.title}</span>
                           {item.badge !== undefined && (

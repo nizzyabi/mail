@@ -28,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
+import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
 
 interface MailDisplayProps {
@@ -39,6 +40,8 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   // Create local state for the muted flag.
   const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
   const [attachments, setAttachments] = useState<File[]>([]);
+
+  const [_mail, setMail] = useMail();
 
   const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -58,6 +61,15 @@ export function MailDisplay({ mail }: MailDisplayProps) {
       return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
     }
     return `${name.slice(0, maxLength)}...`;
+  };
+
+  const handleClose = () => {
+    // close the mail if it is selected
+    if (mail && mail.id === _mail.selected) {
+      setMail({
+        selected: null,
+      });
+    }
   };
 
   // Update the muted state when the mail prop changes.
@@ -174,20 +186,26 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </Tooltip>
         </div>
         <Separator orientation="vertical" className="mx-2 h-6" />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" disabled={!mail}>
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">More</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-            <DropdownMenuItem>Star thread</DropdownMenuItem>
-            <DropdownMenuItem>Add label</DropdownMenuItem>
-            <DropdownMenuItem>Mute thread</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" disabled={!mail}>
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">More</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Mark as unread</DropdownMenuItem>
+              <DropdownMenuItem>Star thread</DropdownMenuItem>
+              <DropdownMenuItem>Add label</DropdownMenuItem>
+              <DropdownMenuItem>Mute thread</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant="ghost" size="icon" disabled={!mail} onClick={handleClose}>
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </Button>
+        </div>
       </div>
       <Separator />
       {mail ? (

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   X,
   Paperclip,
@@ -11,13 +10,11 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface MailComposeProps {
-  open: boolean;
   onClose: () => void;
   replyTo?: {
     email: string;
@@ -26,18 +23,32 @@ interface MailComposeProps {
 }
 
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { compressText, decompressText } from "@/lib/utils";
+import { useQueryState } from "nuqs";
 
 import { Badge } from "../ui/badge";
 
-export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
+export function MailCompose({ onClose, replyTo }: MailComposeProps) {
+  const editorRef = React.useRef<HTMLDivElement>(null);
   const [attachments, setAttachments] = React.useState<File[]>([]);
-  const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
 
-  const editorRef = React.useRef<HTMLDivElement>(null);
+  const [subject, setSubject] = useQueryState("subject", {
+    defaultValue: "",
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value),
+  });
+  const [messageContent, setMessageContent] = useQueryState("body", {
+    defaultValue: "",
+    parse: (value) => decompressText(value),
+    serialize: (value) => compressText(value),
+  });
+
+  const { isOpen } = useOpenComposeModal();
 
   const pastEmails = [
     "alice@example.com",
@@ -46,6 +57,13 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     "david@example.com",
     "eve@example.com",
   ];
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setMessageContent(null);
+      setSubject(null);
+    }
+  }, [isOpen, setMessageContent, setSubject]);
 
   const filteredSuggestions = toInput
     ? pastEmails.filter((email) => email.toLowerCase().includes(toInput.toLowerCase()))
@@ -185,52 +203,49 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>New Message</DialogTitle>
-        </DialogHeader>
-        <div className="grid py-4">
-          <div className="grid gap-2">
-            <div className="relative">
-              <Input
-                tabIndex={1}
-                placeholder="To"
-                value={toInput}
-                onChange={(e) => {
-                  setToInput(e.target.value);
-                  setShowSuggestions(true);
-                }}
-                className="rounded-none border-0 focus-visible:ring-0"
-              />
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
-                  {filteredSuggestions.map((email, index) => (
-                    <li
-                      key={index}
-                      onClick={() => {
-                        setToInput(email);
-                        setShowSuggestions(false);
-                      }}
-                      className="cursor-pointer p-2 hover:bg-muted"
-                    >
-                      {email}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <Separator className="mx-auto w-[95%]" />
+    <Card className="h-full w-full border-none shadow-none">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">New Message</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-2">
+          <div className="relative">
             <Input
-              placeholder="Subject"
-              defaultValue={replyTo?.subject ? `Re: ${replyTo.subject}` : ""}
-              onChange={(e) => setSubject(e.target.value)}
+              tabIndex={1}
+              placeholder="To"
+              value={toInput}
+              onChange={(e) => {
+                setToInput(e.target.value);
+                setShowSuggestions(true);
+              }}
               className="rounded-none border-0 focus-visible:ring-0"
-              tabIndex={2}
             />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
+                {filteredSuggestions.map((email, index) => (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setToInput(email);
+                      setShowSuggestions(false);
+                    }}
+                    className="cursor-pointer p-2 hover:bg-muted"
+                  >
+                    {email}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <Separator className="mx-auto w-[95%]" />
-
+          <Input
+            placeholder="Subject"
+            defaultValue={subject || ""}
+            onChange={(e) => setSubject(e.target.value)}
+            className="rounded-none border-0 focus-visible:ring-0"
+            tabIndex={2}
+          />
+          <Separator className="mx-auto w-[95%]" />
           <div className="flex justify-end p-2">
             <ToggleGroup type="multiple">
               <ToggleGroupItem value="bold" onClick={() => insertFormat("bold")}>
@@ -285,11 +300,12 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
               whiteSpace: "pre-wrap",
               maxWidth: "100%",
             }}
-            onChange={() => setMessageContent(editorRef.current?.innerHTML || "")}
+            onInput={() => {
+              setMessageContent(editorRef.current?.innerHTML || "");
+            }}
           />
 
           {renderAttachments()}
-
           <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
             <label className="cursor-pointer">
               <Button
@@ -324,7 +340,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 }
