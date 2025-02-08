@@ -40,7 +40,7 @@ interface MailProps {
 }
 
 export function Mail({ mails }: MailProps) {
-  const [mail] = useMail();
+  const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
@@ -143,12 +143,12 @@ export function Mail({ mails }: MailProps) {
             <ResizablePanel
               defaultSize={isMobile ? 0 : 75}
               minSize={isMobile ? 0 : 25}
-              className="hidden md:block"
+              className="hidden overflow-hidden md:block"
             >
-              {/* Desktop Mail Display */}
               <div className="hidden h-full flex-1 overflow-y-auto md:block">
                 <MailDisplay
                   mail={filteredMails.find((item) => item.id === mail.selected) || null}
+                  onClose={() => setMail({ selected: null })}
                 />
               </div>
             </ResizablePanel>
@@ -157,11 +157,17 @@ export function Mail({ mails }: MailProps) {
 
         {/* Mobile Dialog */}
         <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="h-[100vh] border-none p-0 sm:max-w-[100vw]">
+          <DialogContent className="h-[100vh] overflow-hidden border-none p-0 sm:max-w-[100vw]">
             <DialogHeader className="hidden">
               <DialogTitle></DialogTitle>
             </DialogHeader>
-            <MailDisplay mail={mails.find((item) => item.id === mail.selected) || null} />
+            <MailDisplay
+              mail={filteredMails.find((item) => item.id === mail.selected) || null}
+              onClose={() => {
+                setIsDialogOpen(false);
+                setMail({ selected: null });
+              }}
+            />
           </DialogContent>
         </Dialog>
       </div>
