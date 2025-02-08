@@ -25,6 +25,7 @@ interface MailComposeProps {
   };
 }
 
+import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [attachments, setAttachments] = React.useState<File[]>([]);
@@ -33,7 +34,7 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [subject, setSubject] = React.useState<string>(replyTo?.subject || "");
 
-  const editorRef = React.useRef<HTMLDivElement>(null);
+  const editorRef = React.createRef<HTMLTextAreaElement>();
 
   const pastEmails = [
     "alice@example.com",
@@ -167,14 +168,13 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
             </Button>
           </div>
 
-          <div
+          <Textarea
             ref={editorRef}
-            contentEditable
-            className="mx-auto min-h-[300px] w-[95%] resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             onInput={(e) => setMessageContent(e.currentTarget.innerHTML)}
-            role="textbox"
             aria-multiline="true"
+            className="mx-auto min-h-[300px] w-[95%] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background [resize:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
+
           {attachments.length > 0 && (
             <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
               {attachments.map((file, index) => (
