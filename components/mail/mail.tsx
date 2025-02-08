@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlignVerticalSpaceAround, ListFilter } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -65,6 +65,16 @@ export function Mail({ mails }: MailProps) {
 
   // Only show dialog if we're on mobile
   const showDialog = isDialogOpen && isMobile;
+
+  const onMobileDialogClose = useCallback(() => {
+    setIsDialogOpen(false);
+    setMail({ selected: null });
+  }, [setMail]);
+
+  const selectedMail = useMemo(
+    () => filteredMails.find((item) => item.id === mail.selected) || null,
+    [filteredMails, mail.selected],
+  );
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -146,28 +156,19 @@ export function Mail({ mails }: MailProps) {
               className="hidden overflow-hidden md:block"
             >
               <div className="hidden h-full flex-1 overflow-y-auto md:block">
-                <MailDisplay
-                  mail={filteredMails.find((item) => item.id === mail.selected) || null}
-                  onClose={() => setMail({ selected: null })}
-                />
+                <MailDisplay mail={selectedMail} onClose={onMobileDialogClose} />
               </div>
             </ResizablePanel>
           )}
         </ResizablePanelGroup>
 
         {/* Mobile Dialog */}
-        <Dialog open={showDialog} onOpenChange={setIsDialogOpen}>
+        <Dialog open={showDialog} onOpenChange={(open) => !open && onMobileDialogClose()}>
           <DialogContent className="h-[100vh] overflow-hidden border-none p-0 sm:max-w-[100vw]">
             <DialogHeader className="hidden">
               <DialogTitle></DialogTitle>
             </DialogHeader>
-            <MailDisplay
-              mail={filteredMails.find((item) => item.id === mail.selected) || null}
-              onClose={() => {
-                setIsDialogOpen(false);
-                setMail({ selected: null });
-              }}
-            />
+            <MailDisplay mail={selectedMail} onClose={onMobileDialogClose} />
           </DialogContent>
         </Dialog>
       </div>

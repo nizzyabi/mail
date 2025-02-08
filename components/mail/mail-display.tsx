@@ -11,7 +11,7 @@ import {
   Lock,
   Send,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
 import React from "react";
 
@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
+import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
 
 interface MailDisplayProps {
@@ -32,10 +33,15 @@ interface MailDisplayProps {
 }
 
 export function MailDisplay({ mail, onClose }: MailDisplayProps) {
-  // Create local state for the muted flag.
   const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [, setMail] = useMail();
+
+  const handleClose = useCallback(() => {
+    onClose?.();
+    setMail({ selected: null });
+  }, [onClose, setMail]);
 
   const handleAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -72,16 +78,13 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && onClose) {
-        onClose();
+      if (event.key === "Escape") {
+        handleClose();
       }
     };
     window.addEventListener("keydown", handleEsc);
-
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
-    };
-  }, [onClose]);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [handleClose]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-r-lg">
@@ -89,7 +92,7 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
         <div className="flex flex-1 items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail} onClick={onClose}>
+              <Button variant="ghost" size="icon" disabled={!mail} onClick={handleClose}>
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
               </Button>
