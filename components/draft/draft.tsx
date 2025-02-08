@@ -1,9 +1,9 @@
 "use client";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlignVerticalSpaceAround, Search, Trash2 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { useDrafts } from "./draftHooks/useDrafts";
@@ -16,7 +16,6 @@ export function Draft() {
   const { drafts, addDraft, removeDraft } = useDrafts();
   const [isCompact, setIsCompact] = useState(false);
   const [selectedDraft, setSelectedDraft] = useState<DraftType | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // checking if the screen is mobile
@@ -86,7 +85,6 @@ export function Draft() {
                           }`}
                           onClick={() => {
                             setSelectedDraft(draft); // selecting the draft
-                            setIsDialogOpen(true); // for mobile
                           }}
                         >
                           <div className="mr-4 min-w-0 flex-1">
