@@ -12,8 +12,10 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { MessageKeys, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { MessageKey } from "@/types";
 import * as React from "react";
 import Link from "next/link";
 
@@ -44,10 +46,12 @@ export function NavMain({ items }: NavMainProps) {
     return cleanPath === cleanUrl;
   };
 
+  const t = useTranslations();
+
   return (
     <>
       {items.map((group) => (
-        <SidebarGroup key={group.title}>
+        <SidebarGroup key={t(group.title as MessageKey)}>
           <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
