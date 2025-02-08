@@ -8,6 +8,7 @@ import {
   Archive,
   Users2,
   Bell,
+  ArchiveX,
   MessageSquare,
   ShoppingCart,
   Tag,
@@ -83,7 +84,7 @@ const data: SidebarData = {
         {
           title: "Junk",
           url: "/under-construction/junk",
-          icon: Trash2,
+          icon: ArchiveX,
           badge: 23,
         },
         {
