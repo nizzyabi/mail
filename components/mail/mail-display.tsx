@@ -1,13 +1,16 @@
 import {
   Archive,
   ArchiveX,
+  ArrowUp,
   Clock,
   Forward,
   MoreVertical,
+  Plus,
   Reply,
   ReplyAll,
   Trash2,
   BellOff,
+  X,
 } from "lucide-react";
 import { nextSaturday } from "date-fns/nextSaturday";
 import { addHours } from "date-fns/addHours";
@@ -23,9 +26,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Mail } from "@/components/mail/data";
-import { Label } from "@/components/ui/label";
+import { Badge } from "../ui/badge";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -35,6 +37,17 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   const today = new Date();
   // Create local state for the muted flag.
   const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
+  const [attachments, setAttachments] = useState<File[]>([]);
+
+  const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAttachments([...attachments, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
+  };
 
   // Update the muted state when the mail prop changes.
   useEffect(() => {
@@ -199,26 +212,80 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
-          <Separator className="mt-auto" />
-          <div className="p-4">
-            <form>
-              <div className="grid gap-4">
-                <Textarea className="p-4" placeholder={`Reply ${mail.name}...`} />
-                <div className="flex items-center">
-                  <Label htmlFor="mute" className="flex items-center gap-2 text-xs font-normal">
-                    {/* Bind the switch to our local muted state */}
-                    <Switch
-                      id="mute"
-                      aria-label="Mute thread"
-                      checked={isMuted}
-                      onCheckedChange={(checked: boolean) => setIsMuted(checked)}
-                    />{" "}
-                    Mute this thread
-                  </Label>
-                  <Button onClick={(e) => e.preventDefault()} size="sm" className="ml-auto">
-                    Send
-                  </Button>
+          {/* Reply Form */}
+          <div className="box-border p-4">
+            <form className="space-y-1 overflow-x-auto rounded-xl border bg-secondary p-3">
+              <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
+                <Reply className="h-4 w-4" />
+                <p className="truncate">
+                  {mail.name} ({mail.email})
+                </p>
+              </div>
+              <Textarea
+                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
+                placeholder="Message…"
+                rows={3}
+              ></Textarea>
+              {/* Attachment Display */}
+              {attachments.length > 0 && (
+                <div className="box-border py-4">
+                  <div className="flex flex-wrap gap-2">
+                    {attachments.map((file, index) => (
+                      <Badge key={index} variant="default">
+                        {file.name}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            removeAttachment(index);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
+              )}
+              <div className="flex justify-between">
+                <div className="flex space-x-1.5">
+                  <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
+                    <span>Send</span>
+                    <ArrowUp />
+                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 w-9 hover:bg-primary/10"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const fileInput = document.getElementById(
+                            "attachment-input",
+                          ) as HTMLInputElement;
+                          if (fileInput) fileInput.click();
+                        }}
+                      >
+                        <Plus />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add an attachment</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* Hidden File Input */}
+                  <input
+                    id="attachment-input"
+                    type="file"
+                    className="hidden"
+                    multiple
+                    onChange={handleAttachment}
+                  />
+                </div>
+                <div className="flex space-x-1"></div>
               </div>
             </form>
           </div>

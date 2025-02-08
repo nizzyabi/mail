@@ -58,41 +58,24 @@ We’re just getting started. If you’re excited about a future where **email b
 
 Before running the application, you'll need to set up several services and environment variables:
 
-1. **Database Setup with Neon & Drizzle**
+1. **Setup Local Services with Docker**
 
-   - Sign up for [Neon](https://neon.tech)
-   - Create a new project
-   - Copy your connection string and add to `.env`:
-
-     ```env
-     DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
-     ```
-
-   - The project already includes Drizzle with these commands:
-
-     ```bash
-     pnpm db:generate  # Generate migrations
-     pnpm db:migrate   # Run migrations
-     pnpm db:push     # Push schema changes
-     pnpm db:studio   # Open Drizzle Studio
-     ```
-
-   - Initialize your schema in `src/db/schema.ts`
+   - Make sure you have [Docker](https://docs.docker.com/get-docker/), [NodeJS](https://nodejs.org/en/download/), and [pnpm](https://pnpm.io/installation) installed.
+   - Install all dependencies with `pnpm install`
+   - Copy the example env, `cp .env.example .env`
+   - Run `pnpm docker:up` to start the database and other services.
    - Run `pnpm db:push` to sync your schema with the database
    - Use `pnpm db:studio` to view and manage your data
 
 2. **Better Auth Setup**
 
-   - Sign up for [Better Auth](https://www.better-auth.com/)
-   - Create a new project and get your API keys
-   - Add to `.env`:
+   - Open `.env` and change the BETTER_AUTH_SECRET to a random string. (Use `openssl rand -hex 32` to generate a 32 character string)
 
      ```env
      BETTER_AUTH_SECRET=your_secret_key
-     BETTER_AUTH_URL=http://localhost:3000
      ```
 
-3. **Google OAuth Setup**
+3. **Google OAuth Setup (Optional)**
 
    - Go to [Google Cloud Console](https://console.cloud.google.com)
    - Create a new project
@@ -108,40 +91,9 @@ Before running the application, you'll need to set up several services and envir
      GOOGLE_CLIENT_SECRET=your_client_secret
      ```
 
-4. **PostHog Setup**
+### Running Locally
 
-   - Create an account on [PostHog](https://posthog.com)
-   - Get your project API key
-   - Add to `.env`:
-
-     ```env
-     NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
-     NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-     ```
-
-5. **Environment Setup**
-
-   - Copy `.env.example` to `.env`
-   - Fill in all the required variables from the steps above
-   - Add your base URL:
-
-     ```env
-     BASE_URL=http://localhost:3000
-     ```
-
-### Installation
-
-First, install the dependencies:
-
-// ... rest of existing code ...
-
-First, install the dependencies:
-
-```bash
-pnpm install
-```
-
-Then, run the development server:
+Run the development server:
 
 ```bash
 pnpm dev

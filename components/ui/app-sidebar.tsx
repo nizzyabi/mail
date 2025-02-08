@@ -36,6 +36,7 @@ import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
 const data: SidebarData = {
+  // TODO: Dynamically render user data based on auth info
   user: {
     name: "nizzy",
     email: "nizabizaher@gmail.com",
@@ -76,23 +77,23 @@ const data: SidebarData = {
         },
         {
           title: "Sent",
-          url: "/sent",
+          url: "/under-construction/sent",
           icon: SendHorizontal,
         },
         {
           title: "Junk",
-          url: "/junk",
+          url: "/under-construction/junk",
           icon: Trash2,
           badge: 23,
         },
         {
           title: "Trash",
-          url: "/trash",
+          url: "/under-construction/trash",
           icon: Trash2,
         },
         {
           title: "Archive",
-          url: "/archive",
+          url: "/under-construction/archive",
           icon: Archive,
         },
       ],
@@ -163,7 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            className="m-2 w-fit bg-primary px-3 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
+            className="bg-primary px-3 py-5 text-primary-foreground transition-[margin] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground group-data-[collapsible=icon]:mx-0"
             onClick={handleComposeClick}
           >
             <Pencil className="size-4" />
@@ -189,12 +190,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavUser />
         </SidebarFooter>
         <SidebarRail />
-        <MailCompose
-          open={composeOpen}
-          onClose={() => setComposeOpen(false)}
-          aria-label="Compose email dialog"
-        />
       </Sidebar>
+      <MailCompose
+        open={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        aria-label="Compose email dialog"
+      />
     </>
   );
 }

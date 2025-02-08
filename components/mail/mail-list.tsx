@@ -23,24 +23,31 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
 
-  const handleMailClick = (mail: Mail) => {
-    setMail({
-      ...mail,
-      selected: mail.id,
-    });
+  const handleMailClick = (selectedMail: Mail) => {
+    if (mail.selected === selectedMail.id) {
+      setMail({
+        selected: null,
+      });
+    } else {
+      setMail({
+        ...mail,
+        selected: selectedMail.id,
+      });
+    }
+
     onMailClick();
   };
 
   return (
-    <ScrollArea className="mt-4 h-[calc(100vh-13rem-1px)]" type="auto">
-      <div className="flex flex-col gap-2 p-4 pt-0">
+    <ScrollArea className="h-[calc(100dvh-8rem-1px)]" type="auto">
+      <div className="flex flex-col pt-0">
         {items.map((item) => (
           <div
             key={item.id}
             className={cn(
-              "flex cursor-pointer flex-col items-start rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
+              "flex cursor-pointer flex-col items-start border-b p-4 text-left text-sm transition-all hover:bg-accent",
               mail.selected === item.id && "bg-muted hover:opacity-100",
-              isCompact && mail.selected !== item.id && item.read ? "gap-0" : "gap-2",
+              isCompact && mail.selected !== item.id ? "gap-0" : "gap-2",
               item.read && mail.selected !== item.id
                 ? "opacity-70 hover:opacity-100"
                 : "opacity-100",

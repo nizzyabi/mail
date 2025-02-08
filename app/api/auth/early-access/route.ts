@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rateLimit";
 import { earlyAccess } from "@/db/schema";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
@@ -8,8 +9,11 @@ type PostgresError = {
   message: string;
 };
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    if (!rateLimit(req)) {
+      return NextResponse.json({ message: "Too Many Request" }, { status: 429 });
+    }
     const { email } = await req.json();
 
     if (!email) {
