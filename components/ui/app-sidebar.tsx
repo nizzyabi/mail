@@ -29,10 +29,10 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { useLocale, useTranslations } from "next-intl";
 // import { AccountSwitcher } from "./account-switcher";
 import { MailCompose } from "../mail/mail-compose";
 import { SidebarToggle } from "./sidebar-toggle";
+import { useTranslations } from "next-intl";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
