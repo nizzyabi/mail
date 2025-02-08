@@ -1,9 +1,9 @@
-import Draft from "@/components/draft/draft";
+import { Draft } from "@/components/draft/draft";
 import React from "react";
 
-function page() {
+async function page() {
   return (
-    <div>
+    <div className="w-full">
       <Draft />
     </div>
   );

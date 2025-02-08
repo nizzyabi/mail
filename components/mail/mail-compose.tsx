@@ -26,13 +26,12 @@ interface MailComposeProps {
 }
 
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { handleDraft } from "../draft/draftHelperFuntion";
+import { draftsAtom } from "@/store/draftStates";
 import { Badge } from "../ui/badge";
-// import { useAtom } from "jotai";
-// import { draftsAtom } from "@/store/draftStates";
+import { useAtom } from "jotai";
 
 export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
-  // const [drafts, setDrafts] = useAtom(draftsAtom);
+  const [draftStates, setDraftStates] = useAtom(draftsAtom);
   const [attachments, setAttachments] = React.useState<File[]>([]);
   const [messageContent, setMessageContent] = React.useState("");
   const [toInput, setToInput] = React.useState(replyTo?.email || "");
@@ -48,6 +47,18 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
     "david@example.com",
     "eve@example.com",
   ];
+
+  // saving as draft
+  const handleDraft = () => {
+    const newDraft = {
+      id: Math.random().toString(8).substring(7),
+      message: messageContent,
+      subject,
+    };
+    setDraftStates((drafts) => {
+      return [newDraft, ...drafts];
+    });
+  };
 
   const filteredSuggestions = toInput
     ? pastEmails.filter((email) => email.toLowerCase().includes(toInput.toLowerCase()))
@@ -292,8 +303,8 @@ export function MailCompose({ open, onClose, replyTo }: MailComposeProps) {
               <Button
                 variant="outline"
                 onClick={() => {
-                  handleDraft(messageContent, subject);
-                  onClose;
+                  handleDraft();
+                  onClose();
                 }}
               >
                 Save as draft

@@ -1,13 +1,11 @@
 import { atomWithStorage } from "jotai/utils";
-import { useAtom } from "jotai";
+import { atom } from "jotai";
 
-interface Draft {
+export interface DraftType {
   id: string;
   recipient?: string;
   subject?: string;
   message?: string;
-  lastEdited: string;
 }
-
-export const draftsAtom = atomWithStorage<Draft[]>("emailDrafts", []);
-export const [draftStates, setDraftStates] = useAtom(draftsAtom);
+export const draftsAtom = atomWithStorage<DraftType[]>("emailDrafts", []);
+export const draftCountAtom = atom((get) => get(draftsAtom).length);
