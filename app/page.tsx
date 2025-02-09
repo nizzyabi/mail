@@ -15,18 +15,25 @@ export default function BetaSignup() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/early-access", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      toast.promise(
+        fetch("/api/auth/early-access", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }).then((response) => {
+          if (response.ok) {
+            setEmail("");
+          }
+          return response;
+        }),
+        {
+          loading: "Signing up...",
+          success: "Thanks for signing up for early access!",
+          error: "Something went wrong. Please try again.",
         },
-        body: JSON.stringify({ email }),
-      });
-
-      if (response.ok) {
-        setEmail("");
-        toast.success("Thanks for signing up for early access!");
-      }
+      );
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Please try again.");

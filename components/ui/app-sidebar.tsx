@@ -14,19 +14,14 @@ import {
   Tag,
   Code,
   ChartLine,
-  SquarePen,
-  Search,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import React, { Suspense } from "react";
 import { SidebarData } from "@/types";
+import React from "react";
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-// import { AccountSwitcher } from "./account-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { Button } from "./button";
 
 const data: SidebarData = {
   // TODO: Dynamically render user data based on auth info
@@ -64,7 +59,7 @@ const data: SidebarData = {
         },
         {
           title: "Drafts",
-          url: "/mail/under-construction/drafts",
+          url: "/draft",
           icon: FileText,
           badge: 9,
         },
@@ -149,17 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <>
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader className="mt-2 flex items-center justify-between gap-2">
-          <div className="flex w-full items-center gap-2">
-            <NavUser />
-            <div className="flex items-center">
-              <Suspense>
-                <ComposeButton />
-              </Suspense>
-              <Button variant="ghost" className="h-fit px-2">
-                <Search />
-              </Button>
-            </div>
-          </div>
+          <NavUser />
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} />
@@ -167,15 +152,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarRail />
       </Sidebar>
     </>
-  );
-}
-
-function ComposeButton() {
-  const { open } = useOpenComposeModal();
-
-  return (
-    <Button onClick={open} variant="ghost" className="md:h-fit md:px-2">
-      <SquarePen />
-    </Button>
   );
 }

@@ -1,28 +1,41 @@
-import { NextRequest, NextResponse } from "next/server";
-import { betterFetch } from "@better-fetch/fetch";
-import type { auth } from "@/lib/auth";
-
-type Session = typeof auth.$Infer.Session;
+import { type NextRequest, NextResponse } from "next/server";
+import { waitlistRateLimiter } from "./lib/rateLimit";
 
 export async function middleware(request: NextRequest) {
-  const fetchRoute = process.env.BETTER_AUTH_COOKIE_FETCH as string;
-  const isProductLaunched = process.env.IS_LAUNCHED;
-  const redirectRoute = isProductLaunched === "true" ? "/signin" : "/";
+  const { pathname } = request.nextUrl;
 
-  const { data: session } = await betterFetch<Session>(fetchRoute, {
-    baseURL: request.nextUrl.origin,
-    headers: {
-      cookie: request.headers.get("cookie") || "",
-    },
-  });
-
-  if (!session) {
-    return NextResponse.redirect(new URL(redirectRoute, request.url));
+  const ip = request.headers.get("x-forwarded-for");
+  if (!ip) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Could not determine your IP address, please try again later!",
+      },
+      { status: 400 },
+    );
   }
 
-  return NextResponse.next();
+  switch (pathname) {
+    case "/api/auth/early-access": {
+      const rateLimiter = await waitlistRateLimiter();
+      const { success } = await rateLimiter.limit(ip);
+      if (!success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Rate limit exceeded, please try again later!",
+          },
+          { status: 429 },
+        );
+      }
+    }
+
+    default: {
+      return NextResponse.next();
+    }
+  }
 }
 
 export const config = {
-  matcher: ["/mail"],
+  matcher: ["/api/auth/early-access"],
 };

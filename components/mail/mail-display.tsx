@@ -1,23 +1,21 @@
 import {
   Archive,
   ArchiveX,
-  ArrowUp,
-  Clock,
   Forward,
   MoreVertical,
-  Plus,
+  Paperclip,
   Reply,
   ReplyAll,
-  Trash2,
   BellOff,
   X,
   Lock,
+  Send,
+  FileIcon,
 } from "lucide-react";
-import { nextSaturday } from "date-fns/nextSaturday";
-import { addHours } from "date-fns/addHours";
-import { useState, useEffect } from "react";
-import { addDays } from "date-fns/addDays";
+import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -30,22 +28,55 @@ import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 interface MailDisplayProps {
   mail: Mail | null;
+  onClose?: () => void;
+  isMobile?: boolean;
 }
 
-export function MailDisplay({ mail }: MailDisplayProps) {
-  const today = new Date();
-  // Create local state for the muted flag.
-  const [isMuted, setIsMuted] = useState(mail ? mail.muted : false);
+export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
+  const [, setMail] = useMail();
+  const [currentMail, setCurrentMail] = useState<Mail | null>(mail);
+  const [isMuted, setIsMuted] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [_mail, setMail] = useMail();
+  useEffect(() => {
+    setCurrentMail(mail);
+  }, [mail]);
 
-  const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (currentMail) {
+      setIsMuted(currentMail.muted ?? false);
+    }
+  }, [currentMail]);
+
+  const handleClose = useCallback(() => {
+    onClose?.();
+    setMail({ selected: null });
+  }, [onClose, setMail]);
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [handleClose]);
+
+  const handleAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setAttachments([...attachments, ...Array.from(e.target.files)]);
+      setIsUploading(true);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setAttachments([...attachments, ...Array.from(e.target.files)]);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -57,307 +88,294 @@ export function MailDisplay({ mail }: MailDisplayProps) {
     if (name.length <= maxLength) return name;
     const extIndex = name.lastIndexOf(".");
     if (extIndex !== -1 && name.length - extIndex <= 5) {
-      // Preserve file extension if possible
       return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
     }
     return `${name.slice(0, maxLength)}...`;
   };
 
-  const handleClose = () => {
-    // close the mail if it is selected
-    if (mail && mail.id === _mail.selected) {
-      setMail({
-        selected: null,
-      });
-    }
-  };
-
-  // Update the muted state when the mail prop changes.
-  useEffect(() => {
-    if (mail) {
-      setIsMuted(mail.muted);
-    }
-  }, [mail]);
+  if (!currentMail) return null;
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mt-7 flex items-center p-2 md:mt-0">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Archive className="h-4 w-4" />
-                <span className="sr-only">Archive</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Archive</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ArchiveX className="h-4 w-4" />
-                <span className="sr-only">Move to junk</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to junk</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Move to trash</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to trash</TooltipContent>
-          </Tooltip>
-          <Separator orientation="vertical" className="mx-1 h-6" />
-          <Tooltip>
-            <Popover>
-              <PopoverTrigger asChild>
+      <div className={cn("flex h-full flex-col", isMobile ? "" : "rounded-r-lg pt-[6px]")}>
+        <div className="sticky top-0 z-20 flex items-center gap-2 border-b bg-background/95 px-4 pb-[7.5px] pt-[0.5px] backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex flex-1 items-center gap-2">
+            {!isMobile && (
+              <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" disabled={!mail}>
-                    <Clock className="h-4 w-4" />
-                    <span className="sr-only">Snooze</span>
+                  <Button
+                    variant="ghost"
+                    className="md:h-fit md:px-2"
+                    disabled={!currentMail}
+                    onClick={handleClose}
+                  >
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
                   </Button>
                 </TooltipTrigger>
-              </PopoverTrigger>
-              <PopoverContent className="flex w-[535px] p-0">
-                <div className="flex flex-col gap-2 border-r px-2 py-4">
-                  <div className="px-4 text-sm font-medium">Snooze until</div>
-                  <div className="grid min-w-[250px] gap-1">
-                    <Button variant="ghost" className="justify-start font-normal">
-                      Later today{" "}
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addHours(today, 4), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
-                      Tomorrow
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 1), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
-                      This weekend
-                      <span className="ml-auto text-muted-foreground">
-                        {format(nextSaturday(today), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button variant="ghost" className="justify-start font-normal">
-                      Next week
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 7), "E, h:m b")}
-                      </span>
-                    </Button>
+                <TooltipContent>Close</TooltipContent>
+              </Tooltip>
+            )}
+            <div className="flex-1 truncate text-sm font-medium">
+              {currentMail?.subject || "No message selected"}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                  <Archive className="h-4 w-4" />
+                  <span className="sr-only">Archive</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Archive</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                  <Reply className="h-4 w-4" />
+                  <span className="sr-only">Reply</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Reply</TooltipContent>
+            </Tooltip>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">More</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <ArchiveX className="mr-2 h-4 w-4" /> Move to junk
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <ReplyAll className="mr-2 h-4 w-4" /> Reply all
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Forward className="mr-2 h-4 w-4" /> Forward
+                </DropdownMenuItem>
+                <DropdownMenuItem>Mark as unread</DropdownMenuItem>
+                <DropdownMenuItem>Add label</DropdownMenuItem>
+                <DropdownMenuItem>Mute thread</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        <div className="relative flex-1 overflow-hidden">
+          <div className="absolute inset-0 overflow-y-auto">
+            <div className="flex flex-col gap-4 px-4 py-4">
+              <div className="flex items-start gap-3">
+                <Avatar>
+                  <AvatarImage alt={currentMail.name} />
+                  <AvatarFallback>
+                    {currentMail.name
+                      .split(" ")
+                      .map((chunk) => chunk[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                  <div className="font-semibold">{currentMail.name}</div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <span>{currentMail.email}</span>
+                    {isMuted && <BellOff className="h-4 w-4" />}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <time className="text-xs text-muted-foreground">
+                      {format(new Date(currentMail.date), "PPp")}
+                    </time>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-auto p-0 text-xs underline">
+                          Details
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[280px] space-y-2" align="start">
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">From:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">Reply-To:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">To:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">Cc:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">Date:</span>{" "}
+                          {format(new Date(currentMail.date), "PPpp")}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">Mailed-By:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-medium text-muted-foreground">Signed-By:</span>{" "}
+                          {currentMail.email}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <span className="font-medium text-muted-foreground">Security:</span>{" "}
+                          <Lock className="h-3 w-3" /> {currentMail.email}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
-              </PopoverContent>
-            </Popover>
-            <TooltipContent>Snooze</TooltipContent>
-          </Tooltip>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Reply className="h-4 w-4" />
-                <span className="sr-only">Reply</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ReplyAll className="h-4 w-4" />
-                <span className="sr-only">Reply all</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply all</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Forward className="h-4 w-4" />
-                <span className="sr-only">Forward</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Forward</TooltipContent>
-          </Tooltip>
-        </div>
-        <Separator orientation="vertical" className="mx-2 h-6" />
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">More</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-              <DropdownMenuItem>Star thread</DropdownMenuItem>
-              <DropdownMenuItem>Add label</DropdownMenuItem>
-              <DropdownMenuItem>Mute thread</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="ghost" size="icon" disabled={!mail} onClick={handleClose}>
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
-        </div>
-      </div>
-      <Separator />
-      {mail ? (
-        <div className="flex flex-1 flex-col">
-          <div className="flex items-start p-4">
-            <div className="flex items-start gap-4 text-sm">
-              <Avatar>
-                <AvatarImage alt={mail.name} />
-                <AvatarFallback>
-                  {mail.name
-                    .split(" ")
-                    .map((chunk) => chunk[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <div className="font-semibold">
-                  {mail.name} <span className="text-muted-foreground">&lt;{mail.email}&gt;</span>
-                </div>
-                {/* Display the subject with the muted icon if isMuted is true */}
-                <div className="line-clamp-1 flex items-center text-xs">
-                  {mail.subject}
-                  {isMuted && <BellOff className="ml-2 h-4 w-4 text-muted-foreground" />}
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <span className="cursor-pointer text-xs underline">Details</span>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[320px] space-y-2" align="start">
-                    {/* TODO: Content is currently dummy and uses mail.email for all of them. need to add other values to email type */}
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">From:</span> {mail.email}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">Reply-To:</span>{" "}
-                      {mail.email}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">To:</span> {mail.email}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">Cc:</span> {mail.email}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">Date:</span>{" "}
-                      {format(new Date(mail.date), "PPpp")}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">Mailed-By:</span>{" "}
-                      {mail.email}
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium text-muted-foreground">Signed-By:</span>{" "}
-                      {mail.email}
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <span className="font-medium text-muted-foreground">Security:</span>{" "}
-                      <Lock className="h-3 w-3" /> {mail.email}
-                    </div>
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
-            {mail.date && (
-              <div className="ml-auto text-xs text-muted-foreground">
-                {format(new Date(mail.date), "PPpp")}
-              </div>
-            )}
+
+            <Separator />
+
+            <div className="px-8 py-4 pb-[200px]">
+              <div className="whitespace-pre-wrap text-sm leading-relaxed">{currentMail.text}</div>
+            </div>
           </div>
-          <Separator />
-          <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
-          {/* Reply Form */}
-          <div className="box-border p-4">
-            <form className="space-y-1 overflow-x-auto rounded-xl border bg-secondary p-3">
-              <div className="grid grid-cols-[auto,1fr] items-center space-x-1 text-sm text-muted-foreground">
-                <Reply className="h-4 w-4" />
-                <p className="truncate">
-                  {mail.name} ({mail.email})
-                </p>
+
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-background px-4 pb-4 pt-2">
+            <form className="relative space-y-2.5 rounded-[calc(var(--radius)-2px)] border bg-secondary/50 p-4 shadow-sm">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Reply className="h-4 w-4" />
+                  <p className="truncate">
+                    {currentMail?.name} ({currentMail?.email})
+                  </p>
+                </div>
               </div>
+
               <Textarea
-                className="min-h-0 resize-none border-none bg-inherit p-0 py-1 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
-                placeholder="Message…"
-                rows={3}
-              ></Textarea>
-              {/* Attachment Display */}
-              {attachments.length > 0 && (
-                <div className="box-border py-4">
-                  <div className="flex flex-wrap gap-2">
-                    {attachments.map((file, index) => (
-                      <Badge key={index} variant="default">
-                        {truncateFileName(file.name)}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="-mr-1 ml-2 h-5 w-5 rounded-full p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            removeAttachment(index);
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                className="min-h-[120px] w-full resize-none border-0 bg-[#18181A] leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
+                placeholder="Write your reply..."
+                spellCheck={true}
+                autoFocus
+              />
+
+              {(attachments.length > 0 || isUploading) && (
+                <div className="relative z-50 min-h-[32px]">
+                  <div className="hide-scrollbar absolute inset-x-0 flex gap-2 overflow-x-auto">
+                    {isUploading && (
+                      <Badge
+                        variant="secondary"
+                        className="inline-flex shrink-0 animate-pulse items-center bg-background/50 px-2 py-1.5 text-xs"
+                      >
+                        Uploading...
                       </Badge>
+                    )}
+                    {attachments.map((file, index) => (
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
+                          >
+                            <span className="max-w-[120px] truncate">
+                              {truncateFileName(file.name)}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="ml-1 h-4 w-4 hover:bg-background/80"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeAttachment(index);
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="w-64 p-0">
+                          <div className="relative h-32 w-full">
+                            {file.type.startsWith("image/") ? (
+                              <Image
+                                src={URL.createObjectURL(file) || "/placeholder.svg"}
+                                alt={file.name}
+                                fill
+                                className="rounded-t-md object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center p-4">
+                                <FileIcon className="h-16 w-16 text-primary" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="bg-secondary p-2">
+                            <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Last modified: {new Date(file.lastModified).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     ))}
                   </div>
                 </div>
               )}
-              <div className="flex justify-between">
-                <div className="flex space-x-1.5">
-                  <Button size="sm" type="submit" onClick={(e) => e.preventDefault()}>
-                    <span>Send</span>
-                    <ArrowUp />
-                  </Button>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        size="sm"
                         variant="ghost"
-                        className="h-9 w-9 hover:bg-primary/10"
+                        size="icon"
+                        type="button"
+                        className="h-8 w-8 hover:bg-background/80"
                         onClick={(e) => {
                           e.preventDefault();
-                          const fileInput = document.getElementById(
-                            "attachment-input",
-                          ) as HTMLInputElement;
-                          if (fileInput) fileInput.click();
+                          document.getElementById("attachment-input")?.click();
                         }}
                       >
-                        <Plus />
+                        <Paperclip className="h-4 w-4" />
+                        <span className="sr-only">Add attachment</span>
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Add an attachment</p>
-                    </TooltipContent>
+                    <TooltipContent>Attach file</TooltipContent>
                   </Tooltip>
-                  {/* Hidden File Input */}
                   <input
-                    id="attachment-input"
                     type="file"
+                    id="attachment-input"
                     className="hidden"
-                    multiple
                     onChange={handleAttachment}
+                    multiple
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
                   />
                 </div>
-                <div className="flex space-x-1"></div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="h-8">
+                    Save draft
+                  </Button>
+                  <Button size="sm" className="h-8">
+                    Send <Send className="ml-2 h-3 w-3" />
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
         </div>
-      ) : (
-        <div className="p-8 text-center text-muted-foreground">No message selected</div>
-      )}
+      </div>
     </div>
   );
 }
+
+<style jsx global>{`
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+`}</style>;

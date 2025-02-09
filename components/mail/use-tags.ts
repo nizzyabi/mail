@@ -15,7 +15,6 @@ const initialTags: Tag[] = [
   { id: "1", label: "budget", checked: false },
   { id: "2", label: "meeting", checked: false },
   { id: "3", label: "personal", checked: false },
-  { id: "4", label: "budget", checked: false },
   { id: "5", label: "a really long one to test", checked: false },
 ];
 

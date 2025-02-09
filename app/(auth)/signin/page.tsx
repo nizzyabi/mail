@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 
 import { signIn } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function SignIn() {
   return (
@@ -19,10 +20,17 @@ export default function SignIn() {
             variant="outline"
             className="w-full gap-2"
             onClick={async () => {
-              await signIn.social({
-                provider: "google",
-                callbackURL: "/mail",
-              });
+              toast.promise(
+                signIn.social({
+                  provider: "google",
+                  callbackURL: "/mail",
+                }),
+                {
+                  loading: "Redirecting...",
+                  success: "Redirected successfully!",
+                  error: "Login redirect failed",
+                },
+              );
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
