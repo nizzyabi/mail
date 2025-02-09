@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlignVerticalSpaceAround, ListFilter, Search, SquarePen } from "lucide-react";
 import { useState, useCallback, useMemo, useRef } from "react";
+
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -24,9 +25,8 @@ import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
-import { Input } from "../ui/input";
-import Filters from "./filters";
 
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 
@@ -231,6 +231,7 @@ export function Mail({ mails }: MailProps) {
                         className="h-7 w-full pl-7 focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
                     </div>
+
                     <div className="flex items-center space-x-1.5">
                       <Button
                         variant="ghost"
@@ -254,7 +255,6 @@ export function Mail({ mails }: MailProps) {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <Filters />
                     </div>
                   </div>
                   <Separator className="mt-2" />
