@@ -89,8 +89,8 @@ export function Mail({ mails }: MailProps) {
         >
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
             <div className="h-full flex-1 overflow-y-auto">
-              <div>
-                <div className="sticky top-0 z-10 flex items-center justify-between bg-background px-2">
+              <div className="sticky top-0 z-10 bg-background pt-[6px]">
+                <div className="flex items-center justify-between px-2">
                   <div className="flex items-center gap-1">
                     <SidebarToggle className="h-fit px-2" />
                     <React.Suspense>
@@ -130,32 +130,31 @@ export function Mail({ mails }: MailProps) {
                     <Filters />
                   </div>
                 </div>
-
                 <Separator className="mt-2" />
+              </div>
 
-                <div className="h-[calc(93vh)] overflow-y-auto">
-                  {filterValue === "all" ? (
-                    filteredMails.length === 0 ? (
-                      <div className="p-8 text-center text-muted-foreground">
-                        No messages found | Clear filters to see more results
-                      </div>
-                    ) : (
-                      <MailList
-                        items={filteredMails}
-                        isCompact={isCompact}
-                        onMailClick={() => setIsDialogOpen(true)}
-                      />
-                    )
-                  ) : filteredMails.filter((item) => !item.read).length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+              <div className="h-[calc(93vh)] overflow-y-auto">
+                {filterValue === "all" ? (
+                  filteredMails.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">
+                      No messages found | Clear filters to see more results
+                    </div>
                   ) : (
                     <MailList
-                      items={filteredMails.filter((item) => !item.read)}
+                      items={filteredMails}
                       isCompact={isCompact}
                       onMailClick={() => setIsDialogOpen(true)}
                     />
-                  )}
-                </div>
+                  )
+                ) : filteredMails.filter((item) => !item.read).length === 0 ? (
+                  <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                ) : (
+                  <MailList
+                    items={filteredMails.filter((item) => !item.read)}
+                    isCompact={isCompact}
+                    onMailClick={() => setIsDialogOpen(true)}
+                  />
+                )}
               </div>
             </div>
           </ResizablePanel>
