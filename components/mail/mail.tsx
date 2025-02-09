@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlignVerticalSpaceAround, ListFilter, Search, SquarePen } from "lucide-react";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -13,7 +13,6 @@ import { Separator } from "@/components/ui/separator";
 import { useMail } from "@/components/mail/use-mail";
 import { Button } from "@/components/ui/button";
 
-// Filters imports
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +28,8 @@ import { useAtomValue } from "jotai";
 import { Input } from "../ui/input";
 import Filters from "./filters";
 
+import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
+
 interface MailProps {
   accounts: {
     label: string;
@@ -42,31 +43,48 @@ interface MailProps {
   muted?: boolean;
 }
 
+//  shortcut map outside component to prevent recreating on each render
+export const mailShortcutMap = {
+  COMPOSE: "n",
+  TOGGLE_COMPACT: "t",
+  TOGGLE_FILTER_ALL: "a",
+  TOGGLE_FILTER_UNREAD: "u",
+  CLOSE_MAIL: "Escape",
+  SEARCH_FOCUS: "/",
+  PREV_MAIL: "ArrowUp",
+  NEXT_MAIL: "ArrowDown",
+  ARCHIVE: "e",
+  DELETE: "Delete",
+  REPLY: "r",
+  REPLY_ALL: "shift+r",
+  FORWARD: "f",
+  TOGGLE_READ: "m",
+  TOGGLE_STAR: "s",
+} as const;
+
 export function Mail({ mails }: MailProps) {
   const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
-
   const filteredMails = useFilteredMails(mails, activeTags);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
+  const { open: openCompose } = useOpenComposeModal();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Check if we're on mobile on mount and when window resizes
   React.useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is the 'md' breakpoint
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkIsMobile();
     window.addEventListener("resize", checkIsMobile);
-
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Only show dialog if we're on mobile
   const showDialog = isDialogOpen && isMobile;
 
   const onMobileDialogClose = useCallback(() => {
@@ -79,12 +97,119 @@ export function Mail({ mails }: MailProps) {
     [filteredMails, mail.selected],
   );
 
+  // Handler to navigate between emails
+  const handleMailNavigation = useCallback(
+    (direction: "next" | "prev") => {
+      if (!mail.selected || filteredMails.length === 0) return;
+
+      const currentIndex = filteredMails.findIndex((item) => item.id === mail.selected);
+      if (currentIndex === -1) return;
+
+      let newIndex;
+      if (direction === "next") {
+        newIndex = currentIndex + 1 >= filteredMails.length ? 0 : currentIndex + 1;
+      } else {
+        newIndex = currentIndex - 1 < 0 ? filteredMails.length - 1 : currentIndex - 1;
+      }
+
+      setMail({ selected: filteredMails[newIndex].id });
+      setIsDialogOpen(true);
+    },
+    [mail.selected, filteredMails, setMail],
+  );
+
+  // Mail action handlers
+  const handleArchive = useCallback(() => {
+    if (selectedMail) {
+      // Implement archive functionality once backend is done
+      console.log("Archive mail:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  const handleDelete = useCallback(() => {
+    if (selectedMail) {
+      // Implement delete functionality once backend is done
+      console.log("Delete mail:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  const handleToggleRead = useCallback(() => {
+    if (selectedMail) {
+      // Implement toggle read functionality
+      console.log("Toggle read:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  const handleReply = useCallback(() => {
+    if (selectedMail) {
+      // Implement reply functionality
+      console.log("Reply to:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  const handleReplyAll = useCallback(() => {
+    if (selectedMail) {
+      // Implement reply all functionality
+      console.log("Reply all to:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  const handleForward = useCallback(() => {
+    if (selectedMail) {
+      // Implement forward functionality
+      console.log("Forward mail:", selectedMail.id);
+    }
+  }, [selectedMail]);
+
+  // Define keyboard shortcut handlers
+  const shortcutHandlers = useMemo(
+    () => ({
+      COMPOSE: () => openCompose(),
+      TOGGLE_COMPACT: () => setIsCompact((prev) => !prev),
+      TOGGLE_FILTER_ALL: () => setFilterValue("all"),
+      TOGGLE_FILTER_UNREAD: () => setFilterValue("unread"),
+      CLOSE_MAIL: () => {
+        setIsDialogOpen(false);
+        setMail({ selected: null });
+      },
+      SEARCH_FOCUS: (e?: KeyboardEvent) => {
+        e?.preventDefault();
+        searchInputRef.current?.focus();
+      },
+      PREV_MAIL: () => handleMailNavigation("prev"),
+      NEXT_MAIL: () => handleMailNavigation("next"),
+      ARCHIVE: handleArchive,
+      DELETE: handleDelete,
+      REPLY: handleReply,
+      REPLY_ALL: handleReplyAll,
+      FORWARD: handleForward,
+      TOGGLE_READ: handleToggleRead,
+    }),
+    [
+      openCompose,
+      handleMailNavigation,
+      setMail,
+      handleArchive,
+      handleDelete,
+      handleReply,
+      handleReplyAll,
+      handleForward,
+      handleToggleRead,
+    ],
+  );
+
+  // Initialize keyboard shortcuts
+  useKeyboardShortcuts(mailShortcutMap, shortcutHandlers, {
+    enableInInputs: false,
+    preventDefault: true,
+  });
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="rounded-inherit flex">
         <ResizablePanelGroup
           direction="horizontal"
-          autoSaveId={"mail-panel-layout"}
+          autoSaveId="mail-panel-layout"
           className="rounded-inherit overflow-hidden"
         >
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
@@ -101,6 +226,7 @@ export function Mail({ mails }: MailProps) {
                     <div className="relative flex-1 px-4 md:max-w-[400px] md:px-8">
                       <Search className="absolute left-6 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground md:left-10" />
                       <Input
+                        ref={searchInputRef}
                         placeholder="Search"
                         className="h-7 w-full pl-7 focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
