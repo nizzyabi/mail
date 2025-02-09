@@ -87,68 +87,65 @@ export function Mail({ mails }: MailProps) {
           className="rounded-inherit overflow-hidden"
         >
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
-            <div className="flex-1 overflow-y-auto">
-              <div>
-                <div className="sticky top-0 z-10 rounded-t-md bg-background pt-[6px]">
-                  <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-1">
-                      <SidebarToggle className="h-fit px-2" />
-                      <React.Suspense>
-                        <ComposeButton />
-                      </React.Suspense>
-                    </div>
-                    <SearchBar />
-                    <div className="flex items-center space-x-1.5">
-                      <Button
-                        variant="ghost"
-                        className="md:h-fit md:px-2"
-                        onClick={() => setIsCompact(!isCompact)}
-                      >
-                        <AlignVerticalSpaceAround />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="md:h-fit md:px-2">
-                            <ListFilter className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setFilterValue("all")}>
-                            All mail
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setFilterValue("unread")}>
-                            Unread
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+            <div className="h-full flex-1 overflow-y-auto">
+              <div className="sticky top-0 z-10 bg-background pt-[6px]">
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center gap-1">
+                    <SidebarToggle className="h-fit px-2" />
+                    <React.Suspense>
+                      <ComposeButton />
+                    </React.Suspense>
                   </div>
-                  <Separator className="mt-2" />
+                  <SearchBar />
+                  <div className="flex items-center space-x-1.5">
+                    <Button
+                      variant="ghost"
+                      className="md:h-fit md:px-2"
+                      onClick={() => setIsCompact(!isCompact)}
+                    >
+                      <AlignVerticalSpaceAround />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="md:h-fit md:px-2">
+                          <ListFilter className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setFilterValue("all")}>
+                          All mail
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setFilterValue("unread")}>
+                          Unread
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-
-                <div className="h-[calc(93vh)] overflow-y-auto">
-                  {filterValue === "all" ? (
-                    filteredMails.length === 0 ? (
-                      <div className="p-8 text-center text-muted-foreground">
-                        No messages found | Clear filters to see more results
-                      </div>
-                    ) : (
-                      <MailList
-                        items={filteredMails}
-                        isCompact={isCompact}
-                        onMailClick={() => setIsDialogOpen(true)}
-                      />
-                    )
-                  ) : filteredMails.filter((item) => !item.read).length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                <Separator className="mt-2" />
+              </div>
+              <div className="h-[calc(93vh)] overflow-y-auto">
+                {filterValue === "all" ? (
+                  filteredMails.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">
+                      No messages found | Clear filters to see more results
+                    </div>
                   ) : (
                     <MailList
-                      items={filteredMails.filter((item) => !item.read)}
+                      items={filteredMails}
                       isCompact={isCompact}
                       onMailClick={() => setIsDialogOpen(true)}
                     />
-                  )}
-                </div>
+                  )
+                ) : filteredMails.filter((item) => !item.read).length === 0 ? (
+                  <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                ) : (
+                  <MailList
+                    items={filteredMails.filter((item) => !item.read)}
+                    isCompact={isCompact}
+                    onMailClick={() => setIsDialogOpen(true)}
+                  />
+                )}
               </div>
             </div>
           </ResizablePanel>
