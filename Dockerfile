@@ -9,6 +9,7 @@ RUN corepack enable pnpm
 
 # install deps
 RUN pnpm install
+RUN pnpm build
 
 COPY . .
 
@@ -26,4 +27,4 @@ ENV REDIS_TOKEN=
 
 EXPOSE 3000
 
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "start"]
