@@ -10,6 +10,7 @@ import {
   X,
   Lock,
   Send,
+  FileIcon,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
@@ -26,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -283,19 +285,29 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
                             </Button>
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent>
-                          <div className="flex flex-col items-center gap-2">
-                            {file.type.startsWith("image/") && (
-                              <img
-                                src={URL.createObjectURL(file)}
+                        <TooltipContent className="w-64 p-0">
+                          <div className="relative h-32 w-full">
+                            {file.type.startsWith("image/") ? (
+                              <Image
+                                src={URL.createObjectURL(file) || "/placeholder.svg"}
                                 alt={file.name}
-                                style={{ width: 80, height: 80 }}
+                                fill
+                                className="rounded-t-md object-cover"
                               />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center p-4">
+                                <FileIcon className="h-16 w-16 text-primary" />
+                              </div>
                             )}
-                            <div>
-                              <p>File: {file.name}</p>
-                              <p>Size: {(file.size / 2048).toFixed(2)} MB</p>
-                            </div>
+                          </div>
+                          <div className="bg-secondary p-2">
+                            <p className="text-sm font-medium">{file.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Size: {(file.size / 2048).toFixed(2)} MB
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Last modified: {new Date(file.lastModified).toLocaleDateString()}
+                            </p>
                           </div>
                         </TooltipContent>
                       </Tooltip>
@@ -363,3 +375,12 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
     display: none;
   }
 `}</style>;
+
+/*
+                                <Image
+                                src={"/placeholder.svg"}
+                                alt={file.name}
+                                fill
+                                className="rounded-t-md object-cover"
+                              />
+                                */
