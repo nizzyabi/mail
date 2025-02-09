@@ -10,6 +10,7 @@ import {
   X,
   Lock,
   Send,
+  FileIcon,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
@@ -26,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -260,26 +262,55 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
                       </Badge>
                     )}
                     {attachments.map((file, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
-                      >
-                        <span className="max-w-[120px] truncate">
-                          {truncateFileName(file.name)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="ml-1 h-4 w-4 hover:bg-background/80"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            removeAttachment(index);
-                          }}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </Badge>
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
+                          >
+                            <span className="max-w-[120px] truncate">
+                              {truncateFileName(file.name)}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="ml-1 h-4 w-4 hover:bg-background/80"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeAttachment(index);
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="w-64 p-0">
+                          <div className="relative h-32 w-full">
+                            {file.type.startsWith("image/") ? (
+                              <Image
+                                src={URL.createObjectURL(file) || "/placeholder.svg"}
+                                alt={file.name}
+                                fill
+                                className="rounded-t-md object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center p-4">
+                                <FileIcon className="h-16 w-16 text-primary" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="bg-secondary p-2">
+                            <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Last modified: {new Date(file.lastModified).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     ))}
                   </div>
                 </div>
@@ -344,3 +375,12 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
     display: none;
   }
 `}</style>;
+
+/*
+                                <Image
+                                src={"/placeholder.svg"}
+                                alt={file.name}
+                                fill
+                                className="rounded-t-md object-cover"
+                              />
+                                */

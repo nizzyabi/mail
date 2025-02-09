@@ -37,7 +37,7 @@ export default function RootLayout({
             {children}
           </NuqsAdapter>
         </Providers>
-        <Toaster position="top-center" />
+        <Toaster position="top-center" theme="system" />
       </body>
     </html>
   );
