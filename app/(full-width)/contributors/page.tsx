@@ -158,7 +158,7 @@ export default function OpenPage() {
             <Card className="border-neutral-800 bg-neutral-900/50 p-4">
               <h3 className="mb-4 text-sm font-medium text-neutral-400">Stars & Forks</h3>
               <ResponsiveContainer width="100%" height={240}>
-                <AreaChart data={timelineData}>
+                <AreaChart data={timelineData} className="-mx-5 mt-2">
                   <XAxis
                     dataKey="date"
                     stroke="#525252"
@@ -214,7 +214,7 @@ export default function OpenPage() {
             <Card className="border-neutral-800 bg-neutral-900/50 p-4">
               <h3 className="mb-4 text-sm font-medium text-neutral-400">Commit Activity</h3>
               <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={activityData}>
+                <LineChart data={activityData} className="-mx-5 mt-2">
                   <XAxis
                     dataKey="date"
                     stroke="#525252"
@@ -253,7 +253,7 @@ export default function OpenPage() {
             {/* Issues & Pull Requests */}
             <Card className="border-neutral-800 bg-neutral-900/50 p-4">
               <h3 className="mb-4 text-sm font-medium text-neutral-400">Issues & PRs</h3>
-              <ResponsiveContainer width="100%" height={240}>
+              <ResponsiveContainer width="100%" height={240} className="-mx-5 mt-2">
                 <BarChart data={activityData}>
                   <XAxis
                     dataKey="date"
