@@ -88,15 +88,15 @@ export function Mail({ mails }: MailProps) {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="rounded-inherit flex h-full pt-[6px]">
+      <div className="rounded-inherit flex">
         <ResizablePanelGroup
           direction="horizontal"
           autoSaveId={"mail-panel-layout"}
           className="rounded-inherit overflow-hidden"
         >
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
-            <div className="h-full flex-1 overflow-y-auto">
-              <div className="sticky top-0 z-10 bg-background pt-[6px]">
+            <div className="flex-1 overflow-y-auto">
+              <div className="sticky top-0 z-10 rounded-t-md bg-background pt-[6px]">
                 <div className="flex items-center justify-between px-2">
                   <div className="flex items-center gap-1">
                     <SidebarToggle className="h-fit px-2" />
@@ -132,7 +132,8 @@ export function Mail({ mails }: MailProps) {
                 </div>
                 <Separator className="mt-2" />
               </div>
-              <div className="h-[calc(93vh)] overflow-y-auto">
+
+              <div className="h-[calc(93vh)]">
                 {filterValue === "all" ? (
                   filteredMails.length === 0 ? (
                     <div className="p-8 text-center text-muted-foreground">
