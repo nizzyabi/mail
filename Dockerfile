@@ -9,9 +9,9 @@ RUN corepack enable pnpm
 
 # install deps
 RUN pnpm install
+COPY . .
 RUN pnpm build
 
-COPY . .
 
 # env vars, overriden by the `.env` file via compose
 ENV BASE_URL=http://localhost:3000
