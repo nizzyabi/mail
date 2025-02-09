@@ -51,6 +51,7 @@
     "jotai": "^2.11.3",
     "lint-staged": "^15.4.3",
     "lucide-react": "^0.474.0",
+    "lz-string": "^1.5.0",
     "motion": "^12.4.1",
     "nanoid": "^5.0.9",
     "next": "15.1.6",
