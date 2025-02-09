@@ -1,6 +1,6 @@
 "use client";
-
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { DraftType, messageContentAtom, subjectAtom } from "@/store/draftStates";
 import { AlignVerticalSpaceAround, Search, Trash2 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -8,8 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { useDrafts } from "./draftHooks/useDrafts";
 import { Button } from "@/components/ui/button";
-import { DraftType } from "@/store/draftStates";
-import { useState } from "react";
+import { EditorToolbar } from "./EditorToolbar";
+import { useState, useRef } from "react";
+import { useAtom } from "jotai";
 import * as React from "react";
 
 export function Draft() {
@@ -17,8 +18,10 @@ export function Draft() {
   const [isCompact, setIsCompact] = useState(false);
   const [selectedDraft, setSelectedDraft] = useState<DraftType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [subject, setSubject] = useAtom(subjectAtom);
+  const [messageContent, setMessageContent] = useAtom(messageContentAtom);
 
-  // checking if the screen is mobile
   React.useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -28,25 +31,58 @@ export function Draft() {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Handle changes to subject or message
   const handleInputChange = (field: "subject" | "message", value: string) => {
     if (!selectedDraft) return;
+    if (field === "subject") {
+      setSubject(value);
+    } else if (field === "message") {
+      setMessageContent(value);
+    }
     setSelectedDraft((prevDraft) => {
       if (!prevDraft) return null;
       return { ...prevDraft, [field]: value };
     });
   };
 
+  React.useEffect(() => {
+    if (editorRef.current && messageContent) {
+      if (editorRef.current.innerHTML !== messageContent) {
+        editorRef.current.innerHTML = messageContent;
+      }
+    }
+  }, [messageContent, selectedDraft]);
+
   const editMail = () => {
     if (!selectedDraft) return;
-    addDraft(selectedDraft);
-    setSelectedDraft(null); // closing panel after editing
+    addDraft({ ...selectedDraft, subject, message: messageContent });
+    setSelectedDraft(null);
+  };
+
+  const [activeCommands, setActiveCommands] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+  });
+
+  const execCommand = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    setActiveCommands({
+      bold: document.queryCommandState("bold"),
+      italic: document.queryCommandState("italic"),
+      underline: document.queryCommandState("underline"),
+    });
+
+    if (editorRef.current) {
+      handleInputChange("message", editorRef.current.innerHTML);
+    }
+    editorRef.current?.focus();
   };
 
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-dvh">
         <ResizablePanelGroup direction="horizontal" autoSaveId="draft-panel-layout">
+          {/* Draft list */}
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
             <div className="flex-1 overflow-y-auto border-r">
               <Tabs defaultValue="all">
@@ -84,7 +120,9 @@ export function Draft() {
                             selectedDraft?.id === draft.id ? "bg-secondary" : ""
                           }`}
                           onClick={() => {
-                            setSelectedDraft(draft); // selecting the draft
+                            setSelectedDraft(draft);
+                            setSubject(draft.subject || "");
+                            setMessageContent(draft.message || "");
                           }}
                         >
                           <div className="mr-4 min-w-0 flex-1">
@@ -92,7 +130,12 @@ export function Draft() {
                               {draft.subject || "No subject"}
                             </h3>
                             <p className="mt-1 truncate text-sm text-muted-foreground">
-                              {draft.message?.substring(0, 50) || "No message"}...
+                              {draft.message
+                                ? new DOMParser()
+                                    .parseFromString(draft.message, "text/html")
+                                    .body.textContent?.substring(0, 50) || "No message"
+                                : "No message"}
+                              ...
                             </p>
                           </div>
                           <div className="flex shrink-0 gap-2">
@@ -117,7 +160,7 @@ export function Draft() {
             </div>
           </ResizablePanel>
 
-          {/* draft editor */}
+          {/* Draft editor */}
           {!isMobile && selectedDraft && <ResizableHandle withHandle />}
           {selectedDraft && (
             <ResizablePanel
@@ -128,16 +171,12 @@ export function Draft() {
               <div className="flex h-full flex-col">
                 <div className="flex items-center justify-between p-2">
                   <div className="flex items-center space-x-2">
-                    <Button
-                      onClick={editMail} // save the updated draft
-                      variant="ghost"
-                      size="sm"
-                    >
+                    <Button onClick={editMail} variant="ghost" size="sm">
                       Save
                     </Button>
                     <Button
                       onClick={() => {
-                        removeDraft(selectedDraft.id); // Remove the draft
+                        removeDraft(selectedDraft.id);
                         setSelectedDraft(null);
                       }}
                       variant="ghost"
@@ -155,15 +194,19 @@ export function Draft() {
                   <input
                     type="text"
                     placeholder="Subject"
-                    className="mb-4 w-full rounded-md border bg-background p-2"
-                    value={selectedDraft.subject || ""}
+                    className="mb-2 w-full rounded-md border bg-background p-2"
+                    value={subject || ""}
                     onChange={(e) => handleInputChange("subject", e.target.value)}
                   />
-                  <textarea
-                    placeholder="Write your message..."
-                    className="h-[calc(100%-120px)] w-full resize-none rounded-md border bg-background p-2"
-                    value={selectedDraft.message || ""}
-                    onChange={(e) => handleInputChange("message", e.target.value)}
+                  <EditorToolbar onCommand={execCommand} activeCommands={activeCommands} />
+                  <div
+                    ref={editorRef}
+                    contentEditable
+                    className="h-[calc(100%-180px)] w-full resize-none overflow-y-auto rounded-md border bg-background p-2 focus:outline-none"
+                    onInput={(e) => {
+                      const target = e.target as HTMLElement;
+                      handleInputChange("message", target.innerHTML);
+                    }}
                   />
                 </div>
               </div>

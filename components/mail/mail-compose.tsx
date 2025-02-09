@@ -397,7 +397,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 maxWidth: "100%",
               }}
               onInput={() => {
-                setMessageContent(editorRef.current?.textContent || "");
+                setMessageContent(editorRef.current?.innerHTML || "");
               }}
             />
 
