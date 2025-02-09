@@ -9,7 +9,7 @@ export const Logo = () => {
       <SidebarLink
         isLogo
         link={{
-          label: "Compose",
+          label: "Mail0",
           href: "/",
           icon: (
             <Image

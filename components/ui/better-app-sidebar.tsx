@@ -1,5 +1,5 @@
 "use client";
-import { links } from "@/constants/mail-dashboard-sidebar";
+import { advanced, categories, links } from "@/constants/mail-dashboard-sidebar";
 import { SidebarLink } from "./sidebar-links";
 import { SidebarBody } from "./sidebar-body";
 import profile from "@/public/profile.jpg";
@@ -32,14 +32,14 @@ export function SidebarDemo() {
             <div className="mt-8 flex flex-col gap-2">
               {open && <span className="text-[#B2B2B4]">Categories</span>}
 
-              {links.map((link, idx) => (
+              {categories.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
             <div className="mt-8 flex flex-col gap-2">
               {open && <span className="text-[#B2B2B4]">Advanced</span>}
 
-              {links.map((link, idx) => (
+              {advanced.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
