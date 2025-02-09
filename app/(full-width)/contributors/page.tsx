@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Github, Star, GitFork, MessageCircle, FileCode } from "lucide-react";
+import { Github, Star, GitFork, MessageCircle, FileCode, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
@@ -85,6 +85,7 @@ export default function OpenPage() {
     stars: 0,
     forks: 0,
     watchers: 0,
+    issues: 0,
   });
   const [timelineData] = useState(() => generateTimelineData(7));
   const [activityData] = useState(() => generateActivityData(7));
@@ -102,6 +103,7 @@ export default function OpenPage() {
           stars: data.stargazers_count,
           forks: data.forks_count,
           watchers: data.watchers_count,
+          issues: data.open_issues_count,
         }),
       )
       .catch((err) => console.error("Error fetching repo stats:", err));
@@ -135,7 +137,7 @@ export default function OpenPage() {
 
           <Separator className="my-4 bg-neutral-800" />
 
-          <div className="mb-6 flex gap-6">
+          <div className="mb-6 flex flex-wrap gap-4 sm:gap-6">
             <div className="flex items-center gap-2">
               <Star className="h-5 w-5 text-neutral-400" />
               <span className="text-lg font-medium">{repoStats.stars}</span>
@@ -150,6 +152,11 @@ export default function OpenPage() {
               <Github className="h-5 w-5 text-neutral-400" />
               <span className="text-lg font-medium">{repoStats.watchers}</span>
               <span className="text-neutral-400">watchers</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-neutral-400" />
+              <span className="text-lg font-medium">{repoStats.issues}</span>
+              <span className="text-neutral-400">open issues</span>
             </div>
           </div>
 
