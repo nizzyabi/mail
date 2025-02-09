@@ -69,10 +69,9 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
 
   // saving as draft
   const handleDraft = () => {
-    const plainText = editorRef.current?.textContent || "";
     const newDraft = {
       id: Math.random().toString(8).substring(7),
-      message: plainText,
+      message: messageContent,
       subject,
     };
     setDraftStates((drafts) => {
@@ -398,7 +397,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 maxWidth: "100%",
               }}
               onInput={() => {
-                setMessageContent(editorRef.current?.innerHTML || "");
+                setMessageContent(editorRef.current?.textContent || "");
               }}
             />
 
