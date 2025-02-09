@@ -69,9 +69,10 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
 
   // saving as draft
   const handleDraft = () => {
+    const plainText = editorRef.current?.textContent || "";
     const newDraft = {
       id: Math.random().toString(8).substring(7),
-      message: messageContent,
+      message: plainText,
       subject,
     };
     setDraftStates((drafts) => {
