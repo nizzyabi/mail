@@ -260,26 +260,45 @@ export function MailDisplay({ mail, onClose }: MailDisplayProps) {
                       </Badge>
                     )}
                     {attachments.map((file, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
-                      >
-                        <span className="max-w-[120px] truncate">
-                          {truncateFileName(file.name)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="ml-1 h-4 w-4 hover:bg-background/80"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            removeAttachment(index);
-                          }}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </Badge>
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
+                          >
+                            <span className="max-w-[120px] truncate">
+                              {truncateFileName(file.name)}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="ml-1 h-4 w-4 hover:bg-background/80"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeAttachment(index);
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="flex flex-col items-center gap-2">
+                            {file.type.startsWith("image/") && (
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                style={{ width: 80, height: 80 }}
+                              />
+                            )}
+                            <div>
+                              <p>File: {file.name}</p>
+                              <p>Size: {(file.size / 2048).toFixed(2)} MB</p>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     ))}
                   </div>
                 </div>

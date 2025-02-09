@@ -22,7 +22,7 @@ interface MailComposeProps {
   };
 }
 
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
@@ -157,8 +157,20 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                   </Button>
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent className="bg-popover">
-                <p className="z-50">{truncateFileName(file.name, 100)}</p>
+              <TooltipContent>
+                <div className="flex flex-col items-center gap-2">
+                  {file.type.startsWith("image/") && (
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      style={{ width: 80, height: 80 }}
+                    />
+                  )}
+                  <div>
+                    <p>File: {file.name}</p>
+                    <p>Size: {(file.size / 2048).toFixed(2)} MB</p>
+                  </div>
+                </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -195,27 +207,50 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 >
                   <div className="space-y-1">
                     {attachments.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
-                      >
-                        <div className="flex items-center gap-2 overflow-hidden">
-                          <Paperclip className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate text-sm">{truncateFileName(file.name)}</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 flex-shrink-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            removeAttachment(index);
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <TooltipProvider key={index}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
+                            >
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <Paperclip className="h-4 w-4 flex-shrink-0" />
+                                <span className="truncate text-sm">
+                                  {truncateFileName(file.name)}
+                                </span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 flex-shrink-0"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  removeAttachment(index);
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <div className="flex flex-col items-center gap-2">
+                              {file.type.startsWith("image/") && (
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={file.name}
+                                  style={{ width: 80, height: 80 }}
+                                />
+                              )}
+                              <div>
+                                <p>File: {file.name}</p>
+                                <p>Size: {(file.size / 2048).toFixed(2)} MB</p>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     ))}
                   </div>
                 </div>
