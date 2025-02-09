@@ -24,7 +24,6 @@ import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { useMediaQuery } from "../../hooks/use-media-query";
 import { tagsAtom } from "@/components/mail/use-tags";
-import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
 import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
@@ -100,7 +99,7 @@ export function Mail({ mails }: MailProps) {
                 <div className="sticky top-0 z-10 rounded-t-md bg-background pt-[6px]">
                   <div className="flex items-center justify-between px-2">
                     <div className="flex items-center gap-1">
-                      <SidebarToggle className="h-fit px-2" />
+                      {/* <SidebarToggle className="h-fit px-2" /> */}
                       <React.Suspense>
                         <ComposeButton />
                       </React.Suspense>

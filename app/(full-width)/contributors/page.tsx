@@ -319,46 +319,75 @@ export default function OpenPage() {
           </h1>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {contributors
-              .sort((a, b) => b.contributions - a.contributions)
-              .map((contributor) => (
-                <Link
-                  key={contributor.login}
-                  href={contributor.html_url}
-                  target="_blank"
-                  className="group rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:bg-neutral-800/50"
-                >
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16 rounded-xl">
-                      <AvatarImage
-                        src={contributor.avatar_url}
-                        alt={contributor.login}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="text-lg">
-                        {contributor.login.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-white">{contributor.login}</h3>
-                        <div className="flex items-center gap-1 text-sm text-neutral-400">
-                          {contributor.contributions} contributions
+              .sort((a, b) => {
+                const roleA = specialRoles[a.login.toLowerCase()] || "Contributor";
+                const roleB = specialRoles[b.login.toLowerCase()] || "Contributor";
+
+                const roleOrder: Record<"Project Owner" | "Maintainer" | "Contributor", number> = {
+                  "Project Owner": 1,
+                  Maintainer: 2,
+                  Contributor: 3,
+                };
+
+                if (
+                  roleOrder[roleA as keyof typeof roleOrder] !==
+                  roleOrder[roleB as keyof typeof roleOrder]
+                ) {
+                  return (
+                    roleOrder[roleA as keyof typeof roleOrder] -
+                    roleOrder[roleB as keyof typeof roleOrder]
+                  );
+                }
+
+                return b.contributions - a.contributions;
+              })
+              .map((contributor) => {
+                const role = specialRoles[contributor.login.toLowerCase()] || "Contributor";
+                const roleColor =
+                  role === "Project Owner"
+                    ? "text-yellow-400"
+                    : role === "Maintainer"
+                      ? "text-blue-400"
+                      : "text-neutral-400";
+
+                return (
+                  <Link
+                    key={contributor.login}
+                    href={contributor.html_url}
+                    target="_blank"
+                    className="group rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:bg-neutral-800/50"
+                  >
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-16 w-16 rounded-xl">
+                        <AvatarImage
+                          src={contributor.avatar_url}
+                          alt={contributor.login}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-lg">
+                          {contributor.login.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-white">{contributor.login}</h3>
+                          <div className="flex items-center gap-1 text-sm text-neutral-400">
+                            {contributor.contributions} contributions
+                          </div>
+                        </div>
+                        <p className={`text-sm font-semibold ${roleColor}`}>{role}</p>
+                        <div className="pt-2">
+                          <Progress
+                            value={(contributor.contributions / maxContributions) * 100}
+                            className="h-1.5 bg-neutral-800"
+                            indicatorClassName="bg-white"
+                          />
                         </div>
                       </div>
-                      <p className="text-sm text-neutral-400">
-                        {specialRoles[contributor.login.toLowerCase()] || "Contributor"}
-                      </p>
-                      <div className="pt-2">
-                        <Progress
-                          value={(contributor.contributions / maxContributions) * 100}
-                          className="h-1.5 bg-neutral-800"
-                          indicatorClassName="bg-white"
-                        />
-                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
           </div>
         </div>
       </div>
