@@ -20,8 +20,6 @@ import { SidebarData } from "@/types";
 import React from "react";
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-import { useTranslations } from "next-intl";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
