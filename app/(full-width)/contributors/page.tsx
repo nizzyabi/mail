@@ -297,7 +297,7 @@ export default function OpenPage() {
         {/* Contributors Section */}
         <div className="space-y-4">
           <h1 className="mt-20 text-center text-3xl font-semibold text-white">
-            Meet theContributors
+            Meet the Contributors
           </h1>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {contributors
