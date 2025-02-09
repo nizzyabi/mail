@@ -1,6 +1,17 @@
 "use client";
 
-import { ChevronDown, ChevronRight, Cog, LogIn, LogOut, UserCog, UserPlus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Cog,
+  LogIn,
+  LogOut,
+  MonitorCog,
+  Moon,
+  Sun,
+  UserCog,
+  UserPlus,
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -15,13 +26,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
+import { Tabs, TabsList, TabsTrigger } from "./tabs";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import { toast } from "sonner";
 
 export function NavUser() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { setTheme, theme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -118,6 +132,21 @@ export function NavUser() {
             </DropdownMenuItem>
           </>
         )}
+        <span className="mt-2 block w-full">
+          <Tabs defaultValue={theme} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="dark" onClick={() => setTheme("dark")}>
+                <Moon size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              </TabsTrigger>
+              <TabsTrigger value="light" onClick={() => setTheme("light")}>
+                <Sun size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              </TabsTrigger>
+              <TabsTrigger value="system" onClick={() => setTheme("system")}>
+                <MonitorCog size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </span>
       </DropdownMenuContent>
     </DropdownMenu>
   );
