@@ -178,7 +178,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                 <div className="bg-secondary p-2">
                   <p className="text-sm font-medium">{file.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    Size: {(file.size / 2048).toFixed(2)} MB
+                    Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Last modified: {new Date(file.lastModified).toLocaleDateString()}
@@ -264,7 +264,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                           <div className="bg-secondary p-2">
                             <p className="text-sm font-medium">{file.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              Size: {(file.size / 2048).toFixed(2)} MB
+                              Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
                             </p>
                             <p className="text-xs text-muted-foreground">
                               Last modified: {new Date(file.lastModified).toLocaleDateString()}
