@@ -351,7 +351,7 @@ export default function OpenPage() {
                         </div>
                       </div>
                       <p className="text-sm text-neutral-400 dark:text-neutral-500">
-                        {specialRoles[contributor.login] || "Contributor"}
+                        {specialRoles[contributor.login.toLowerCase()] || "Contributor"}
                       </p>
                       <div className="pt-2">
                         <Progress
