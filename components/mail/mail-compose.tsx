@@ -36,7 +36,6 @@ import { useQueryState } from "nuqs";
 
 import { TooltipPortal } from "@radix-ui/react-tooltip";
 import { Badge } from "../ui/badge";
-
 import { useAtom } from "jotai";
 
 export function MailCompose({ onClose, replyTo }: MailComposeProps) {
