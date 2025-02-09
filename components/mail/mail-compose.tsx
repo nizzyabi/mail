@@ -176,7 +176,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                   )}
                 </div>
                 <div className="bg-secondary p-2">
-                  <p className="text-sm font-medium">{file.name}</p>
+                  <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
                   <p className="text-xs text-muted-foreground">
                     Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
                   </p>

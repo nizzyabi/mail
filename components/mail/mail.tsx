@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlignVerticalSpaceAround, ListFilter, Search, SquarePen } from "lucide-react";
+import { AlignVerticalSpaceAround, ListFilter, SquarePen } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
 
@@ -25,9 +25,8 @@ import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
-import { Input } from "../ui/input";
-import Filters from "./filters";
 
 interface MailProps {
   accounts: {
@@ -98,13 +97,7 @@ export function Mail({ mails }: MailProps) {
                         <ComposeButton />
                       </React.Suspense>
                     </div>
-                    <div className="relative flex-1 px-4 md:max-w-[400px] md:px-8">
-                      <Search className="absolute left-6 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground md:left-10" />
-                      <Input
-                        placeholder="Search"
-                        className="h-7 w-full pl-7 focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
+                    <SearchBar />
                     <div className="flex items-center space-x-1.5">
                       <Button
                         variant="ghost"
@@ -128,7 +121,6 @@ export function Mail({ mails }: MailProps) {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <Filters />
                     </div>
                   </div>
                   <Separator className="mt-2" />
