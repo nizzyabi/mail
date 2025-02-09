@@ -1,7 +1,12 @@
+import { Draft } from "@/components/draft/draft";
 import React from "react";
 
-function page() {
-  return <div>draft page</div>;
+async function page() {
+  return (
+    <div className="w-full">
+      <Draft />
+    </div>
+  );
 }
 
 export default page;
