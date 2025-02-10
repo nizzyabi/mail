@@ -26,6 +26,7 @@ import { useMediaQuery } from "../../hooks/use-media-query";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { useSearch } from "./use-search";
 import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
 
@@ -47,12 +48,12 @@ export function Mail({ mails }: MailProps) {
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
   const activeTags = tags.filter((tag) => tag.checked);
+  const [searchFilters, setSearchFilters] = useSearch();
 
-  const filteredMails = useFilteredMails(mails, activeTags);
+  const filteredMails = useFilteredMails(mails, activeTags, searchFilters);
 
   const [, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -121,10 +122,18 @@ export function Mail({ mails }: MailProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setFilterValue("all")}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setSearchFilters((prev) => ({ ...prev, readFilter: "all" }))
+                            }
+                          >
                             All mail
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setFilterValue("unread")}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setSearchFilters((prev) => ({ ...prev, readFilter: "unread" }))
+                            }
+                          >
                             Unread
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -135,7 +144,7 @@ export function Mail({ mails }: MailProps) {
                 </div>
 
                 <div className="h-[calc(93vh)]">
-                  {filterValue === "all" ? (
+                  {searchFilters.readFilter === "all" ? (
                     filteredMails.length === 0 ? (
                       <div className="p-8 text-center text-muted-foreground">
                         No messages found | Clear filters to see more results
