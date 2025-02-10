@@ -164,7 +164,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
           </div>
         </div>
 
-        <div className="relative flex-1 overflow-hidden">
+        <div className="relative flex-1 overflow-hidden bg-background">
           <div className="absolute inset-0 overflow-y-auto">
             <div className="flex flex-col gap-4 px-4 py-4">
               <div className="flex items-start gap-3">

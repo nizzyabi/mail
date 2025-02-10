@@ -134,7 +134,7 @@ export function Mail({ mails }: MailProps) {
                   <Separator className="mt-2" />
                 </div>
 
-                <div className="h-[calc(93vh)]">
+                <div className="h-[calc(93vh)] overflow-scroll rounded-b-sm bg-background">
                   {filterValue === "all" ? (
                     filteredMails.length === 0 ? (
                       <div className="p-8 text-center text-muted-foreground">
