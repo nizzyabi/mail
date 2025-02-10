@@ -1,7 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
+import { ChevronDown, ChevronRight, Cog, LogIn, LogOut, UserCog, UserPlus } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -18,7 +17,7 @@ import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import { toast } from "sonner";
 
 export function NavUser() {
   const { data: session } = useSession();
@@ -56,8 +55,12 @@ export function NavUser() {
         {session ? (
           <>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="flex items-center justify-between">
-                Switch account
+              <DropdownMenuSubTrigger className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <UserCog size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+                  Switch account
+                </div>
+                <ChevronRight size={8} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent className="ml-1">
@@ -72,32 +75,46 @@ export function NavUser() {
                     {session.user.email}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Add another account</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <UserPlus size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+                    Add another account
+                  </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <button
-                onClick={async () => {
-                  await signOut({
+              <Cog size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={async () => {
+                toast.promise(
+                  signOut({
                     fetchOptions: {
                       onSuccess: () => {
                         router.push("/");
                       },
                     },
-                  });
-                }}
-              >
-                Log out
-              </button>
+                  }),
+                  {
+                    loading: "Signing out...",
+                    success: () => "Signed out successfully!",
+                    error: "Error signing out",
+                  },
+                );
+              }}
+            >
+              <LogOut size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              Log out
             </DropdownMenuItem>
           </>
         ) : (
           <>
-            <DropdownMenuItem>
-              <Link href="/signin">Sign in</Link>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/signin")}>
+              <LogIn size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+              Sign in
             </DropdownMenuItem>
           </>
         )}

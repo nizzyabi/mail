@@ -1,8 +1,7 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlignVerticalSpaceAround, ListFilter, Search, SquarePen } from "lucide-react";
-import { useState, useCallback, useMemo } from "react";
+import { AlignVerticalSpaceAround, ListFilter, SquarePen } from "lucide-react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -20,14 +19,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { useFilteredMails } from "@/hooks/use-filtered-mails";
+import { useMediaQuery } from "../../hooks/use-media-query";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
-import { Input } from "../ui/input";
-import Filters from "./filters";
 
 interface MailProps {
   accounts: {
@@ -50,9 +50,11 @@ export function Mail({ mails }: MailProps) {
 
   const filteredMails = useFilteredMails(mails, activeTags);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
+  const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Check if we're on mobile on mount and when window resizes
   React.useEffect(() => {
@@ -66,11 +68,16 @@ export function Mail({ mails }: MailProps) {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Only show dialog if we're on mobile
-  const showDialog = isDialogOpen && isMobile;
+  useEffect(() => {
+    if (mail.selected) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+    }
+  }, [mail.selected]);
 
-  const onMobileDialogClose = useCallback(() => {
-    setIsDialogOpen(false);
+  const handleClose = useCallback(() => {
+    setOpen(false);
     setMail({ selected: null });
   }, [setMail]);
 
@@ -98,13 +105,7 @@ export function Mail({ mails }: MailProps) {
                         <ComposeButton />
                       </React.Suspense>
                     </div>
-                    <div className="relative flex-1 px-4 md:max-w-[400px] md:px-8">
-                      <Search className="absolute left-6 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground md:left-10" />
-                      <Input
-                        placeholder="Search"
-                        className="h-7 w-full pl-7 focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
+                    <SearchBar />
                     <div className="flex items-center space-x-1.5">
                       <Button
                         variant="ghost"
@@ -128,7 +129,6 @@ export function Mail({ mails }: MailProps) {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <Filters />
                     </div>
                   </div>
                   <Separator className="mt-2" />
@@ -161,30 +161,31 @@ export function Mail({ mails }: MailProps) {
             </div>
           </ResizablePanel>
 
-          {!isMobile && mail.selected && <ResizableHandle withHandle />}
-
-          {mail.selected && (
-            <ResizablePanel
-              defaultSize={isMobile ? 0 : 75}
-              minSize={isMobile ? 0 : 25}
-              className="hidden overflow-hidden md:block"
-            >
-              <div className="hidden h-full flex-1 overflow-y-auto md:block">
-                <MailDisplay mail={selectedMail} onClose={onMobileDialogClose} />
-              </div>
-            </ResizablePanel>
+          {isDesktop && mail.selected && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={75} minSize={25}>
+                <div className="hidden h-full flex-1 overflow-y-auto md:block">
+                  <MailDisplay mail={selectedMail} onClose={handleClose} />
+                </div>
+              </ResizablePanel>
+            </>
           )}
         </ResizablePanelGroup>
 
-        {/* Mobile Dialog */}
-        <Dialog open={showDialog} onOpenChange={(open) => !open && onMobileDialogClose()}>
-          <DialogContent className="h-[100vh] overflow-hidden border-none p-0 sm:max-w-[100vw]">
-            <DialogHeader className="hidden">
-              <DialogTitle className="sr-only">Mail</DialogTitle>
-            </DialogHeader>
-            <MailDisplay mail={selectedMail} onClose={onMobileDialogClose} />
-          </DialogContent>
-        </Dialog>
+        {/* Mobile Drawer */}
+        {!isDesktop && (
+          <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent className="h-[calc(100vh-3rem)] p-0">
+              <DrawerHeader className="sr-only">
+                <DrawerTitle>Email Details</DrawerTitle>
+              </DrawerHeader>
+              <div className="flex h-full flex-col overflow-hidden">
+                <MailDisplay mail={selectedMail} onClose={handleClose} isMobile={true} />
+              </div>
+            </DrawerContent>
+          </Drawer>
+        )}
       </div>
     </TooltipProvider>
   );
