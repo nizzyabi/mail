@@ -1,0 +1,21 @@
+{
+  "Sidebar": {
+    "Compose": "Composer",
+    "Mail": "Courrier",
+    "Inbox": "Boite de reception",
+    "Drafts": "Drafts",
+    "Sent": "Sent",
+    "Junk": "Junk",
+    "Trash": "Trash",
+    "Archive": "Archive",
+    "Categories": "Categories",
+    "Social": "Social",
+    "Updates": "Updates",
+    "Forums": "Forums",
+    "Shopping": "Shopping",
+    "Promotions": "Promotions",
+    "Advanced": "Advanced",
+    "Analytics": "Analytics",
+    "Developers": "Developers"
+  }
+}

@@ -5,3 +5,4 @@ export const SIDEBAR_WIDTH_MOBILE = "12rem";
 export const SIDEBAR_WIDTH_ICON = "3rem";
 export const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 export const BASE_URL = "http://localhost:3000";
+export const I18N_LOCALE_COOKIE_NAME = "i18n:locale";

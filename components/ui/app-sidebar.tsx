@@ -52,69 +52,69 @@ const data: SidebarData = {
       title: "",
       items: [
         {
-          title: "Inbox",
+          title: "Sidebar.Inbox",
           url: "/mail",
           icon: Inbox,
           badge: 128,
         },
         {
-          title: "Drafts",
+          title: "Sidebar.Drafts",
           url: "/draft",
           icon: FileText,
           badge: 9,
         },
         {
-          title: "Sent",
+          title: "Sidebar.Sent",
           url: "/mail/under-construction/sent",
           icon: SendHorizontal,
         },
         {
-          title: "Junk",
+          title: "Sidebar.Junk",
           url: "/mail/under-construction/junk",
           icon: ArchiveX,
           badge: 23,
         },
         {
-          title: "Trash",
+          title: "Sidebar.Trash",
           url: "/mail/under-construction/trash",
           icon: Trash2,
         },
         {
-          title: "Archive",
+          title: "Sidebar.Archive",
           url: "/mail/under-construction/archive",
           icon: Archive,
         },
       ],
     },
     {
-      title: "Categories",
+      title: "Sidebar.Categories",
       items: [
         {
-          title: "Social",
+          title: "Sidebar.Social",
           url: "/mail/under-construction/social",
           icon: Users2,
           badge: 972,
         },
         {
-          title: "Updates",
+          title: "Sidebar.Updates",
           url: "/mail/under-construction/updates",
           icon: Bell,
           badge: 342,
         },
         {
-          title: "Forums",
+          title: "Sidebar.Forums",
           url: "/mail/under-construction/forums",
           icon: MessageSquare,
           badge: 128,
         },
         {
-          title: "Shopping",
+          title: "Sidebar.Shopping",
           url: "/mail/under-construction/shopping",
           icon: ShoppingCart,
           badge: 8,
         },
         {
-          title: "Promotions",
+          title: "Sidebar.Promotions",
           url: "/mail/under-construction/promotions",
           icon: Tag,
           badge: 21,
@@ -122,15 +122,15 @@ const data: SidebarData = {
       ],
     },
     {
-      title: "Advanced",
+      title: "Sidebar.Advanced",
       items: [
         {
-          title: "Analytics",
+          title: "Sidebar.Analytics",
           url: "/mail/under-construction/analytics",
           icon: ChartLine,
         },
         {
-          title: "Developers",
+          title: "Sidebar.Developers",
           url: "/mail/under-construction/developers",
           icon: Code,
         },
