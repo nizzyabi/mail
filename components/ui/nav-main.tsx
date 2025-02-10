@@ -25,9 +25,10 @@ interface NavMainProps {
       url: string;
       icon?: React.ComponentType<{ className?: string }>;
       badge?: number;
-      items?: {
+      subItems?: {
         title: string;
         url: string;
+        icon?: React.ComponentType<{ className?: string }>;
         badge?: number;
       }[];
     }[];
@@ -44,6 +45,11 @@ export function NavMain({ items }: NavMainProps) {
     return cleanPath === cleanUrl;
   };
 
+  const isGroupActive = (item: (typeof items)[0]["items"][0]) => {
+    if (isUrlActive(item.url)) return true;
+    return item.subItems?.some((subItem) => isUrlActive(subItem.url)) || false;
+  };
+
   return (
     <>
       {items.map((group) => (
@@ -52,7 +58,7 @@ export function NavMain({ items }: NavMainProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {group.items.map((item) => (
-                <Collapsible key={item.title}>
+                <Collapsible key={item.title} defaultOpen={isGroupActive(item)}>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <Link href={item.url}>
@@ -65,25 +71,26 @@ export function NavMain({ items }: NavMainProps) {
                           {item.badge !== undefined && (
                             <span className="ml-auto mr-2 text-muted-foreground">{item.badge}</span>
                           )}
-                          {item.items && (
-                            <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          {item.subItems && (
+                            <ChevronDown className="ml-auto size-4 transition-transform duration-200 ease-in-out group-data-[state=closed]/collapsible:rotate-[-90deg]" />
                           )}
                         </SidebarMenuButton>
                       </Link>
                     </CollapsibleTrigger>
-                    {item.items && (
+                    {item.subItems && (
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.items.map((subItem) => (
+                          {item.subItems.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
                                 <Link
                                   href={subItem.url}
-                                  className={`flex w-full justify-between ${
+                                  className={`flex w-full items-center gap-2 ${
                                     isUrlActive(subItem.url) ? "text-primary" : ""
                                   }`}
                                 >
-                                  <span>{subItem.title}</span>
+                                  {subItem.icon && <subItem.icon className="size-4" />}
+                                  <span className="flex-1">{subItem.title}</span>
                                   {subItem.badge !== undefined && (
                                     <span className="text-muted-foreground">{subItem.badge}</span>
                                   )}
