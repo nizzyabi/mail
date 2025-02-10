@@ -1,5 +1,4 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Avatar, AvatarFallback } from "../ui/avatar";
 import { useMail } from "@/components/mail/use-mail";
 import { useThread } from "@/hooks/use-threads";
 import { ComponentProps, useMemo } from "react";
@@ -8,12 +7,8 @@ import { Skeleton } from "../ui/skeleton";
 import { format } from "date-fns/format";
 import { InitialThread } from "@/types";
 import { cn } from "@/lib/utils";
-// import Image from "next/image";
-
 interface MailListProps {
   items: InitialThread[];
-  isCompact: boolean;
-  onMailClick: () => void;
 }
 
 const Thread = ({ id }: { id: string }) => {
@@ -44,15 +39,21 @@ const Thread = ({ id }: { id: string }) => {
       key={data.id}
       className={cn(
         "group flex cursor-pointer flex-col items-start border-b px-4 py-4 text-left text-sm transition-all hover:bg-accent",
-        data.unread && "font-bold",
+        data.unread && "",
         isMailSelected ? "bg-accent" : "",
       )}
     >
       <div className="flex w-full flex-col gap-1">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
-            <p className="text-md font-medium opacity-70 group-hover:opacity-100">
-              {data.sender.name}
+            <p
+              className={cn(
+                data.unread ? "font-bold" : "font-medium",
+                "text-md flex items-center gap-1 opacity-70 group-hover:opacity-100",
+              )}
+            >
+              {data.sender.name}{" "}
+              {data.unread ? <span className="size-2 rounded-full bg-red-500" /> : null}
             </p>
           </div>
           <p className="pr-2 text-xs font-normal opacity-70 group-hover:opacity-100">

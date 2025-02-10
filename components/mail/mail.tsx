@@ -1,7 +1,8 @@
 "use client";
 
-import { AlignVerticalSpaceAround, ListFilter, SquarePen } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { AlignVerticalSpaceAround, Check, ListFilter, SquarePen } from "lucide-react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -21,31 +22,53 @@ import {
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { useMediaQuery } from "../../hooks/use-media-query";
+import { useSearchValue } from "@/hooks/use-search-value";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
+import { useSearchParams } from "next/navigation";
 import { useThreads } from "@/hooks/use-threads";
 import { SearchBar } from "./search-bar";
+
 interface MailProps {
   accounts: {
     label: string;
     email: string;
     icon: React.ReactNode;
   }[];
-  mails: Mail[];
+  folder: string;
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
   muted?: boolean;
 }
 
-export function Mail({ props }: MailProps) {
-  const { data: threadsResponse, isLoading } = useThreads("inbox");
+export function Mail({ folder }: MailProps) {
+  const [searchValue] = useSearchValue();
   const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
+  const searchParams = useSearchParams();
 
-  const [, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
+  const labels = useMemo(() => {
+    if (filterValue === "all") {
+      if (searchParams.has("category")) {
+        return [`CATEGORY_${searchParams.get("category")!.toUpperCase()}`];
+      }
+      return undefined;
+    }
+    if (filterValue) {
+      if (searchParams.has("category")) {
+        return [
+          filterValue.toUpperCase(),
+          `CATEGORY_${searchParams.get("category")!.toUpperCase()}`,
+        ];
+      }
+      return [filterValue.toUpperCase()];
+    }
+    return undefined;
+  }, [filterValue, searchParams]);
+  const { data: threadsResponse, isLoading } = useThreads(folder, labels, searchValue.value);
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -110,10 +133,10 @@ export function Mail({ props }: MailProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => setFilterValue("all")}>
-                            All mail
+                            All mail {filterValue === "all" && <Check />}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setFilterValue("unread")}>
-                            Unread
+                            Unread {filterValue === "unread" && <Check />}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -126,11 +149,7 @@ export function Mail({ props }: MailProps) {
                   {isLoading ? (
                     <p>Loading</p>
                   ) : (
-                    <MailList
-                      items={threadsResponse?.messages || []}
-                      isCompact={isCompact}
-                      onMailClick={() => setIsDialogOpen(true)}
-                    />
+                    <MailList items={threadsResponse?.messages || []} />
                   )}
                 </div>
               </div>

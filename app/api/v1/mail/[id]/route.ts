@@ -13,9 +13,13 @@ export const GET = async (
   const session = await auth.api.getSession({ headers });
   if (!session) return new Response("Unauthorized", { status: 401 });
   const [foundAccount] = await db.select().from(account).where(eq(account.userId, session.user.id));
-  if (!foundAccount?.accessToken) return new Response("Unauthorized", { status: 401 });
+  if (!foundAccount?.accessToken || !foundAccount.refreshToken)
+    return new Response("Unauthorized", { status: 401 });
   const gmail = createDriver("google", {
-    auth: foundAccount.accessToken,
+    auth: {
+      access_token: foundAccount.accessToken,
+      refresh_token: foundAccount.refreshToken,
+    },
   });
   const res = await gmail.get(id);
   return new Response(JSON.stringify(res));

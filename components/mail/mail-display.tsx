@@ -41,11 +41,28 @@ interface ReplyState {
 export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
   const { data: mail, isLoading, error } = useThread(mailId);
   const [, setMail] = useMail();
+
   const [replyState, setReplyState] = useState<ReplyState>({
     content: "",
     attachments: [],
     isUploading: false,
   });
+
+  // const [currentMail] = useState<Mail | null>();
+  // const [isMuted, setIsMuted] = useState(false);
+  // const [attachments, setAttachments] = useState<File[]>([]);
+  // const [isUploading, setIsUploading] = useState(false);
+
+  // useEffect(() => {
+  // find email and parse body and set it
+  // setCurrentMail(mail);
+  // }, [mail]);
+
+  // useEffect(() => {
+  //   if (currentMail) {
+  //     setIsMuted(currentMail.muted ?? false);
+  //   }
+  // }, [currentMail]);
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -219,7 +236,7 @@ export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
-                  <ArchiveX className="mr-2 h-4 w-4" /> Move to junk
+                  <ArchiveX className="mr-2 h-4 w-4" /> Move to spam
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <ReplyAll className="mr-2 h-4 w-4" /> Reply all

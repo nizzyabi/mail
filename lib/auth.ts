@@ -15,6 +15,9 @@ export const auth = betterAuth({
   }),
   socialProviders: {
     google: {
+      // Remove this before going to prod, it's to force to get `refresh_token` from google, some users don't have it yet.
+      prompt: "consent",
+      accessType: "offline",
       scope: ["https://mail.google.com/"],
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,

@@ -11,9 +11,13 @@ export const GET = async ({ headers, nextUrl }: NextRequest) => {
   const session = await auth.api.getSession({ headers });
   if (!session) return new Response("Unauthorized", { status: 401 });
   const [foundAccount] = await db.select().from(account).where(eq(account.userId, session.user.id));
-  if (!foundAccount?.accessToken) return new Response("Unauthorized", { status: 401 });
+  if (!foundAccount?.accessToken || !foundAccount.refreshToken)
+    return new Response("Unauthorized, reconnect", { status: 402 });
   const gmail = createDriver("google", {
-    auth: foundAccount.accessToken,
+    auth: {
+      access_token: foundAccount.accessToken,
+      refresh_token: foundAccount.refreshToken,
+    },
   });
   if (!searchParams.has("folder")) return new Response("Bad Request", { status: 400 });
   return new Response(
@@ -22,11 +26,12 @@ export const GET = async ({ headers, nextUrl }: NextRequest) => {
         searchParams.get("folder")!,
         searchParams.get("q") ?? undefined,
         Number(searchParams.get("max")) ? +searchParams.get("max")! : undefined,
+        searchParams.get("labelIds") ? searchParams.get("labelIds")!.split(",") : undefined,
       ),
     ),
   );
 };
 
-export const POST = async ({ headers }: NextRequest) => {
+export const POST = async () => {
   return new Response("Hello World");
 };

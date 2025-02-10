@@ -6,11 +6,14 @@ interface MailManager {
   get(id: string): Promise<any>;
   create(data: any): Promise<any>;
   delete(id: string): Promise<any>;
-  list(folder: string, query?: string, maxResults?: number): Promise<any>;
+  list(folder: string, query?: string, maxResults?: number, labelIds?: string[]): Promise<any>;
 }
 
 interface IConfig {
-  auth: string;
+  auth: {
+    access_token: string;
+    refresh_token: string;
+  };
 }
 
 const googleDriver = (config: IConfig): MailManager => {
@@ -18,7 +21,7 @@ const googleDriver = (config: IConfig): MailManager => {
     clientId: process.env.GOOGLE_CLIENT_ID as string,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
   });
-  auth.setCredentials({ access_token: config.auth, scope: "https://mail.google.com/" });
+  auth.setCredentials({ ...config.auth, scope: "https://mail.google.com/" });
   const parse = ({
     id,
     snippet,
@@ -48,13 +51,22 @@ const googleDriver = (config: IConfig): MailManager => {
       receivedOn,
     };
   };
+  const normalizeSearch = (folder: string, q: string) => {
+    if (folder === "trash") {
+      return { folder: undefined, q: `in:trash ${q}` };
+    }
+    return { folder, q };
+  };
   const gmail = google.gmail({ version: "v1", auth });
   return {
-    list: async (folder, q, maxResults = 10) => {
+    list: async (folder, q, maxResults = 10, _labelIds: string[] = []) => {
+      const { folder: normalizedFolder, q: normalizedQ } = normalizeSearch(folder, q ?? "");
+      const labelIds = [..._labelIds];
+      if (normalizedFolder) labelIds.push(normalizedFolder.toUpperCase());
       const res = await gmail.users.messages.list({
         userId: "me",
-        q,
-        labelIds: [folder.toUpperCase()],
+        q: normalizedQ ? normalizedQ : undefined,
+        labelIds,
         maxResults,
       });
       return res.data;

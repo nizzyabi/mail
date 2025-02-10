@@ -6,12 +6,13 @@ import useSWR from "swr";
 
 // TODO: improve the filters
 const fetchEmails = async (args: any[]) => {
-  const [_, folder, query, max] = args;
+  const [_, folder, query, max, labelIds] = args;
 
   let searchParams = new URLSearchParams();
   if (max) searchParams.set("max", max.toString());
   if (query) searchParams.set("q", query);
   if (folder) searchParams.set("folder", folder.toString());
+  if (labelIds) searchParams.set("labelIds", labelIds.join(","));
 
   return (await $fetch("/api/v1/mail?" + searchParams.toString(), {
     baseURL: BASE_URL,
@@ -32,10 +33,10 @@ interface RawResponse {
   resultSizeEstimate: number;
 }
 
-export const useThreads = (folder: string, query?: string, max?: number) => {
+export const useThreads = (folder: string, labelIds?: string[], query?: string, max?: number) => {
   const { data: session } = useSession();
   const { data, isLoading, error } = useSWR<RawResponse>(
-    [session?.user.id, folder, query, max],
+    [session?.user.id, folder, query, max, labelIds],
     fetchEmails,
   );
 
