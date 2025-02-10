@@ -14,16 +14,17 @@ RUN pnpm build
 
 
 # env vars, overriden by the `.env` file via compose
-ENV BASE_URL=http://localhost:3000
-ENV DATABASE_URL=postgresql://postgres:super-secret-password@localhost:5432/mail0
-ENV BETTER_AUTH_SECRET=
-ENV BETTER_AUTH_URL=
-ENV GOOGLE_CLIENT_ID=
-ENV GOOGLE_CLIENT_SECRET=
-ENV NEXT_PUBLIC_POSTHOG_KEY=
-ENV NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-ENV REDIS_URL=
-ENV REDIS_TOKEN=
+ENV NODE_ENV=production \
+    BASE_URL=http://localhost:3000 \
+    DATABASE_URL=postgresql://postgres:super-secret-password@localhost:5432/mail0 \
+    BETTER_AUTH_SECRET= \
+    BETTER_AUTH_URL= \
+    GOOGLE_CLIENT_ID= \
+    GOOGLE_CLIENT_SECRET= \
+    NEXT_PUBLIC_POSTHOG_KEY= \
+    NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com \
+    REDIS_URL= \
+    REDIS_TOKEN=
 
 EXPOSE 3000
 
