@@ -115,11 +115,11 @@ export default function OpenPage() {
     <div className="min-h-screen w-full text-white">
       <div className="container mx-auto max-w-6xl px-4 py-8">
         {/* Project Stats */}
-        <div className="mb-8 rounded-lg border border-neutral-800 bg-neutral-900/50 p-6">
+        <div className="mb-8 rounded-lg border p-6 dark:border-neutral-800 dark:bg-neutral-900/50">
           <div className="flex items-center justify-between">
             <div className="w-full space-y-1">
               <div className="flex justify-between">
-                <h2 className="text-2xl font-semibold text-white">Mail0</h2>
+                <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">Mail0</h2>
                 <Button
                   asChild
                   variant="outline"
@@ -137,7 +137,8 @@ export default function OpenPage() {
             <Button
               asChild
               variant="outline"
-              className="mt-6 hidden border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:flex"
+              className="bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800"
+              // className="mt-6 hidden border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:flex"
             >
               <Link href="https://github.com/nizzyabi/mail0" target="_blank" className="gap-2">
                 <Github className="h-4 w-4" />
@@ -146,35 +147,37 @@ export default function OpenPage() {
             </Button>
           </div>
 
-          <Separator className="my-4 bg-neutral-800" />
+          <Separator className="my-4 dark:bg-neutral-800" />
 
-          <div className="mb-6 flex flex-wrap gap-4 sm:gap-6">
+          <div className="mb-6 flex flex-wrap gap-4 text-neutral-600 dark:text-neutral-400 sm:gap-6">
             <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-neutral-400" />
+              <Star className="h-5 w-5" />
               <span className="text-lg font-medium">{repoStats.stars}</span>
-              <span className="text-neutral-400">stars</span>
+              <span>stars</span>
             </div>
             <div className="flex items-center gap-2">
-              <GitFork className="h-5 w-5 text-neutral-400" />
+              <GitFork className="h-5 w-5" />
               <span className="text-lg font-medium">{repoStats.forks}</span>
-              <span className="text-neutral-400">forks</span>
+              <span>forks</span>
             </div>
             <div className="flex items-center gap-2">
-              <Github className="h-5 w-5 text-neutral-400" />
+              <Github className="h-5 w-5" />
               <span className="text-lg font-medium">{repoStats.watchers}</span>
-              <span className="text-neutral-400">watchers</span>
+              <span>watchers</span>
             </div>
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-neutral-400" />
+              <AlertTriangle className="h-5 w-5" />
               <span className="text-lg font-medium">{repoStats.issues}</span>
-              <span className="text-neutral-400">open issues</span>
+              <span>open issues</span>
             </div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
             {/* Stars & Forks Timeline */}
-            <Card className="border-neutral-800 bg-neutral-900/50 p-4">
-              <h3 className="mb-4 text-sm font-medium text-neutral-400">Stars & Forks</h3>
+            <Card className="p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
+              <h3 className="mb-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                Stars & Forks
+              </h3>
               <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={timelineData} className="-mx-5 mt-2">
                   <XAxis
@@ -211,8 +214,8 @@ export default function OpenPage() {
                   <Area
                     type="monotone"
                     dataKey="stars"
-                    stroke="#FFFFFF"
-                    fill="#FFFFFF"
+                    stroke="#525252"
+                    fill="#525252"
                     fillOpacity={0.1}
                     strokeWidth={2}
                   />
@@ -229,7 +232,7 @@ export default function OpenPage() {
             </Card>
 
             {/* Commit Activity */}
-            <Card className="border-neutral-800 bg-neutral-900/50 p-4">
+            <Card className="p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
               <h3 className="mb-4 text-sm font-medium text-neutral-400">Commit Activity</h3>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={activityData} className="-mx-5 mt-2">
@@ -260,7 +263,7 @@ export default function OpenPage() {
                   <Line
                     type="monotone"
                     dataKey="commits"
-                    stroke="#FFFFFF"
+                    stroke="#525252"
                     strokeWidth={2}
                     dot={false}
                   />
@@ -269,7 +272,7 @@ export default function OpenPage() {
             </Card>
 
             {/* Issues & Pull Requests */}
-            <Card className="border-neutral-800 bg-neutral-900/50 p-4">
+            <Card className="p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
               <h3 className="mb-4 text-sm font-medium text-neutral-400">Issues & PRs</h3>
               <ResponsiveContainer width="100%" height={240} className="-mx-5 mt-2">
                 <BarChart data={activityData}>
@@ -304,8 +307,8 @@ export default function OpenPage() {
                       return null;
                     }}
                   />
-                  <Bar dataKey="issues" fill="#FFFFFF" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="pullRequests" fill="#A0A0A0" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="issues" fill="#A0A0A0" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="pullRequests" fill="#525252" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -314,7 +317,7 @@ export default function OpenPage() {
 
         {/* Contributors Section */}
         <div className="space-y-4">
-          <h1 className="mt-20 text-center text-3xl font-semibold text-white">
+          <h1 className="mt-20 text-center text-3xl font-semibold text-neutral-900/80 dark:text-white">
             Meet the Contributors
           </h1>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -325,7 +328,7 @@ export default function OpenPage() {
                   key={contributor.login}
                   href={contributor.html_url}
                   target="_blank"
-                  className="group rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:bg-neutral-800/50"
+                  className="group rounded-lg border p-4 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:bg-neutral-800/50"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="h-16 w-16 rounded-xl">
@@ -340,18 +343,20 @@ export default function OpenPage() {
                     </Avatar>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-white">{contributor.login}</h3>
-                        <div className="flex items-center gap-1 text-sm text-neutral-400">
+                        <h3 className="font-medium text-neutral-900 dark:text-white">
+                          {contributor.login}
+                        </h3>
+                        <div className="flex items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
                           {contributor.contributions} contributions
                         </div>
                       </div>
-                      <p className="text-sm text-neutral-400">
+                      <p className="text-sm text-neutral-400 dark:text-neutral-500">
                         {specialRoles[contributor.login.toLowerCase()] || "Contributor"}
                       </p>
                       <div className="pt-2">
                         <Progress
                           value={(contributor.contributions / maxContributions) * 100}
-                          className="h-1.5 bg-neutral-800"
+                          className="h-1.5 border border-neutral-200 bg-neutral-200 dark:bg-neutral-800"
                           indicatorClassName="bg-white"
                         />
                       </div>
