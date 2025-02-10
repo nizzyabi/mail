@@ -4,7 +4,7 @@ An Open-Source Gmail Alternative for the Future of Email
 
 ## What is Mail0.io?
 
-Mail0.io is an open-source email solution that gives users the power to **self-host** their own email servers while also integrating external services like Gmail and other email providers. Our goal is to put **control, privacy, and customization** back into the hands of users—whether they choose to host their email independently or manage multiple inboxes from a single, customizable platform.
+Mail0.io is an open-source email solution that gives users the power to **self-host** their own email app while also integrating external services like Gmail and other email providers. Our goal is to put **control, privacy, and customization** back into the hands of users—whether they choose to host their email independently or manage multiple inboxes from a single, customizable platform.
 
 ## Why Mail0.io?
 
@@ -12,7 +12,7 @@ Most email services today are either **closed-source**, **data-hungry**, or **to
 
 ✅ **Fully Open-Source** – No hidden agendas, no walled gardens. 100% transparency.  
 🔒 **Data Privacy First** – Your emails, your data. No tracking, no selling, no middlemen.  
-⚙️ **Self-Hosting Freedom** – Run your own email server with ease.  
+⚙️ **Self-Hosting Freedom** – Run your own email app with ease.
 📬 **Unified Inbox** – Connect multiple email providers like Gmail, Outlook, and more.  
 🎨 **Customizable UI & Features** – Tailor your email experience the way you want it.  
 🚀 **Developer-Friendly** – Built with extensibility and integrations in mind.
@@ -28,7 +28,7 @@ We believe email should be:
 
 ## Roadmap 🛤️
 
-We're in the early stages of development, and we’re shaping the future of Mail0.io **together with the community**. Some key areas we will focus on:
+We're in the early stages of development, and we're shaping the future of Mail0.io **together with the community**. Some key areas we will focus on:
 
 - **Core Email Server** – A lightweight, reliable self-hosted email server.
 - **Email Client** – A sleek, customizable web app for managing emails.
@@ -38,7 +38,7 @@ We're in the early stages of development, and we’re shaping the future of Mail
 
 ## Join the Movement 🚀
 
-Mail0.io is not just another email app—it's a **vision** for a better, more open, and user-controlled email ecosystem. If you believe in **privacy**, **open-source software**, and **giving users control**, we’d love for you to join us!
+Mail0.io is not just another email app—it's a **vision** for a better, more open, and user-controlled email ecosystem. If you believe in **privacy**, **open-source software**, and **giving users control**, we'd love for you to join us!
 
 📢 **Follow our progress** – Stay updated on GitHub as we build Mail0.io.  
 💡 **Contribute** – Share your ideas, suggest features, and help shape the project.  
@@ -46,7 +46,7 @@ Mail0.io is not just another email app—it's a **vision** for a better, more op
 
 ### Stay Tuned!
 
-We’re just getting started. If you’re excited about a future where **email belongs to users, not corporations**, let’s make it happen together.
+We're just getting started. If you're excited about a future where **email belongs to users, not corporations**, let's make it happen together.
 
 ---
 
@@ -114,7 +114,7 @@ If you spot a problem with the docs, [search if an issue already exists](https:/
 
 ### Solve an issue
 
-Scan through our [existing issues](https://github.com/nizzyabi/Mail0/issues) to find one that interests you. You can narrow down the search using `labels` as filters. See "[Label reference](https://docs.github.com/en/contributing/collaborating-on-github-docs/label-reference)" for more information. As a general rule, we don’t assign issues to anyone. If you find an issue to work on, you are welcome to open a PR with a fix.
+Scan through our [existing issues](https://github.com/nizzyabi/Mail0/issues) to find one that interests you. You can narrow down the search using `labels` as filters. See "[Label reference](https://docs.github.com/en/contributing/collaborating-on-github-docs/label-reference)" for more information. As a general rule, we don't assign issues to anyone. If you find an issue to work on, you are welcome to open a PR with a fix.
 
 ## Pull Request
 
@@ -127,3 +127,16 @@ When you're finished with the changes, create a pull request, also known as a PR
 - We may ask for changes to be made before a PR can be merged, either using [suggested changes](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/incorporating-feedback-in-your-pull-request) or pull request comments. You can apply suggested changes directly through the UI. You can make any other changes in your fork, then commit them to your branch.
 - As you update your PR and apply changes, mark each conversation as [resolved](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#resolving-conversations).
 - If you run into any merge issues, checkout this [git tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge conflicts and other issues.
+
+## License
+
+Mail0.io is licensed under the MIT License. This means you can:
+
+✅ Use the software commercially  
+✅ Modify the source code  
+✅ Distribute your modifications  
+✅ Use and modify the software privately
+
+The only requirement is that you include the original copyright and license notice in any copy of the software/source.
+
+See the [LICENSE](LICENSE) file for the full license text.
