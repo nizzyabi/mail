@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Book, Users, Terminal, Code2, Webhook, LucideIcon } from "lucide-react";
+import { Github, Book, Users, Terminal, Code2, Webhook, type LucideIcon } from "lucide-react";
 import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { SidebarToggle } from "@/components/ui/sidebar-toggle";
 import { Separator } from "@/components/ui/separator";
