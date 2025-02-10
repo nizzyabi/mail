@@ -1,15 +1,13 @@
-import { ComponentProps } from "react";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMail } from "@/components/mail/use-mail";
-import { Mail } from "@/components/mail/data";
-import { Badge } from "@/components/ui/badge";
-import { BellOff } from "lucide-react";
-import { cn } from "@/lib/utils";
-
+import type { Mail } from "@/components/mail/data";
 import { formatDate } from "@/utils/format-date";
-import { tagsAtom, Tag } from "./use-tags";
+import { tagsAtom, type Tag } from "./use-tags";
+import { Badge } from "@/components/ui/badge";
+import type { ComponentProps } from "react";
+import { BellOff } from "lucide-react";
 import { useAtomValue } from "jotai";
+import { cn } from "@/lib/utils";
 
 interface MailListProps {
   items: Mail[];
@@ -42,8 +40,9 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
     <ScrollArea className="" type="auto">
       <div className="flex flex-col pt-0">
         {items.map((item) => (
-          <div
+          <button
             key={item.id}
+            type="button"
             className={cn(
               "flex cursor-pointer flex-col items-start border-b p-4 text-left text-sm transition-all hover:bg-accent",
               mail.selected === item.id && "bg-muted hover:opacity-100",
@@ -53,6 +52,12 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
                 : "opacity-100",
             )}
             onClick={() => handleMailClick(item)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                handleMailClick(item);
+              }
+            }}
+            tabIndex={0}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">
@@ -105,7 +110,7 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
               isCompact={isCompact}
               isSelected={mail.selected === item.id}
             />
-          </div>
+          </button>
         ))}
       </div>
     </ScrollArea>

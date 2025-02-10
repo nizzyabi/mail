@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Search, SlidersHorizontal, CalendarIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { type DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format, subDays } from "date-fns";
@@ -18,7 +18,7 @@ import { useState } from "react";
 
 const inboxes = ["All Mail", "Inbox", "Drafts", "Sent", "Junk", "Trash", "Archive"];
 
-function DateFilter() {
+function DateFilter({ id }: { id: string }) {
   const [date, setDate] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -117,9 +117,14 @@ export function SearchBar() {
                 {/* Main Filters */}
                 <div className="grid gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Search in</label>
+                    <label
+                      htmlFor="search-in"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Search in
+                    </label>
                     <Select>
-                      <SelectTrigger className="h-8">
+                      <SelectTrigger id="search-in" className="h-8">
                         <SelectValue placeholder="All Mail" />
                       </SelectTrigger>
                       <SelectContent>
@@ -133,8 +138,11 @@ export function SearchBar() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Subject</label>
+                    <label htmlFor="subject" className="text-xs font-medium text-muted-foreground">
+                      Subject
+                    </label>
                     <Input
+                      id="subject"
                       placeholder="Email subject"
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
@@ -144,8 +152,11 @@ export function SearchBar() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">From</label>
+                      <label htmlFor="from" className="text-xs font-medium text-muted-foreground">
+                        From
+                      </label>
                       <Input
+                        id="from"
                         placeholder="Sender"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
@@ -154,8 +165,11 @@ export function SearchBar() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">To</label>
+                      <label htmlFor="to" className="text-xs font-medium text-muted-foreground">
+                        To
+                      </label>
                       <Input
+                        id="to"
                         placeholder="Recipient"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
@@ -165,8 +179,13 @@ export function SearchBar() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Date Range</label>
-                    <DateFilter />
+                    <label
+                      htmlFor="date-filter"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Date Range
+                    </label>
+                    <DateFilter id="date-filter" />
                   </div>
                 </div>
 

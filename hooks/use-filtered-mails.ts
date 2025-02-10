@@ -1,5 +1,5 @@
-import { Tag } from "@/components/mail/use-tags";
-import { Mail } from "@/components/mail/data";
+import type { Tag } from "@/components/mail/use-tags";
+import type { Mail } from "@/components/mail/data";
 import { useMemo } from "react";
 
 /**
@@ -12,9 +12,9 @@ export const useFilteredMails = (mails: Mail[], activeTags: Tag[]) => {
   // Create a lookup object for active tags
   const activeTagLookup = useMemo(() => {
     const lookup: Record<string, boolean> = {};
-    activeTags.forEach((tag) => {
+    for (const tag of activeTags) {
       lookup[tag.label.toLowerCase()] = true;
-    });
+    }
     return lookup;
   }, [activeTags]);
 

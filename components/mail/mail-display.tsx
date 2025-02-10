@@ -15,7 +15,7 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
-import React from "react";
+import type React from "react";
 
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -24,8 +24,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import type { Mail } from "@/components/mail/data";
 import { Button } from "@/components/ui/button";
-import { Mail } from "@/components/mail/data";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
@@ -270,10 +270,9 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                       </Badge>
                     )}
                     {attachments.map((file, index) => (
-                      <Tooltip key={index}>
+                      <Tooltip key={file.name}>
                         <TooltipTrigger asChild>
                           <Badge
-                            key={index}
                             variant="secondary"
                             className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
                           >
@@ -345,6 +344,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                     <TooltipContent>Attach file</TooltipContent>
                   </Tooltip>
                   <input
+                    title="Add attachment"
                     type="file"
                     id="attachment-input"
                     className="hidden"

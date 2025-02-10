@@ -1,4 +1,4 @@
-import { draftsAtom, DraftType } from "@/store/draftStates";
+import { draftsAtom, type DraftType } from "@/store/draftStates";
 import { useAtom } from "jotai";
 
 export const useDrafts = () => {
@@ -12,10 +12,9 @@ export const useDrafts = () => {
         const updatedDrafts = [...prevDrafts];
         updatedDrafts[draftIndex] = { ...prevDrafts[draftIndex], ...draft };
         return updatedDrafts;
-      } else {
-        // Add new draft
-        return [...prevDrafts, draft];
       }
+      // Add new draft
+      return [...prevDrafts, draft];
     });
   };
 

@@ -28,6 +28,8 @@ export async function middleware(request: NextRequest) {
           { status: 429 },
         );
       }
+      // Ensure to exit the case if no rate-limiting error
+      break;
     }
 
     default: {

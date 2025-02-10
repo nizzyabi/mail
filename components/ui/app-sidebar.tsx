@@ -16,8 +16,8 @@ import {
   ChartLine,
 } from "lucide-react";
 import { Gmail, Outlook, Vercel } from "@/components/icons/icons";
-import { SidebarData } from "@/types";
-import React from "react";
+import type { SidebarData } from "@/types";
+import type React from "react";
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";

@@ -25,7 +25,7 @@ import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { useMediaQuery } from "../../hooks/use-media-query";
 import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
-import { type Mail } from "@/components/mail/data";
+import type { Mail } from "@/components/mail/data";
 import { SearchBar } from "./search-bar";
 import { useAtomValue } from "jotai";
 
@@ -42,7 +42,7 @@ interface MailProps {
   muted?: boolean;
 }
 
-export function Mail({ mails }: MailProps) {
+export function MailWrapper({ mails }: MailProps) {
   const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
   const tags = useAtomValue(tagsAtom);
