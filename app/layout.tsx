@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site-config";
+import { Toast } from "@/components/ui/toast";
 import type { Metadata } from "next";
-import { Toaster } from "sonner";
 import "./globals.css";
 
 import MailComposeModal from "@/components/mail/mail-compose-modal";
@@ -35,9 +35,9 @@ export default function RootLayout({
               <MailComposeModal />
             </Suspense>
             {children}
+            <Toast />
           </NuqsAdapter>
         </Providers>
-        <Toaster position="top-center" theme="system" />
       </body>
     </html>
   );
