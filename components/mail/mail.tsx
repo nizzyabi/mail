@@ -1,7 +1,7 @@
 "use client";
 
 import { AlignVerticalSpaceAround, ListFilter, SquarePen } from "lucide-react";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import * as React from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -12,7 +12,6 @@ import { Separator } from "@/components/ui/separator";
 import { useMail } from "@/components/mail/use-mail";
 import { Button } from "@/components/ui/button";
 
-// Filters imports
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,15 +20,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
-import { useFilteredMails } from "@/hooks/use-filtered-mails";
 import { useMediaQuery } from "../../hooks/use-media-query";
-import { tagsAtom } from "@/components/mail/use-tags";
 import { SidebarToggle } from "../ui/sidebar-toggle";
 import { type Mail } from "@/components/mail/data";
 import { useThreads } from "@/hooks/use-threads";
 import { SearchBar } from "./search-bar";
-import { useAtomValue } from "jotai";
-
 interface MailProps {
   accounts: {
     label: string;
@@ -43,14 +38,10 @@ interface MailProps {
   muted?: boolean;
 }
 
-export function Mail({ mails }: MailProps) {
+export function Mail({ props }: MailProps) {
   const { data: threadsResponse, isLoading } = useThreads("inbox");
   const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
-  const tags = useAtomValue(tagsAtom);
-  const activeTags = tags.filter((tag) => tag.checked);
-
-  const filteredMails = useFilteredMails(mails, activeTags);
 
   const [, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -82,11 +73,6 @@ export function Mail({ mails }: MailProps) {
     setOpen(false);
     setMail({ selected: null });
   }, [setMail]);
-
-  const selectedMail = useMemo(
-    () => filteredMails.find((item) => item.id === mail.selected) || null,
-    [filteredMails, mail.selected],
-  );
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -156,7 +142,7 @@ export function Mail({ mails }: MailProps) {
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75} minSize={25}>
                 <div className="hidden h-full flex-1 overflow-y-auto md:block">
-                  <MailDisplay mail={selectedMail} onClose={handleClose} />
+                  <MailDisplay mailId={mail.selected} onClose={handleClose} />
                 </div>
               </ResizablePanel>
             </>
@@ -171,7 +157,7 @@ export function Mail({ mails }: MailProps) {
                 <DrawerTitle>Email Details</DrawerTitle>
               </DrawerHeader>
               <div className="flex h-full flex-col overflow-hidden">
-                <MailDisplay mail={selectedMail} onClose={handleClose} isMobile={true} />
+                <MailDisplay mailId={mail.selected} onClose={handleClose} isMobile={true} />
               </div>
             </DrawerContent>
           </Drawer>
