@@ -63,7 +63,7 @@ function DateFilter() {
   );
 }
 
-export function SearchBar() {
+export function SearchBar({ filters = true }: { filters?: boolean }) {
   const [subject, setSubject] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -79,135 +79,141 @@ export function SearchBar() {
           placeholder="Search"
           className="h-7 w-full pl-8 pr-8 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
-        <div className="absolute right-2 flex items-center">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-5 w-5 p-0 hover:bg-transparent">
-                <SlidersHorizontal
-                  className="h-3.5 w-3.5 text-muted-foreground/70"
-                  aria-hidden="true"
-                />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-[min(calc(100vw-2rem),400px)] p-3 sm:w-[500px] md:w-[600px] md:p-4"
-              side="bottom"
-              sideOffset={10}
-              align="end"
-            >
-              <div className="space-y-4">
-                {/* Quick Filters */}
-                <div>
-                  <h2 className="mb-2 text-xs font-medium text-muted-foreground">Quick Filters</h2>
-                  <div className="flex flex-wrap gap-1.5">
-                    <Button variant="secondary" size="sm" className="h-7 text-xs">
-                      Unread
-                    </Button>
-                    <Button variant="secondary" size="sm" className="h-7 text-xs">
-                      Has Attachment
-                    </Button>
-                    <Button variant="secondary" size="sm" className="h-7 text-xs">
-                      Starred
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator className="my-2" />
-
-                {/* Main Filters */}
-                <div className="grid gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Search in</label>
-                    <Select>
-                      <SelectTrigger className="h-8">
-                        <SelectValue placeholder="All Mail" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {inboxes.map((inbox) => (
-                          <SelectItem key={inbox} value={inbox}>
-                            {inbox}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+        {filters && (
+          <div className="absolute right-2 flex items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-5 w-5 p-0 hover:bg-transparent">
+                  <SlidersHorizontal
+                    className="h-3.5 w-3.5 text-muted-foreground/70"
+                    aria-hidden="true"
+                  />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-[min(calc(100vw-2rem),400px)] p-3 sm:w-[500px] md:w-[600px] md:p-4"
+                side="bottom"
+                sideOffset={10}
+                align="end"
+              >
+                <div className="space-y-4">
+                  {/* Quick Filters */}
+                  <div>
+                    <h2 className="mb-2 text-xs font-medium text-muted-foreground">
+                      Quick Filters
+                    </h2>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Button variant="secondary" size="sm" className="h-7 text-xs">
+                        Unread
+                      </Button>
+                      <Button variant="secondary" size="sm" className="h-7 text-xs">
+                        Has Attachment
+                      </Button>
+                      <Button variant="secondary" size="sm" className="h-7 text-xs">
+                        Starred
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Subject</label>
-                    <Input
-                      placeholder="Email subject"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
-                      className="h-8"
-                    />
-                  </div>
+                  <Separator className="my-2" />
 
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Main Filters */}
+                  <div className="grid gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">From</label>
+                      <label className="text-xs font-medium text-muted-foreground">Search in</label>
+                      <Select>
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="All Mail" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {inboxes.map((inbox) => (
+                            <SelectItem key={inbox} value={inbox}>
+                              {inbox}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Subject</label>
                       <Input
-                        placeholder="Sender"
-                        value={from}
-                        onChange={(e) => setFrom(e.target.value)}
+                        placeholder="Email subject"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
                         className="h-8"
                       />
                     </div>
 
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground">From</label>
+                        <Input
+                          placeholder="Sender"
+                          value={from}
+                          onChange={(e) => setFrom(e.target.value)}
+                          className="h-8"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground">To</label>
+                        <Input
+                          placeholder="Recipient"
+                          value={to}
+                          onChange={(e) => setTo(e.target.value)}
+                          className="h-8"
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">To</label>
-                      <Input
-                        placeholder="Recipient"
-                        value={to}
-                        onChange={(e) => setTo(e.target.value)}
-                        className="h-8"
-                      />
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Date Range
+                      </label>
+                      <DateFilter />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Date Range</label>
-                    <DateFilter />
+                  <Separator className="my-2" />
+
+                  {/* Labels */}
+                  <div>
+                    <h2 className="mb-2 text-xs font-medium text-muted-foreground">Labels</h2>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                        Work
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                        Personal
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                        Important
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs text-muted-foreground"
+                      >
+                        + Add
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-2">
+                    <Button variant="ghost" size="sm" className="h-7 text-xs">
+                      Reset
+                    </Button>
+                    <Button size="sm" className="h-7 text-xs">
+                      Apply Filters
+                    </Button>
                   </div>
                 </div>
-
-                <Separator className="my-2" />
-
-                {/* Labels */}
-                <div>
-                  <h2 className="mb-2 text-xs font-medium text-muted-foreground">Labels</h2>
-                  <div className="flex flex-wrap gap-1.5">
-                    <Button variant="outline" size="sm" className="h-7 text-xs">
-                      Work
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-xs">
-                      Personal
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-xs">
-                      Important
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs text-muted-foreground"
-                    >
-                      + Add
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-2">
-                  <Button variant="ghost" size="sm" className="h-7 text-xs">
-                    Reset
-                  </Button>
-                  <Button size="sm" className="h-7 text-xs">
-                    Apply Filters
-                  </Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </div>
     </div>
   );
