@@ -6,52 +6,46 @@ import {
   Paperclip,
   Reply,
   ReplyAll,
-  BellOff,
-  X,
-  Lock,
   Send,
   FileIcon,
+  X,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
-import React from "react";
 
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Mail } from "@/components/mail/data";
+import { useThread } from "@/hooks/use-threads";
+import { Badge } from "@/components/ui/badge";
 import { useMail } from "./use-mail";
-import { Badge } from "../ui/badge";
 import Image from "next/image";
-
 interface MailDisplayProps {
-  mail: Mail | null;
+  mailId: string;
   onClose?: () => void;
   isMobile?: boolean;
 }
 
-export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
+interface ReplyState {
+  content: string;
+  attachments: File[];
+  isUploading: boolean;
+}
+
+export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
+  const { data: mail, isLoading, error } = useThread(mailId);
   const [, setMail] = useMail();
-  const [currentMail, setCurrentMail] = useState<Mail | null>(mail);
-  const [isMuted, setIsMuted] = useState(false);
-  const [attachments, setAttachments] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-
-  useEffect(() => {
-    setCurrentMail(mail);
-  }, [mail]);
-
-  useEffect(() => {
-    if (currentMail) {
-      setIsMuted(currentMail.muted ?? false);
-    }
-  }, [currentMail]);
+  const [replyState, setReplyState] = useState<ReplyState>({
+    content: "",
+    attachments: [],
+    isUploading: false,
+  });
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -70,18 +64,24 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
 
   const handleAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setIsUploading(true);
+      setReplyState((prev) => ({ ...prev, isUploading: true }));
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        setAttachments([...attachments, ...Array.from(e.target.files)]);
+        setReplyState((prev) => ({
+          ...prev,
+          attachments: [...prev.attachments, ...Array.from(e.target.files!)],
+        }));
       } finally {
-        setIsUploading(false);
+        setReplyState((prev) => ({ ...prev, isUploading: false }));
       }
     }
   };
 
   const removeAttachment = (index: number) => {
-    setAttachments(attachments.filter((_, i) => i !== index));
+    setReplyState((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
   };
 
   const truncateFileName = (name: string, maxLength = 15) => {
@@ -93,7 +93,80 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
     return `${name.slice(0, maxLength)}...`;
   };
 
-  if (!currentMail) return null;
+  const renderAttachmentPreview = (file: File) => {
+    return file.type.startsWith("image/") ? (
+      <Image
+        src={URL.createObjectURL(file) || "/placeholder.svg"}
+        alt={file.name}
+        fill
+        className="rounded-t-md object-cover"
+      />
+    ) : (
+      <div className="flex h-full w-full items-center justify-center p-4">
+        <FileIcon className="h-16 w-16 text-primary" />
+      </div>
+    );
+  };
+
+  const renderAttachmentDetails = (file: File) => {
+    return (
+      <div className="bg-secondary p-2">
+        <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
+        <p className="text-xs text-muted-foreground">
+          Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Last modified: {new Date(file.lastModified).toLocaleDateString()}
+        </p>
+      </div>
+    );
+  };
+
+  const renderAttachmentBadge = (file: File, index: number) => {
+    return (
+      <Tooltip key={index}>
+        <TooltipTrigger asChild>
+          <Badge
+            variant="secondary"
+            className="mb-1 inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
+          >
+            <span className="max-w-[120px] truncate">{truncateFileName(file.name)}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-1 h-4 w-4 hover:bg-background/80"
+              onClick={(e) => {
+                e.preventDefault();
+                removeAttachment(index);
+              }}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent className="w-64 p-0">
+          <div className="relative h-32 w-full">{renderAttachmentPreview(file)}</div>
+          {renderAttachmentDetails(file)}
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
+
+  if (isLoading) {
+    return <div className="flex h-full items-center justify-center">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-destructive">
+        Failed to load message
+      </div>
+    );
+  }
+
+  if (!mail) {
+    return <div className="flex h-full items-center justify-center">No message selected</div>;
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -106,7 +179,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                   <Button
                     variant="ghost"
                     className="md:h-fit md:px-2"
-                    disabled={!currentMail}
+                    disabled={!mail}
                     onClick={handleClose}
                   >
                     <X className="h-4 w-4" />
@@ -116,14 +189,12 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                 <TooltipContent>Close</TooltipContent>
               </Tooltip>
             )}
-            <div className="flex-1 truncate text-sm font-medium">
-              {currentMail?.subject || "No message selected"}
-            </div>
+            <div className="flex-1 truncate text-sm font-medium">{mail?.subject}</div>
           </div>
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                   <Archive className="h-4 w-4" />
                   <span className="sr-only">Archive</span>
                 </Button>
@@ -132,7 +203,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                   <Reply className="h-4 w-4" />
                   <span className="sr-only">Reply</span>
                 </Button>
@@ -141,7 +212,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
             </Tooltip>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!currentMail}>
+                <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">More</span>
                 </Button>
@@ -169,23 +240,21 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
             <div className="flex flex-col gap-4 px-4 py-4">
               <div className="flex items-start gap-3">
                 <Avatar>
-                  <AvatarImage alt={currentMail.name} />
                   <AvatarFallback>
-                    {currentMail.name
+                    {mail.sender.name
                       .split(" ")
                       .map((chunk) => chunk[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">
-                  <div className="font-semibold">{currentMail.name}</div>
+                  <div className="font-semibold">{mail.sender.name}</div>
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <span>{currentMail.email}</span>
-                    {isMuted && <BellOff className="h-4 w-4" />}
+                    <span>{mail.sender.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <time className="text-xs text-muted-foreground">
-                      {format(new Date(currentMail.date), "PPp")}
+                      {format(new Date(mail.receivedOn), "PPp")}
                     </time>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -196,36 +265,21 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                       <PopoverContent className="w-[280px] space-y-2" align="start">
                         <div className="text-xs">
                           <span className="font-medium text-muted-foreground">From:</span>{" "}
-                          {currentMail.email}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-muted-foreground">Reply-To:</span>{" "}
-                          {currentMail.email}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-muted-foreground">To:</span>{" "}
-                          {currentMail.email}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-muted-foreground">Cc:</span>{" "}
-                          {currentMail.email}
+                          {mail.sender.email}
                         </div>
                         <div className="text-xs">
                           <span className="font-medium text-muted-foreground">Date:</span>{" "}
-                          {format(new Date(currentMail.date), "PPpp")}
+                          {format(new Date(mail.receivedOn), "PPpp")}
                         </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-muted-foreground">Mailed-By:</span>{" "}
-                          {currentMail.email}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-muted-foreground">Signed-By:</span>{" "}
-                          {currentMail.email}
-                        </div>
-                        <div className="flex items-center gap-1 text-xs">
-                          <span className="font-medium text-muted-foreground">Security:</span>{" "}
-                          <Lock className="h-3 w-3" /> {currentMail.email}
-                        </div>
+                        {mail.tags && mail.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {mail.tags.map((tag, index) => (
+                              <Badge key={index} variant="secondary">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </PopoverContent>
                     </Popover>
                   </div>
@@ -236,7 +290,10 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
             <Separator />
 
             <div className="px-8 py-4 pb-[200px]">
-              <div className="whitespace-pre-wrap text-sm leading-relaxed">{currentMail.text}</div>
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: mail.body }}
+              />
             </div>
           </div>
 
@@ -246,7 +303,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                 <div className="flex items-center gap-2">
                   <Reply className="h-4 w-4" />
                   <p className="truncate">
-                    {currentMail?.name} ({currentMail?.email})
+                    {mail.sender.name}({mail.sender.email})
                   </p>
                 </div>
               </div>
@@ -258,10 +315,10 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                 autoFocus
               />
 
-              {(attachments.length > 0 || isUploading) && (
+              {(replyState.attachments.length > 0 || replyState.isUploading) && (
                 <div className="relative z-50 min-h-[32px]">
-                  <div className="hide-scrollbar absolute inset-x-0 flex gap-2 overflow-x-auto">
-                    {isUploading && (
+                  <div className="hide-scrollbar absolute inset-x-0 -my-3 flex gap-2 overflow-x-auto">
+                    {replyState.isUploading && (
                       <Badge
                         variant="secondary"
                         className="inline-flex shrink-0 animate-pulse items-center bg-background/50 px-2 py-1.5 text-xs"
@@ -269,57 +326,9 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                         Uploading...
                       </Badge>
                     )}
-                    {attachments.map((file, index) => (
-                      <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
-                          >
-                            <span className="max-w-[120px] truncate">
-                              {truncateFileName(file.name)}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="ml-1 h-4 w-4 hover:bg-background/80"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                removeAttachment(index);
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent className="w-64 p-0">
-                          <div className="relative h-32 w-full">
-                            {file.type.startsWith("image/") ? (
-                              <Image
-                                src={URL.createObjectURL(file) || "/placeholder.svg"}
-                                alt={file.name}
-                                fill
-                                className="rounded-t-md object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center p-4">
-                                <FileIcon className="h-16 w-16 text-primary" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="bg-secondary p-2">
-                            <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Last modified: {new Date(file.lastModified).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+                    {replyState.attachments.map((file, index) =>
+                      renderAttachmentBadge(file, index),
+                    )}
                   </div>
                 </div>
               )}
