@@ -2,13 +2,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site-config";
-import { Toast } from "@/components/ui/toast";
 import type { Metadata } from "next";
 import "./globals.css";
 
 import MailComposeModal from "@/components/mail/mail-compose-modal";
 import { getLocale, getMessages } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toast } from "@/components/ui/toast";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -43,9 +43,9 @@ export default async function RootLayout({
                 <MailComposeModal />
               </Suspense>
               {children}
+              <Toast />
             </NuqsAdapter>
           </Providers>
-          <Toaster position="top-center" />
         </NextIntlClientProvider>
       </body>
     </html>
