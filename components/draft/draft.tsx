@@ -226,7 +226,15 @@ export function Draft() {
         </ResizablePanelGroup>
         {selectedDraft && !isDesktop && (
           <>
-            <Drawer open={open} onOpenChange={setOpen}>
+            <Drawer
+              open={open}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setSelectedDraft(null);
+                }
+                setOpen(open);
+              }}
+            >
               <DrawerPortal>
                 <DrawerContent className="h-[calc(100vh-3rem)] p-0">
                   <DrawerHeader className="sr-only">
