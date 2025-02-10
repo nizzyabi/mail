@@ -6,24 +6,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DayPickerRangeProps, type DateRange } from "react-day-picker";
 import { Search, SlidersHorizontal, CalendarIcon } from "lucide-react";
+import { INBOXES, INITIAL_FILTERS, useSearch } from "./use-search";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { type DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { format, subDays } from "date-fns";
+import { useCallback, useState } from "react";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
-const inboxes = ["All Mail", "Inbox", "Drafts", "Sent", "Junk", "Trash", "Archive"];
-
-function DateFilter() {
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7),
-    to: new Date(),
-  });
-
+interface DateFilterProps {
+  date: DateRange | undefined;
+  onSelect: DayPickerRangeProps["onSelect"];
+}
+function DateFilter(props: DateFilterProps) {
   return (
     <div className="grid gap-2">
       <Popover>
@@ -31,16 +29,19 @@ function DateFilter() {
           <Button
             id="date"
             variant={"outline"}
-            className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}
+            className={cn(
+              "justify-start text-left font-normal",
+              !props.date && "text-muted-foreground",
+            )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
+            {props.date?.from ? (
+              props.date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                  {format(props.date.from, "LLL dd, y")} - {format(props.date.to, "LLL dd, y")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(props.date.from, "LLL dd, y")
               )
             ) : (
               <span>Pick a date</span>
@@ -51,9 +52,9 @@ function DateFilter() {
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
+            defaultMonth={props.date?.from}
+            selected={props.date}
+            onSelect={props.onSelect}
             numberOfMonths={2}
             disabled={(date) => date > new Date()}
           />
@@ -64,9 +65,30 @@ function DateFilter() {
 }
 
 export function SearchBar() {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [, setFilters] = useSearch();
+
   const [subject, setSubject] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [date, setDate] = useState<DateRange | undefined>(undefined);
+
+  const handleQueryChange = useCallback((query: string) => {
+    setFilters((prev) => ({ ...prev, query }));
+  }, []);
+
+  const handleApplyFilters = useCallback(() => {
+    setFilters((prev) => ({ ...prev, from, to, dateRange: date, subject }));
+    setIsPopoverOpen(false);
+  }, [from, to, date, subject]);
+
+  const handleReset = useCallback(() => {
+    setFilters(INITIAL_FILTERS);
+    setSubject("");
+    setFrom("");
+    setTo("");
+    setDate(undefined);
+  }, [setFilters]);
 
   return (
     <div className="relative flex-1 px-4 md:max-w-[600px] md:px-8">
@@ -77,10 +99,11 @@ export function SearchBar() {
         />
         <Input
           placeholder="Search"
+          onChange={(e) => handleQueryChange(e.target.value)}
           className="h-7 w-full pl-8 pr-8 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
         <div className="absolute right-2 flex items-center">
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-5 w-5 p-0 hover:bg-transparent">
                 <SlidersHorizontal
@@ -123,7 +146,7 @@ export function SearchBar() {
                         <SelectValue placeholder="All Mail" />
                       </SelectTrigger>
                       <SelectContent>
-                        {inboxes.map((inbox) => (
+                        {INBOXES.map((inbox) => (
                           <SelectItem key={inbox} value={inbox}>
                             {inbox}
                           </SelectItem>
@@ -166,7 +189,7 @@ export function SearchBar() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-muted-foreground">Date Range</label>
-                    <DateFilter />
+                    <DateFilter date={date} onSelect={setDate} />
                   </div>
                 </div>
 
@@ -197,10 +220,10 @@ export function SearchBar() {
 
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-2">
-                  <Button variant="ghost" size="sm" className="h-7 text-xs">
+                  <Button onClick={handleReset} variant="ghost" size="sm" className="h-7 text-xs">
                     Reset
                   </Button>
-                  <Button size="sm" className="h-7 text-xs">
+                  <Button onClick={handleApplyFilters} size="sm" className="h-7 text-xs">
                     Apply Filters
                   </Button>
                 </div>
