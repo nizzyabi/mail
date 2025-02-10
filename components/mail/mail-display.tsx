@@ -252,7 +252,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
               </div>
 
               <Textarea
-                className="min-h-[120px] w-full resize-none border-0 bg-[#18181A] leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base"
+                className="min-h-[120px] w-full resize-none border-0 leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-[#18181A] md:text-base"
                 placeholder="Write your reply..."
                 spellCheck={true}
                 autoFocus
