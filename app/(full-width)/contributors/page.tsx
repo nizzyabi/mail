@@ -168,7 +168,7 @@ export default function OpenPage() {
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
               <span className="text-lg font-medium">{repoStats.issues}</span>
-              <span>open issues</span>
+              <span>open issues & pull requests</span>
             </div>
           </div>
 
