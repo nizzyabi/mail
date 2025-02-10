@@ -2,8 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site-config";
+import { Toast } from "@/components/ui/toast";
 import type { Metadata } from "next";
-import { Toaster } from "sonner";
 import "./globals.css";
 
 import MailComposeModal from "@/components/mail/mail-compose-modal";
