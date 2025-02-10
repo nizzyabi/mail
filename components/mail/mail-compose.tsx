@@ -77,7 +77,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
       return [newDraft, ...drafts];
     });
   };
-
   React.useEffect(() => {
     if (!isOpen) {
       setMessageContent(null);
