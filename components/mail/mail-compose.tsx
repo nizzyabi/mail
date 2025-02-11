@@ -115,10 +115,11 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
       case "ordered-list":
         document.execCommand("insertOrderedList", false);
         break;
-      case "link":
+      case "link": {
         const url = prompt("Enter URL:");
         if (url) document.execCommand("createLink", false, url);
         break;
+      }
     }
     editorRef.current.focus();
   };
@@ -142,7 +143,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
     return (
       <div className="mx-auto mt-2 flex w-[95%] flex-wrap gap-2">
         {attachments.slice(0, MAX_VISIBLE_ATTACHMENTS).map((file, index) => (
-          <Tooltip key={index}>
+          <Tooltip key={file.name}>
             <TooltipTrigger asChild>
               <Badge variant="secondary">
                 {truncateFileName(file.name)}
@@ -214,18 +215,12 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                   onWheel={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchMove={(e) => e.stopPropagation()}
-                  style={{
-                    WebkitOverflowScrolling: "touch",
-                  }}
                 >
                   <div className="space-y-1">
                     {attachments.map((file, index) => (
-                      <Tooltip key={index}>
+                      <Tooltip key={file.name}>
                         <TooltipTrigger asChild>
-                          <div
-                            key={index}
-                            className="flex items-center justify-between rounded-md p-2 hover:bg-muted"
-                          >
+                          <div className="flex items-center justify-between rounded-md p-2 hover:bg-muted">
                             <div className="flex items-center gap-2 overflow-hidden">
                               <Paperclip className="h-4 w-4 flex-shrink-0" />
                               <span className="truncate text-sm">
@@ -293,7 +288,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
           <div className="grid gap-2">
             <div className="relative">
               <Input
-                tabIndex={1}
                 placeholder="To"
                 value={toInput}
                 onChange={(e) => {
@@ -304,12 +298,18 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-auto rounded-md border border-input bg-background shadow-lg">
-                  {filteredSuggestions.map((email, index) => (
+                  {filteredSuggestions.map((email) => (
                     <li
-                      key={index}
+                      key={email}
                       onClick={() => {
                         setToInput(email);
                         setShowSuggestions(false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setToInput(email);
+                          setShowSuggestions(false);
+                        }
                       }}
                       className="cursor-pointer p-2 hover:bg-muted"
                     >
@@ -325,40 +325,29 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
               defaultValue={subject || ""}
               onChange={(e) => setSubject(e.target.value)}
               className="rounded-none border-0 focus-visible:ring-0"
-              tabIndex={2}
             />
 
             <Separator className="mx-auto w-[95%]" />
             <div className="flex justify-end p-2">
               <ToggleGroup type="multiple">
-                <ToggleGroupItem tabIndex={3} value="bold" onClick={() => insertFormat("bold")}>
+                <ToggleGroupItem value="bold" onClick={() => insertFormat("bold")}>
                   <Bold className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem tabIndex={4} value="italic" onClick={() => insertFormat("italic")}>
+                <ToggleGroupItem value="italic" onClick={() => insertFormat("italic")}>
                   <Italic className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem tabIndex={5} value="list" onClick={() => insertFormat("list")}>
+                <ToggleGroupItem value="list" onClick={() => insertFormat("list")}>
                   <List className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem
-                  tabIndex={6}
-                  value="ordered-list"
-                  onClick={() => insertFormat("ordered-list")}
-                >
+                <ToggleGroupItem value="ordered-list" onClick={() => insertFormat("ordered-list")}>
                   <ListOrdered className="h-4 w-4" />
                 </ToggleGroupItem>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  tabIndex={7}
-                  onClick={() => insertFormat("link")}
-                >
+                <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
                   <Link2 className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  tabIndex={8}
                   onClick={() => {
                     const input = document.createElement("input");
                     input.type = "file";
@@ -384,16 +373,11 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
             <div
               ref={editorRef}
               contentEditable
-              className="mx-auto min-h-[300px] w-[95%] resize-none overflow-y-auto rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mx-auto min-h-[300px] w-[95%] max-w-full resize-none overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               role="textbox"
               aria-multiline="true"
-              tabIndex={9}
-              style={{
-                overflowWrap: "break-word",
-                wordWrap: "break-word",
-                whiteSpace: "pre-wrap",
-                maxWidth: "100%",
-              }}
+              aria-label="Message content"
+              tabIndex={0}
               onInput={() => {
                 setMessageContent(editorRef.current?.innerHTML || "");
               }}
@@ -401,26 +385,30 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
 
             {renderAttachments()}
             <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
-              <label className="cursor-pointer">
+              <label className="cursor-pointer" htmlFor="file-input">
                 <Button
-                  tabIndex={10}
                   variant="outline"
                   size="sm"
                   onClick={(e) => {
                     e.preventDefault();
-                    const fileInput = e.currentTarget.nextElementSibling as HTMLInputElement;
+                    const fileInput = document.getElementById("file-input") as HTMLInputElement;
                     fileInput?.click();
                   }}
                 >
                   <Paperclip className="mr-2 h-4 w-4" />
                   Attach files
                 </Button>
-                <Input type="file" className="hidden" multiple onChange={handleAttachment} />
+                <Input
+                  id="file-input"
+                  type="file"
+                  className="hidden"
+                  multiple
+                  onChange={handleAttachment}
+                />
               </label>
 
               <div className="flex gap-2">
                 <Button
-                  tabIndex={11}
                   variant="outline"
                   onClick={() => {
                     handleDraft();
@@ -430,7 +418,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                   Save as draft
                 </Button>
                 <Button
-                  tabIndex={12}
                   onClick={() => {
                     // TODO: Implement send functionality
                     onClose();

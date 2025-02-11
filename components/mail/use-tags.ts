@@ -1,4 +1,4 @@
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
+import type { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { atomWithStorage } from "jotai/utils";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
