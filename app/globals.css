@@ -107,7 +107,11 @@
 
 @layer base {
   * {
-    @apply scroll-smooth border-border;
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
   }
 
   body {
