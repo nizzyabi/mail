@@ -29,15 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <NuqsAdapter>
+        <NuqsAdapter>
+          <Providers attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <Suspense>
               <MailComposeModal />
             </Suspense>
             {children}
             <Toast />
-          </NuqsAdapter>
-        </Providers>
+          </Providers>
+        </NuqsAdapter>
       </body>
     </html>
   );
