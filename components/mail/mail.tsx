@@ -146,7 +146,7 @@ export function Mail({ folder }: MailProps) {
                 </div>
 
                 <div className="h-[calc(93vh)]">
-                  {isLoading ? null : <MailList items={threadsResponse?.messages || []} />}
+                  {isLoading ? null : <MailList items={threadsResponse?.threads || []} />}
                 </div>
               </div>
             </div>

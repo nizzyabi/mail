@@ -37,11 +37,13 @@ export interface ParsedMessage {
     name: string;
     email: string;
   };
+  subject: string;
   receivedOn: string;
   unread: boolean;
   body: string;
   processedHtml: string;
   blobUrl: string;
+  totalReplies: number;
 }
 
 export interface InitialThread {
@@ -54,4 +56,6 @@ export interface InitialThread {
   };
   receivedOn: string;
   unread: boolean;
+  subject: string;
+  totalReplies: number;
 }

@@ -209,7 +209,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                   <AvatarFallback>
                     {emailData.sender.name
                       .split(" ")
-                      .map((chunk) => chunk[0])
+                      .map((chunk: string) => chunk[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>

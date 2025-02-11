@@ -38,7 +38,7 @@ const fetchEmails = async (args: any[]) => {
     baseURL: BASE_URL,
     onSuccess(context) {
       Promise.all(
-        context.data.messages.reverse().map((message: ParsedMessage) => {
+        context.data.threads.map((message: ParsedMessage) => {
           return threadsCache.set({ ...message, q: searchParams.toString() });
         }),
       );
@@ -54,7 +54,7 @@ const fetchEmailsFromCache = async (args: any[]) => {
   if (folder) searchParams.set("folder", folder.toString());
   if (labelIds) searchParams.set("labelIds", labelIds.join(","));
   const data = await threadsCache.list(searchParams.toString());
-  return { messages: data };
+  return { threads: data };
 };
 
 const fetchEmail = async (args: any[]): Promise<ParsedMessage> => {
@@ -66,18 +66,18 @@ const fetchEmail = async (args: any[]): Promise<ParsedMessage> => {
     onSuccess(context) {
       threadsCache.set(context.data);
     },
-  }).then((e) => e.data as ParsedMessage);
+  }).then((e) => (e.data as ParsedMessage[])[0]);
 };
 
 // Based on gmail
 interface RawResponse {
   nextPageToken: number;
-  messages: InitialThread[];
+  threads: InitialThread[];
   resultSizeEstimate: number;
 }
 
 interface ThreadsResponse {
-  messages: ParsedMessage[];
+  threads: ParsedMessage[];
 }
 
 const useCachedThreads = (folder: string, labelIds?: string[], query?: string, max?: number) => {
@@ -100,7 +100,7 @@ export const useThreads = (folder: string, labelIds?: string[], query?: string, 
 
   return {
     data: data ?? cachedThreads,
-    isLoading: cachedThreads?.messages.length ? false : isLoading,
+    isLoading: cachedThreads?.threads.length ? false : isLoading,
     error,
   };
 };
