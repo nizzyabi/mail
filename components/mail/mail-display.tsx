@@ -245,7 +245,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Reply className="h-4 w-4" />
-                  <p className="truncate">
+                  <p className="whitespace-break-spaces">
                     {currentMail?.name} ({currentMail?.email})
                   </p>
                 </div>
