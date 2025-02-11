@@ -348,7 +348,7 @@ export default function OpenPage() {
                         <Progress
                           value={(contributor.contributions / maxContributions) * 100}
                           className="h-1.5 border border-neutral-200 bg-neutral-200 dark:bg-neutral-800"
-                          indicatorClassName="bg-white"
+                          indicatorClassName="bg-neutral-500 dark:bg-white"
                         />
                       </div>
                     </div>
