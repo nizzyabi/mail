@@ -120,6 +120,15 @@ export default function OpenPage() {
             <div className="w-full space-y-1">
               <div className="flex justify-between">
                 <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">Mail0</h2>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:hidden"
+                >
+                  <Link href="https://github.com/nizzyabi/mail0" target="_blank" className="gap-2">
+                    <Github className="h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
               <p className="text-sm text-neutral-400">
                 An open source email app built with modern technologies
@@ -128,8 +137,7 @@ export default function OpenPage() {
             <Button
               asChild
               variant="outline"
-              className="bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800"
-              // className="mt-6 hidden border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:flex"
+              className="hidden bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800 sm:inline-flex"
             >
               <Link href="https://github.com/nizzyabi/mail0" target="_blank" className="gap-2">
                 <Github className="h-4 w-4" />
