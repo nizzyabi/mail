@@ -19,6 +19,7 @@ export default function SignIn() {
           <Button
             variant="outline"
             className="w-full gap-2"
+            aria-label="Sign in with Google"
             onClick={async () => {
               toast.promise(
                 signIn.social({

@@ -133,13 +133,28 @@ export function NavUser() {
         <span className="mt-2 block w-full">
           <Tabs defaultValue={theme} className="w-full">
             <TabsList className="grid h-fit w-full grid-cols-3 p-1">
-              <TabsTrigger value="dark" onClick={() => setTheme("dark")} className="h-7">
+              <TabsTrigger
+                value="dark"
+                onClick={() => setTheme("dark")}
+                className="h-7"
+                aria-label="Dark theme"
+              >
                 <Moon size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
-              <TabsTrigger value="light" onClick={() => setTheme("light")} className="h-7">
+              <TabsTrigger
+                value="light"
+                onClick={() => setTheme("light")}
+                className="h-7"
+                aria-label="Light theme"
+              >
                 <Sun size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
-              <TabsTrigger value="system" onClick={() => setTheme("system")} className="h-7">
+              <TabsTrigger
+                value="system"
+                onClick={() => setTheme("system")}
+                className="h-7"
+                aria-label="System theme"
+              >
                 <MonitorCog size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
             </TabsList>

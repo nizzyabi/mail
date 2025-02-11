@@ -288,7 +288,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
           <div className="grid gap-2">
             <div className="relative">
               <Input
-                tabIndex={0}
                 placeholder="To"
                 value={toInput}
                 onChange={(e) => {
@@ -326,40 +325,29 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
               defaultValue={subject || ""}
               onChange={(e) => setSubject(e.target.value)}
               className="rounded-none border-0 focus-visible:ring-0"
-              tabIndex={0}
             />
 
             <Separator className="mx-auto w-[95%]" />
             <div className="flex justify-end p-2">
               <ToggleGroup type="multiple">
-                <ToggleGroupItem tabIndex={0} value="bold" onClick={() => insertFormat("bold")}>
+                <ToggleGroupItem value="bold" onClick={() => insertFormat("bold")}>
                   <Bold className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem tabIndex={0} value="italic" onClick={() => insertFormat("italic")}>
+                <ToggleGroupItem value="italic" onClick={() => insertFormat("italic")}>
                   <Italic className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem tabIndex={0} value="list" onClick={() => insertFormat("list")}>
+                <ToggleGroupItem value="list" onClick={() => insertFormat("list")}>
                   <List className="h-4 w-4" />
                 </ToggleGroupItem>
-                <ToggleGroupItem
-                  tabIndex={0}
-                  value="ordered-list"
-                  onClick={() => insertFormat("ordered-list")}
-                >
+                <ToggleGroupItem value="ordered-list" onClick={() => insertFormat("ordered-list")}>
                   <ListOrdered className="h-4 w-4" />
                 </ToggleGroupItem>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  tabIndex={0}
-                  onClick={() => insertFormat("link")}
-                >
+                <Button variant="ghost" size="icon" onClick={() => insertFormat("link")}>
                   <Link2 className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  tabIndex={0}
                   onClick={() => {
                     const input = document.createElement("input");
                     input.type = "file";
@@ -388,6 +376,7 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
               className="mx-auto min-h-[300px] w-[95%] max-w-full resize-none overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               role="textbox"
               aria-multiline="true"
+              aria-label="Message content"
               tabIndex={0}
               onInput={() => {
                 setMessageContent(editorRef.current?.innerHTML || "");
@@ -398,7 +387,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
             <div className="mx-auto mt-4 flex w-[95%] items-center justify-between">
               <label className="cursor-pointer" htmlFor="file-input">
                 <Button
-                  tabIndex={0}
                   variant="outline"
                   size="sm"
                   onClick={(e) => {
@@ -421,7 +409,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
 
               <div className="flex gap-2">
                 <Button
-                  tabIndex={0}
                   variant="outline"
                   onClick={() => {
                     handleDraft();
@@ -431,7 +418,6 @@ export function MailCompose({ onClose, replyTo }: MailComposeProps) {
                   Save as draft
                 </Button>
                 <Button
-                  tabIndex={0}
                   onClick={() => {
                     // TODO: Implement send functionality
                     onClose();

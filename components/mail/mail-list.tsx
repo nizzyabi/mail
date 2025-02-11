@@ -57,7 +57,6 @@ export function MailList({ items, isCompact, onMailClick }: MailListProps) {
                 handleMailClick(item);
               }
             }}
-            tabIndex={0}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">
