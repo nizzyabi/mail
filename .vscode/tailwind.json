@@ -50,6 +50,16 @@
           "url": "https://tailwindcss.com/docs/functions-and-directives#variants"
         }
       ]
+    },
+    {
+      "name": "@layer",
+      "description": "The `@layer` directive allows you to insert styles at specific points in the generated CSS. This is useful when you need to ensure that your custom styles are generated after Tailwind's default styles, but before any `@apply` rules:\n```css\n@layer components {\n  .btn {\n    /* ... */\n  }\n}\n```\n",
+      "references": [
+        {
+          "name": "Tailwind Documentation",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#layer"
+        }
+      ]
     }
   ]
 }
