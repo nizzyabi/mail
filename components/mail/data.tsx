@@ -300,3 +300,230 @@ export const contacts = [
 ];
 
 export type Contact = (typeof contacts)[number];
+
+// export interface EmailData {
+//   id: string;
+//   sender: string;
+//   to: string;
+//   subject: string;
+//   preview: string;
+//   date: string;
+//   isStarred: boolean;
+//   isCheckbox: boolean;
+//   isSelected: boolean;
+//   hasAttachment?: boolean;
+//   attachmentType?: string;
+//   fullContent?: string;
+// }
+
+export const emailData = [
+  {
+    id: "1",
+    sender: "William Smith",
+    to: "john.doe@example.com",
+    subject: "Meeting Tomorrow",
+    preview:
+      "Hi John, let's have a meeting tomorrow to discuss the project. I have some ideas to share...",
+    fullContent: `Hi John,
+      Let's have a meeting tomorrow to discuss the project. I have been reviewing the details and have some ideas I'd like to share.
+      
+      Please come prepared with any questions or insights you may have.
+      
+      Looking forward to our meeting!
+      
+      Best regards,
+      William`,
+    date: "Thu 6 Feb, 10:30",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: false,
+  },
+  {
+    id: "2",
+    sender: "James Anderson",
+    to: "mark.taylor@example.com",
+    subject: "Invoice for Web Development Services",
+    preview:
+      "Dear Mark, Please find attached the invoice for the completed web development services...",
+    fullContent: `Dear Mark,
+      Please find attached the invoice for the completed web development services.
+      
+      Let me know if you have any questions.
+      
+      Best regards,
+      James`,
+    date: "Mon 3 Feb, 09:15",
+    isStarred: true,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "Invoice",
+  },
+  {
+    id: "3",
+    sender: "Emma Johnson",
+    to: "sarah.miller@example.com",
+    subject: "Upcoming Conference Details",
+    preview:
+      "Hello Sarah, I wanted to share the details for the upcoming tech conference in Berlin...",
+    fullContent: `Hello Sarah,
+      I wanted to share the details for the upcoming tech conference in Berlin.
+      
+      Let me know if you'd like to attend.
+      
+      Best,
+      Emma`,
+    date: "Sun 2 Feb, 14:00",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: false,
+  },
+  {
+    id: "4",
+    sender: "Lucas Brown",
+    to: "anna.wilson@example.com",
+    subject: "New Marketing Strategy Proposal",
+    preview:
+      "Hi Anna, I've drafted a new marketing strategy for Q2. Please review the attached document...",
+    fullContent: `Hi Anna,
+      I've drafted a new marketing strategy for Q2. Please review the attached document and share your thoughts.
+      
+      Looking forward to your feedback.
+      
+      Best,
+      Lucas`,
+    date: "Sat 1 Feb, 11:45",
+    isStarred: true,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "Presentation",
+  },
+  {
+    id: "5",
+    sender: "Olivia White",
+    to: "michael.james@example.com",
+    subject: "Job Application Follow-Up",
+    preview:
+      "Hi Michael, I wanted to follow up on my job application for the software engineer position...",
+    fullContent: `Hi Michael,
+      I wanted to follow up on my job application for the software engineer position.
+      
+      Let me know if you need any additional information.
+      
+      Looking forward to hearing from you.
+      
+      Best,
+      Olivia`,
+    date: "Fri 31 Jan, 17:20",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "Resume",
+  },
+  {
+    id: "6",
+    sender: "Daniel Carter",
+    to: "elizabeth.hall@example.com",
+    subject: "Team Meeting Rescheduled",
+    preview: "Hi Elizabeth, The team meeting has been rescheduled to Monday at 10 AM...",
+    fullContent: `Hi Elizabeth,
+      The team meeting has been rescheduled to Monday at 10 AM.
+      
+      Please update your calendar.
+      
+      Regards,
+      Daniel`,
+    date: "Thu 30 Jan, 08:00",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: false,
+  },
+  {
+    id: "7",
+    sender: "Sophia Martinez",
+    to: "robert.clark@example.com",
+    subject: "Project Update & Next Steps",
+    preview: "Hi Robert, Here is an update on our project. We've made significant progress...",
+    fullContent: `Hi Robert,
+      Here is an update on our project. We've made significant progress on the development phase.
+      
+      Let's discuss the next steps in our upcoming meeting.
+      
+      Best,
+      Sophia`,
+    date: "Wed 29 Jan, 15:10",
+    isStarred: true,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: false,
+  },
+  {
+    id: "8",
+    sender: "Ethan Thomas",
+    to: "chris.evans@example.com",
+    subject: "Flight Ticket Confirmation",
+    preview:
+      "Hi Chris, Your flight ticket to New York has been confirmed. Please find the details...",
+    fullContent: `Hi Chris,
+      Your flight ticket to New York has been confirmed. Please find the details attached.
+      
+      Have a safe trip!
+      
+      Best,
+      Ethan`,
+    date: "Tue 28 Jan, 12:45",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "E-Ticket",
+  },
+  {
+    id: "9",
+    sender: "Mia Lopez",
+    to: "david.harris@example.com",
+    subject: "Client Feedback Report",
+    preview:
+      "Hi David, Please find attached the latest client feedback report for your reference...",
+    fullContent: `Hi David,
+      Please find attached the latest client feedback report for your reference.
+      
+      Let me know if you need any insights.
+      
+      Regards,
+      Mia`,
+    date: "Mon 27 Jan, 16:30",
+    isStarred: true,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "Report",
+  },
+  {
+    id: "10",
+    sender: "Noah Wilson",
+    to: "grace.mitchell@example.com",
+    subject: "Software Release Announcement",
+    preview: "Hi Grace, We are excited to announce the release of our new software version...",
+    fullContent: `Hi Grace,
+      We are excited to announce the release of our new software version.
+      
+      Please check the attached release notes.
+      
+      Best,
+      Noah`,
+    date: "Sun 26 Jan, 10:00",
+    isStarred: false,
+    isSelected: false,
+    isCheckbox: true,
+    hasAttachment: true,
+    attachmentType: "Release Notes",
+  },
+];
+
+export type EmailData = (typeof emailData)[number];
