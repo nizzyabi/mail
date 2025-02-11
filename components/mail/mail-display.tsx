@@ -55,7 +55,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
 
   const handleClose = useCallback(() => {
     onClose?.();
-    setMail({ selected: null });
+    setMail((mail) => ({ ...mail, selected: null }));
   }, [onClose, setMail]);
 
   useEffect(() => {
