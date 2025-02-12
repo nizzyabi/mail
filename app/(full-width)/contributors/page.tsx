@@ -102,7 +102,7 @@ export default function OpenPage() {
         setRepoStats({
           stars: data.stargazers_count,
           forks: data.forks_count,
-          watchers: data.watchers_count,
+          watchers: data.subscribers_count,
           issues: data.open_issues_count,
         }),
       )
@@ -123,7 +123,7 @@ export default function OpenPage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:hidden"
+                  className="bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800 sm:hidden"
                 >
                   <Link href="https://github.com/nizzyabi/mail0" target="_blank" className="gap-2">
                     <Github className="h-4 w-4" />
@@ -137,7 +137,7 @@ export default function OpenPage() {
             <Button
               asChild
               variant="outline"
-              className="bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800"
+              className="hidden bg-transparent text-neutral-800 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800 sm:inline-flex"
               // className="mt-6 hidden border-neutral-800 bg-transparent text-white hover:bg-neutral-800 sm:flex"
             >
               <Link href="https://github.com/nizzyabi/mail0" target="_blank" className="gap-2">
@@ -357,7 +357,7 @@ export default function OpenPage() {
                         <Progress
                           value={(contributor.contributions / maxContributions) * 100}
                           className="h-1.5 border border-neutral-200 bg-neutral-200 dark:bg-neutral-800"
-                          indicatorClassName="bg-white"
+                          indicatorClassName="bg-neutral-500 dark:bg-white"
                         />
                       </div>
                     </div>
