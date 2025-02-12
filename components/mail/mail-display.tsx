@@ -42,6 +42,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   useEffect(() => {
     setCurrentMail(mail);
@@ -240,8 +241,22 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-background px-4 pb-4 pt-2">
-            <form className="relative space-y-2.5 rounded-[calc(var(--radius)-2px)] border bg-secondary/50 p-4 shadow-sm">
+          <div className="group absolute bottom-0 left-0 right-0 z-10">
+            <div className="absolute bottom-0 left-0 right-0 flex h-8 cursor-pointer items-center justify-center bg-gradient-to-t from-background to-transparent">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground">
+                <Reply className="h-4 w-4" />
+                <span>Reply to email</span>
+              </div>
+            </div>
+
+            <form
+              className={cn(
+                "relative mx-4 mb-4 space-y-2.5 rounded-[calc(var(--radius)-2px)] border bg-secondary/50 p-4 shadow-sm transition-all duration-200 ease-in-out",
+                replyText === "" && attachments.length === 0
+                  ? "invisible translate-y-full opacity-0 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100"
+                  : "visible translate-y-0 opacity-100",
+              )}
+            >
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Reply className="h-4 w-4" />
@@ -255,7 +270,8 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                 className="min-h-[120px] w-full resize-none border-0 leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-[#18181A] md:text-base"
                 placeholder="Write your reply..."
                 spellCheck={true}
-                autoFocus
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
               />
 
               {(attachments.length > 0 || isUploading) && (
