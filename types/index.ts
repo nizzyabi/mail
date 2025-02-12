@@ -39,6 +39,7 @@ export interface ParsedMessage {
   };
   receivedOn: string;
   unread: boolean;
+  body: string; // base64 encoded HTML
 }
 
 export interface InitialThread {

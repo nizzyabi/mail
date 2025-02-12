@@ -72,8 +72,37 @@ const googleDriver = (config: IConfig): MailManager => {
       return res.data;
     },
     get: async (id: string) => {
-      const res = await gmail.users.messages.get({ userId: "me", id });
-      return parse(res.data as any);
+      const res = await gmail.users.messages.get({
+        userId: "me",
+        id,
+        format: "full",
+      });
+
+      // Helper to find HTML content in message parts
+      const findHtmlBody = (parts: any[]): string => {
+        for (const part of parts) {
+          if (part.mimeType === "text/html" && part.body?.data) {
+            return part.body.data;
+          }
+          if (part.parts) {
+            const found = findHtmlBody(part.parts);
+            if (found) return found;
+          }
+        }
+        return "";
+      };
+
+      // Get body content - check both direct body and parts
+      const bodyData =
+        res.data.payload?.body?.data ||
+        (res.data.payload?.parts ? findHtmlBody(res.data.payload.parts) : "") ||
+        res.data.payload?.parts?.[0]?.body?.data ||
+        ""; // Fallback to first part
+
+      return {
+        ...parse(res.data as any),
+        body: bodyData,
+      };
     },
     create: async (data: any) => {
       const res = await gmail.users.messages.send({ userId: "me", requestBody: data });

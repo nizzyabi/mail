@@ -9,9 +9,11 @@ import {
   Send,
   FileIcon,
   X,
+  Copy,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns/format";
+import sanitizeHtml from "sanitize-html";
 import { cn } from "@/lib/utils";
 
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -41,6 +43,8 @@ interface ReplyState {
 export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
   const { data: mail, isLoading, error } = useThread(mailId);
   const [, setMail] = useMail();
+  const [decodedBody, setDecodedBody] = useState<string>("");
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const [replyState, setReplyState] = useState<ReplyState>({
     content: "",
@@ -53,10 +57,81 @@ export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
   // const [attachments, setAttachments] = useState<File[]>([]);
   // const [isUploading, setIsUploading] = useState(false);
 
-  // useEffect(() => {
-  // find email and parse body and set it
-  // setCurrentMail(mail);
-  // }, [mail]);
+  function fromBinary(str: string) {
+    return decodeURIComponent(
+      atob(str.replace(/-/g, "+").replace(/_/g, "/"))
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join(""),
+    );
+  }
+
+  useEffect(() => {
+    if (mail?.body) {
+      // Sanitize the decoded HTML before setting it
+      const ALLOWED_TAGS = [
+        // Common email tags
+        "div",
+        "p",
+        "span",
+        "a",
+        "img",
+        "table",
+        "tr",
+        "td",
+        "th",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "ul",
+        "ol",
+        "li",
+        "br",
+        "b",
+        "strong",
+        "i",
+        "em",
+        "style",
+      ];
+
+      try {
+        const decoded = fromBinary(mail.body);
+        const sanitized = sanitizeHtml(decoded, {
+          allowedTags: ALLOWED_TAGS,
+          allowedAttributes: {
+            "*": ["class", "id", "style"], // Allow style on everything
+            img: ["src", "alt", "title", "width", "height"],
+            a: ["href", "target", "rel"],
+          },
+          allowedStyles: {
+            "*": {
+              // Allow all styles on all elements
+              "*": [/.*/], // Regex that matches everything
+            },
+          },
+          allowedSchemes: ["http", "https", "mailto", "tel"], // Only allow safe URL schemes
+          transformTags: {
+            a: (tagName, attribs) => ({
+              tagName,
+              attribs: {
+                ...attribs,
+                target: "_blank",
+                rel: "noopener noreferrer",
+              },
+            }),
+          },
+        });
+        setDecodedBody(sanitized);
+      } catch (error) {
+        console.error("Error decoding email body:", error);
+      }
+    }
+  }, [mail]);
 
   // useEffect(() => {
   //   if (currentMail) {
@@ -108,6 +183,18 @@ export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
       return `${name.slice(0, maxLength - 5)}...${name.slice(extIndex)}`;
     }
     return `${name.slice(0, maxLength)}...`;
+  };
+
+  const handleCopy = async () => {
+    if (mail) {
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(mail, null, 2));
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Reset after 2 seconds
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    }
   };
 
   const renderAttachmentPreview = (file: File) => {
@@ -206,9 +293,25 @@ export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
                 <TooltipContent>Close</TooltipContent>
               </Tooltip>
             )}
-            <div className="flex-1 truncate text-sm font-medium">{mail?.subject}</div>
+            <div className="max-w-[300px] flex-1 truncate text-sm font-medium">
+              {mail?.title || "No subject"}
+            </div>
           </div>
           <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="md:h-fit md:px-2"
+                  disabled={!mail}
+                  onClick={handleCopy}
+                >
+                  <Copy className="h-4 w-4" />
+                  <span className="sr-only">Copy email data</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{copySuccess ? "Copied!" : "Copy email data"}</TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" className="md:h-fit md:px-2" disabled={!mail}>
@@ -306,10 +409,11 @@ export function MailDisplay({ mailId, onClose, isMobile }: MailDisplayProps) {
 
             <Separator />
 
-            <div className="px-8 py-4 pb-[200px]">
-              <div
-                className="prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: mail.body }}
+            <div className="h-full w-full px-5 py-4">
+              <iframe
+                srcDoc={decodedBody}
+                className="min-h-full w-full pb-64"
+                title="Email Content"
               />
             </div>
           </div>
