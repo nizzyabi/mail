@@ -103,7 +103,8 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
 
         const dataTransfer = new DataTransfer();
         newFiles.forEach((file) => dataTransfer.items.add(file));
-        setValue("attachments", dataTransfer.files as unknown as File[]);
+        const files = Array.from(dataTransfer.files);
+        setValue("attachments", files);
       } finally {
         setIsUploading(false);
       }
@@ -117,7 +118,8 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
     const newFiles = Array.from(currentFiles).filter((_, i) => i !== index);
     const dataTransfer = new DataTransfer();
     newFiles.forEach((file) => dataTransfer.items.add(file));
-    setValue("attachments", dataTransfer.files as unknown as File[]);
+    const files = Array.from(dataTransfer.files);
+    setValue("attachments", files);
   };
 
   const truncateFileName = (name: string, maxLength = 15) => {
