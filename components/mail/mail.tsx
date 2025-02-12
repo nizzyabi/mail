@@ -52,7 +52,7 @@ export function Mail({ mails }: MailProps) {
 
   const [, setIsDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
+  const [filterValue, setFilterValue] = useState<"all" | "unread" | "read">("all");
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -124,6 +124,9 @@ export function Mail({ mails }: MailProps) {
                           <DropdownMenuItem onClick={() => setFilterValue("all")}>
                             All mail
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterValue("read")}>
+                            Read
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setFilterValue("unread")}>
                             Unread
                           </DropdownMenuItem>
@@ -147,11 +150,23 @@ export function Mail({ mails }: MailProps) {
                         onMailClick={() => setIsDialogOpen(true)}
                       />
                     )
-                  ) : filteredMails.filter((item) => !item.read).length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">No unread messages</div>
+                  ) : filterValue === "unread" ? (
+                    filteredMails.filter((item) => !item.read).length === 0 ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        No unread messages
+                      </div>
+                    ) : (
+                      <MailList
+                        items={filteredMails.filter((item) => !item.read)}
+                        isCompact={isCompact}
+                        onMailClick={() => setIsDialogOpen(true)}
+                      />
+                    )
+                  ) : filteredMails.filter((item) => item.read).length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">No read messages</div>
                   ) : (
                     <MailList
-                      items={filteredMails.filter((item) => !item.read)}
+                      items={filteredMails.filter((item) => item.read)}
                       isCompact={isCompact}
                       onMailClick={() => setIsDialogOpen(true)}
                     />
