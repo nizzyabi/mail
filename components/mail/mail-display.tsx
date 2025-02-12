@@ -235,7 +235,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
 
             <Separator />
 
-            <div className="px-8 py-4 pb-[200px]">
+            <div className="h-[calc(100%-128px)] w-full p-0">
               <div className="whitespace-pre-wrap text-sm leading-relaxed">{currentMail.text}</div>
             </div>
           </div>
