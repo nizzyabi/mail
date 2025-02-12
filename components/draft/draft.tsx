@@ -6,9 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { SidebarToggle } from "../ui/sidebar-toggle";
+import type { DraftType } from "@/store/draftStates";
 import { useDrafts } from "./draftHooks/useDrafts";
 import { Button } from "@/components/ui/button";
-import { DraftType } from "@/store/draftStates";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import * as React from "react";
 
@@ -80,11 +81,17 @@ export function Draft() {
                       {drafts.map((draft) => (
                         <div
                           key={draft.id}
-                          className={`flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-secondary/80 ${
-                            selectedDraft?.id === draft.id ? "bg-secondary" : ""
-                          }`}
+                          className={cn(
+                            "flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-secondary/80",
+                            selectedDraft?.id === draft.id && "bg-secondary",
+                          )}
                           onClick={() => {
                             setSelectedDraft(draft); // selecting the draft
+                          }}
+                          onKeyUp={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              setSelectedDraft(draft); // selecting the draft
+                            }
                           }}
                         >
                           <div className="mr-4 min-w-0 flex-1">

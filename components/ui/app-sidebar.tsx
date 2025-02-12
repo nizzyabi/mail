@@ -18,9 +18,10 @@ import {
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { $fetch } from "@/lib/auth-client";
 import { BASE_URL } from "@/lib/constants";
-import React, { useMemo } from "react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { useMemo } from "react";
+import type React from "react";
 import useSWR from "swr";
 
 const fetchStats = async (args: any[]) => {

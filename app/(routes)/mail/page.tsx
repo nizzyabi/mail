@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
-import { accounts } from "@/components/mail/data";
-import { Mail } from "@/components/mail/mail";
+import { accounts, mails } from "@/components/mail/data";
+import { MailWrapper } from "@/components/mail/mail";
 
 export default async function MailPage() {
   const cookieStore = await cookies();
@@ -14,7 +14,7 @@ export default async function MailPage() {
   return (
     <div className="w-full bg-white dark:bg-sidebar">
       <div className="flex-col dark:bg-[#090909] dark:text-gray-100 md:m-2 md:flex md:rounded-md md:border">
-        <Mail
+        <MailWrapper
           accounts={accounts}
           folder={"inbox"}
           defaultLayout={defaultLayout}

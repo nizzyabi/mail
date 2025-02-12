@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { earlyAccess } from "@/db/schema";
 import { nanoid } from "nanoid";
 import { db } from "@/db";

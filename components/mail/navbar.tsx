@@ -1,11 +1,10 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
-import Link from "next/link";
-
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { buttonVariants } from "@/components/ui/button";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface NavProps {
   isCollapsed: boolean;
@@ -26,7 +25,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
         {links.map((link, index) =>
           isCollapsed ? (
-            <Tooltip key={index} delayDuration={0}>
+            <Tooltip key={link.title} delayDuration={0}>
               <TooltipTrigger asChild>
                 <Link
                   href="#"
@@ -48,7 +47,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
             </Tooltip>
           ) : (
             <Link
-              key={index}
+              key={link.title}
               href="#"
               className={cn(
                 buttonVariants({ variant: link.variant, size: "sm" }),

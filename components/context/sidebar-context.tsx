@@ -7,8 +7,8 @@ import {
   SIDEBAR_WIDTH,
   SIDEBAR_WIDTH_ICON,
 } from "@/lib/constants";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { TooltipProvider } from "../ui/tooltip";
 import { getCookie } from "@/utils/cookies";
 import { cn } from "@/lib/utils";
 import * as React from "react";
