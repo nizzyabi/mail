@@ -12,23 +12,23 @@ import {
   Send,
   FileIcon,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import { format } from "date-fns/format";
-import { cn } from "@/lib/utils";
-import React from "react";
-
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useState, useEffect, useCallback } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail } from "@/components/mail/data";
+import { format } from "date-fns/format";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
+import React from "react";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -36,12 +36,35 @@ interface MailDisplayProps {
   isMobile?: boolean;
 }
 
+type FormInputs = {
+  replyText: string;
+  attachments: File[];
+};
+
 export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
   const [, setMail] = useMail();
   const [currentMail, setCurrentMail] = useState<Mail | null>(mail);
   const [isMuted, setIsMuted] = useState(false);
-  const [attachments, setAttachments] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    // formState: { errors },
+  } = useForm<FormInputs>({
+    defaultValues: {
+      replyText: "",
+      attachments: undefined,
+    },
+  });
+
+  // Watch form values for visibility control
+  const replyText = watch("replyText");
+  const attachmentField = watch("attachments");
+
+  const onSubmit: SubmitHandler<FormInputs> = (data) => console.log(data);
 
   useEffect(() => {
     setCurrentMail(mail);
@@ -73,7 +96,15 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
       setIsUploading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        setAttachments([...attachments, ...Array.from(e.target.files)]);
+        const currentFiles = attachmentField;
+        const newFiles = currentFiles
+          ? [...Array.from(currentFiles), ...Array.from(e.target.files)]
+          : Array.from(e.target.files);
+
+        const dataTransfer = new DataTransfer();
+        newFiles.forEach((file) => dataTransfer.items.add(file));
+        const files = Array.from(dataTransfer.files);
+        setValue("attachments", files);
       } finally {
         setIsUploading(false);
       }
@@ -81,7 +112,14 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
   };
 
   const removeAttachment = (index: number) => {
-    setAttachments(attachments.filter((_, i) => i !== index));
+    const currentFiles = attachmentField;
+    if (!currentFiles) return;
+
+    const newFiles = Array.from(currentFiles).filter((_, i) => i !== index);
+    const dataTransfer = new DataTransfer();
+    newFiles.forEach((file) => dataTransfer.items.add(file));
+    const files = Array.from(dataTransfer.files);
+    setValue("attachments", files);
   };
 
   const truncateFileName = (name: string, maxLength = 15) => {
@@ -164,7 +202,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
           </div>
         </div>
 
-        <div className="relative flex-1 overflow-hidden">
+        <div className="relative flex-1 overflow-hidden bg-background">
           <div className="absolute inset-0 overflow-y-auto">
             <div className="flex flex-col gap-4 px-4 py-4">
               <div className="flex items-start gap-3">
@@ -235,13 +273,28 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
 
             <Separator />
 
-            <div className="px-8 py-4 pb-[200px]">
+            <div className="h-[calc(100%-128px)] w-full p-0">
               <div className="whitespace-pre-wrap text-sm leading-relaxed">{currentMail.text}</div>
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-background px-4 pb-4 pt-2">
-            <form className="relative space-y-2.5 rounded-[calc(var(--radius)-2px)] border bg-secondary/50 p-4 shadow-sm">
+          <div className="group absolute bottom-0 left-0 right-0 z-10">
+            <div className="absolute bottom-0 left-0 right-0 flex h-8 cursor-pointer items-center justify-center bg-gradient-to-t from-background to-transparent">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground">
+                <Reply className="h-4 w-4" />
+                <span>Reply to email</span>
+              </div>
+            </div>
+
+            <form
+              className={cn(
+                "relative mx-4 mb-4 space-y-2.5 rounded-[calc(var(--radius)-2px)] border bg-secondary/50 p-4 shadow-sm transition-all duration-200 ease-in-out",
+                replyText === "" && (!attachmentField || attachmentField.length === 0)
+                  ? "invisible translate-y-full opacity-0 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100"
+                  : "visible translate-y-0 opacity-100",
+              )}
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Reply className="h-4 w-4" />
@@ -255,10 +308,10 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                 className="min-h-[120px] w-full resize-none border-0 leading-relaxed placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-[#18181A] md:text-base"
                 placeholder="Write your reply..."
                 spellCheck={true}
-                autoFocus
+                {...register("replyText")}
               />
 
-              {(attachments.length > 0 || isUploading) && (
+              {((attachmentField && attachmentField.length > 0) || isUploading) && (
                 <div className="relative z-50 min-h-[32px]">
                   <div className="hide-scrollbar absolute inset-x-0 flex gap-2 overflow-x-auto">
                     {isUploading && (
@@ -269,57 +322,60 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                         Uploading...
                       </Badge>
                     )}
-                    {attachments.map((file, index) => (
-                      <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
-                          >
-                            <span className="max-w-[120px] truncate">
-                              {truncateFileName(file.name)}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="ml-1 h-4 w-4 hover:bg-background/80"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                removeAttachment(index);
-                              }}
+                    {attachmentField &&
+                      Array.from(attachmentField).map((file, index) => (
+                        <Tooltip key={index}>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
                             >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent className="w-64 p-0">
-                          <div className="relative h-32 w-full">
-                            {file.type.startsWith("image/") ? (
-                              <Image
-                                src={URL.createObjectURL(file) || "/placeholder.svg"}
-                                alt={file.name}
-                                fill
-                                className="rounded-t-md object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center p-4">
-                                <FileIcon className="h-16 w-16 text-primary" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="bg-secondary p-2">
-                            <p className="text-sm font-medium">{truncateFileName(file.name, 30)}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Last modified: {new Date(file.lastModified).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+                              <span className="max-w-[120px] truncate">
+                                {truncateFileName(file.name)}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="ml-1 h-4 w-4 hover:bg-background/80"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  removeAttachment(index);
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent className="w-64 p-0">
+                            <div className="relative h-32 w-full">
+                              {file.type.startsWith("image/") ? (
+                                <Image
+                                  src={URL.createObjectURL(file) || "/placeholder.svg"}
+                                  alt={file.name}
+                                  fill
+                                  className="rounded-t-md object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center p-4">
+                                  <FileIcon className="h-16 w-16 text-primary" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="bg-secondary p-2">
+                              <p className="text-sm font-medium">
+                                {truncateFileName(file.name, 30)}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Last modified: {new Date(file.lastModified).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
                   </div>
                 </div>
               )}
@@ -346,11 +402,13 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                   </Tooltip>
                   <input
                     type="file"
-                    id="attachment-input"
                     className="hidden"
-                    onChange={handleAttachment}
+                    id="attachment-input"
                     multiple
                     accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                    {...register("attachments", {
+                      onChange: handleAttachment,
+                    })}
                   />
                 </div>
                 <div className="flex items-center gap-2">
