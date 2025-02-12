@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
+import { MailWrapper } from "@/components/mail/mail";
 import { accounts } from "@/components/mail/data";
-import { Mail } from "@/components/mail/mail";
 
 interface MailPageProps {
   params: Promise<{
@@ -28,7 +28,7 @@ export default async function MailPage({ params }: MailPageProps) {
   return (
     <div className="w-full bg-white dark:bg-sidebar">
       <div className="flex-col bg-[#090909] dark:text-gray-100 md:m-2 md:flex md:rounded-md md:border">
-        <Mail
+        <MailWrapper
           accounts={accounts}
           folder={resolvedParams.folder}
           defaultLayout={defaultLayout}

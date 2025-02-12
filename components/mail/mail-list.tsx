@@ -1,11 +1,18 @@
-import { ComponentProps, useMemo, useEffect, useRef } from "react";
+import { type ComponentProps, useMemo, useEffect, useRef } from "react";
 import { useThread, preloadThread } from "@/hooks/use-threads";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMail } from "@/components/mail/use-mail";
 import { useSession } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
+import type { InitialThread } from "@/types";
 import { Skeleton } from "../ui/skeleton";
-import { InitialThread } from "@/types";
+
+import type { Mail } from "@/components/mail/data";
+import { formatDate } from "@/utils/format-date";
+import { tagsAtom, type Tag } from "./use-tags";
+
+import { BellOff } from "lucide-react";
+import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 
 interface MailListProps {
@@ -78,10 +85,9 @@ const Thread = ({ message }: { message: InitialThread }) => {
   }, []);
 
   return (
-    <div
+    <button
+      type="button"
       onClick={handleMailClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       key={message.id}
       className={cn(
         "group flex cursor-pointer flex-col items-start border-b px-4 py-4 text-left text-sm transition-all hover:bg-accent",
@@ -111,7 +117,7 @@ const Thread = ({ message }: { message: InitialThread }) => {
         </p>
       </div>
       <MailLabels labels={message.tags} />
-    </div>
+    </button>
   );
 };
 
@@ -143,8 +149,6 @@ function MailLabels({ labels }: { labels: string[] }) {
 }
 
 function getDefaultBadgeStyle(label: string): ComponentProps<typeof Badge>["variant"] {
-  return "outline";
-
   // TODO: styling for each tag type
   switch (true) {
     case label.toLowerCase() === "work":

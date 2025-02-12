@@ -17,17 +17,30 @@ export async function middleware(request: NextRequest) {
 
   switch (pathname) {
     case "/api/auth/early-access": {
-      const rateLimiter = await waitlistRateLimiter();
-      const { success } = await rateLimiter.limit(ip);
-      if (!success) {
+      try {
+        const rateLimiter = await waitlistRateLimiter();
+        const { success } = await rateLimiter.limit(ip);
+        if (!success) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Rate limit exceeded, please try again later!",
+            },
+            { status: 429 },
+          );
+        }
+      } catch (error) {
+        console.error("Rate limiter error:", error);
         return NextResponse.json(
           {
             success: false,
-            error: "Rate limit exceeded, please try again later!",
+            error: "Internal server error, please try again later",
           },
-          { status: 429 },
+          { status: 500 },
         );
       }
+      // Ensure to exit the case if no rate-limiting error
+      break;
     }
 
     default: {

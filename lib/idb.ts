@@ -1,6 +1,6 @@
 "use client";
 import Dexie, { type EntityTable } from "dexie";
-import { ParsedMessage } from "@/types";
+import type { ParsedMessage } from "@/types";
 
 const idb = new Dexie("mail0") as Dexie & {
   threads: EntityTable<

@@ -4,8 +4,8 @@ import {
   ALLOWED_HTML_STYLES,
   EMAIL_HTML_TEMPLATE,
 } from "@/lib/constants";
+import type { ParsedMessage } from "@/types";
 import sanitizeHtml from "sanitize-html";
-import { ParsedMessage } from "@/types";
 import { google } from "googleapis";
 import * as he from "he";
 
@@ -28,9 +28,7 @@ function fromBinary(str: string) {
   return decodeURIComponent(
     atob(str.replace(/-/g, "+").replace(/_/g, "/"))
       .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
       .join(""),
   );
 }
@@ -134,7 +132,7 @@ const googleDriver = (config: IConfig): MailManager => {
       });
       const messages = await Promise.all(
         (res.data.messages || [])
-          .map(async (message) => {
+          .map(async (message: { id: any }) => {
             if (!message.id) return null;
             const msg = await gmail.users.messages.get({
               userId: "me",
@@ -150,7 +148,7 @@ const googleDriver = (config: IConfig): MailManager => {
               blobUrl: "",
             };
           })
-          .filter((msg): msg is NonNullable<typeof msg> => msg !== null),
+          .filter((msg: null): msg is NonNullable<typeof msg> => msg !== null),
       );
 
       return { ...res.data, messages };

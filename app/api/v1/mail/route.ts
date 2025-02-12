@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { createDriver } from "./driver";
 import { account } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -20,13 +20,14 @@ export const GET = async ({ headers, nextUrl }: NextRequest) => {
     },
   });
   if (!searchParams.has("folder")) return new Response("Bad Request", { status: 400 });
+  const max = searchParams.get("max");
   return new Response(
     JSON.stringify(
       await driver.list(
-        searchParams.get("folder")!,
+        searchParams.get("folder") ?? "",
         searchParams.get("q") ?? undefined,
-        Number(searchParams.get("max")) ? +searchParams.get("max")! : undefined,
-        searchParams.get("labelIds") ? searchParams.get("labelIds")!.split(",") : undefined,
+        max ? Number(max) : undefined,
+        searchParams.get("labelIds") ? searchParams.get("labelIds")?.split(",") : undefined,
       ),
     ),
   );

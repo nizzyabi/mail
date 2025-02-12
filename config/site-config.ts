@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 const TITLE = "mail0";
 const DESCRIPTION = "An Open Source Gmail Alternative.";

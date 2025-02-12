@@ -14,7 +14,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 import Link from "next/link";
 
 interface NavMainProps {

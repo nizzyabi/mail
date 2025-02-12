@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
-import React from "react";
+import type React from "react";
 
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -27,9 +27,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import type { Mail } from "@/components/mail/data";
 import { Button } from "@/components/ui/button";
 import { useThread } from "@/hooks/use-threads";
-import { Mail } from "@/components/mail/data";
 import { useMail } from "./use-mail";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
@@ -242,7 +242,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                   <AvatarFallback>
                     {emailData.sender.name
                       .split(" ")
-                      .map((chunk) => chunk[0])
+                      .map((chunk: number[]) => chunk[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
@@ -265,22 +265,14 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                     key={emailData.id}
                     src={emailData.blobUrl}
                     className={cn(
-                      "w-full flex-1 border-none transition-opacity duration-200",
+                      "h-full min-h-[500px] w-full flex-1 overflow-auto border-none transition-opacity duration-200",
                       isLoading ? "opacity-50" : "opacity-100",
                     )}
                     title="Email Content"
                     sandbox="allow-same-origin"
-                    style={{
-                      minHeight: "500px",
-                      height: "100%",
-                      overflow: "auto",
-                    }}
                   />
                 ) : (
-                  <div
-                    className="flex h-[500px] w-full items-center justify-center"
-                    style={{ minHeight: "500px" }}
-                  >
+                  <div className="flex h-[500px] min-h-[500px] w-full items-center justify-center">
                     <div className="h-32 w-32 animate-pulse rounded-full bg-secondary" />
                   </div>
                 )}
@@ -320,10 +312,9 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                       </Badge>
                     )}
                     {attachments.map((file, index) => (
-                      <Tooltip key={index}>
+                      <Tooltip key={file.name}>
                         <TooltipTrigger asChild>
                           <Badge
-                            key={index}
                             variant="secondary"
                             className="inline-flex shrink-0 items-center gap-1 bg-background/50 px-2 py-1.5 text-xs"
                           >
@@ -395,6 +386,7 @@ export function MailDisplay({ mail, onClose, isMobile }: MailDisplayProps) {
                     <TooltipContent>Attach file</TooltipContent>
                   </Tooltip>
                   <input
+                    title="Add attachment"
                     type="file"
                     id="attachment-input"
                     className="hidden"

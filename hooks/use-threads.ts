@@ -1,6 +1,6 @@
 "use client";
+import type { InitialThread, ParsedMessage } from "@/types";
 import { $fetch, useSession } from "@/lib/auth-client";
-import { InitialThread, ParsedMessage } from "@/types";
 import { BASE_URL } from "@/lib/constants";
 import useSWR, { preload } from "swr";
 import { idb } from "@/lib/idb";

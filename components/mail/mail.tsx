@@ -24,7 +24,7 @@ import { useOpenComposeModal } from "@/hooks/use-open-compose-modal";
 import { useMediaQuery } from "../../hooks/use-media-query";
 import { useSearchValue } from "@/hooks/use-search-value";
 import { SidebarToggle } from "../ui/sidebar-toggle";
-import { type Mail } from "@/components/mail/data";
+import type { Mail } from "@/components/mail/data";
 import { useSearchParams } from "next/navigation";
 import { useThreads } from "@/hooks/use-threads";
 import { SearchBar } from "./search-bar";
@@ -42,7 +42,7 @@ interface MailProps {
   muted?: boolean;
 }
 
-export function Mail({ folder }: MailProps) {
+export function MailWrapper({ folder }: MailProps) {
   const [searchValue] = useSearchValue();
   const [mail, setMail] = useMail();
   const [isCompact, setIsCompact] = React.useState(false);
@@ -53,7 +53,7 @@ export function Mail({ folder }: MailProps) {
   const labels = useMemo(() => {
     if (filterValue === "all") {
       if (searchParams.has("category")) {
-        return [`CATEGORY_${searchParams.get("category")!.toUpperCase()}`];
+        return [`CATEGORY_${searchParams.get("category")?.toUpperCase()}`];
       }
       return undefined;
     }
@@ -61,7 +61,7 @@ export function Mail({ folder }: MailProps) {
       if (searchParams.has("category")) {
         return [
           filterValue.toUpperCase(),
-          `CATEGORY_${searchParams.get("category")!.toUpperCase()}`,
+          `CATEGORY_${searchParams.get("category")?.toUpperCase()}`,
         ];
       }
       return [filterValue.toUpperCase()];

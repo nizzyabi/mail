@@ -61,7 +61,7 @@ export function NavUser() {
         </SidebarMenuItem>
       </SidebarMenu>
       <DropdownMenuContent
-        className="ml-2 w-[--radix-dropdown-menu-trigger-width] min-w-52 font-medium"
+        className="ml-2 w-[--radix-dropdown-menu-trigger-width] min-w-36 font-medium"
         align="end"
         side={"bottom"}
         sideOffset={1}
@@ -77,7 +77,7 @@ export function NavUser() {
                 <ChevronRight size={8} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent className="ml-1">
+                <DropdownMenuSubContent className="ml-1 w-fit">
                   <DropdownMenuItem>
                     <Image
                       src={session.user.image || "/placeholder.svg"}
@@ -125,23 +125,36 @@ export function NavUser() {
             </DropdownMenuItem>
           </>
         ) : (
-          <>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/signin")}>
-              <LogIn size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
-              Sign in
-            </DropdownMenuItem>
-          </>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/signin")}>
+            <LogIn size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
+            Sign in
+          </DropdownMenuItem>
         )}
         <span className="mt-2 block w-full">
           <Tabs defaultValue={theme} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="dark" onClick={() => setTheme("dark")}>
+            <TabsList className="grid h-fit w-full grid-cols-3 p-1">
+              <TabsTrigger
+                value="dark"
+                onClick={() => setTheme("dark")}
+                className="h-7"
+                aria-label="Dark theme"
+              >
                 <Moon size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
-              <TabsTrigger value="light" onClick={() => setTheme("light")}>
+              <TabsTrigger
+                value="light"
+                onClick={() => setTheme("light")}
+                className="h-7"
+                aria-label="Light theme"
+              >
                 <Sun size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
-              <TabsTrigger value="system" onClick={() => setTheme("system")}>
+              <TabsTrigger
+                value="system"
+                onClick={() => setTheme("system")}
+                className="h-7"
+                aria-label="System theme"
+              >
                 <MonitorCog size={16} strokeWidth={2} className="opacity-60" aria-hidden="true" />
               </TabsTrigger>
             </TabsList>
