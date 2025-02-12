@@ -1,159 +1,159 @@
+import { type ComponentProps, useMemo, useEffect, useRef } from "react";
+import { useThread, preloadThread } from "@/hooks/use-threads";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMail } from "@/components/mail/use-mail";
+import { useSession } from "@/lib/auth-client";
+import { Badge } from "@/components/ui/badge";
+import type { InitialThread } from "@/types";
+import { Skeleton } from "../ui/skeleton";
+
 import type { Mail } from "@/components/mail/data";
 import { formatDate } from "@/utils/format-date";
 import { tagsAtom, type Tag } from "./use-tags";
-import { Badge } from "@/components/ui/badge";
-import type { ComponentProps } from "react";
+
 import { BellOff } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 
 interface MailListProps {
-  items: Mail[];
-  isCompact: boolean;
-  onMailClick: () => void;
+  items: InitialThread[];
 }
 
-export function MailList({ items, isCompact, onMailClick }: MailListProps) {
+const HOVER_DELAY = 300; // ms before prefetching
+
+const Thread = ({ message }: { message: InitialThread }) => {
   const [mail, setMail] = useMail();
+  const { data: session } = useSession();
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const isHovering = useRef<boolean>(false);
+  const hasPrefetched = useRef<boolean>(false);
 
-  const tags = useAtomValue(tagsAtom);
-  const activeTags = tags.filter((tag) => tag.checked);
+  const isMailSelected = useMemo(() => message.id === mail.selected, [message.id, mail.selected]);
 
-  const handleMailClick = (selectedMail: Mail) => {
-    if (mail.selected === selectedMail.id) {
+  const handleMailClick = () => {
+    if (isMailSelected) {
       setMail({
         selected: null,
       });
     } else {
       setMail({
         ...mail,
-        selected: selectedMail.id,
+        selected: message.id,
       });
     }
-
-    onMailClick();
   };
 
+  const handleMouseEnter = () => {
+    isHovering.current = true;
+    if (session?.user.id && !hasPrefetched.current) {
+      // Clear any existing timeout
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+
+      // Set new timeout for prefetch
+      hoverTimeoutRef.current = setTimeout(() => {
+        if (isHovering.current) {
+          // Only prefetch if still hovering and hasn't been prefetched
+          console.log(`🕒 Hover threshold reached for email ${message.id}, initiating prefetch...`);
+          preloadThread(session.user.id, message.id);
+          hasPrefetched.current = true;
+        }
+      }, HOVER_DELAY);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    isHovering.current = false;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+  };
+
+  // Reset prefetch flag when message changes
+  useEffect(() => {
+    hasPrefetched.current = false;
+  }, [message.id]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <button
+      type="button"
+      onClick={handleMailClick}
+      key={message.id}
+      className={cn(
+        "group flex cursor-pointer flex-col items-start border-b px-4 py-4 text-left text-sm transition-all hover:bg-accent",
+        message.unread && "",
+        isMailSelected ? "bg-accent" : "",
+      )}
+    >
+      <div className="flex w-full flex-col gap-1">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            <p
+              className={cn(
+                message.unread ? "font-bold" : "font-medium",
+                "text-md flex items-center gap-1 opacity-70 group-hover:opacity-100",
+              )}
+            >
+              {message.sender.name}{" "}
+              {message.unread ? <span className="ml-1 size-2 rounded-full bg-blue-500" /> : null}
+            </p>
+          </div>
+          <p className="pr-2 text-xs font-normal opacity-70 group-hover:opacity-100">
+            {new Date(message.receivedOn).toLocaleDateString()}
+          </p>
+        </div>
+        <p className="mt-1 text-xs font-medium opacity-70 group-hover:opacity-100">
+          {message.title}
+        </p>
+      </div>
+      <MailLabels labels={message.tags} />
+    </button>
+  );
+};
+
+export function MailList({ items }: MailListProps) {
+  // TODO: add logic for tags filtering & search
   return (
     <ScrollArea className="" type="auto">
       <div className="flex flex-col pt-0">
         {items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={cn(
-              "flex cursor-pointer flex-col items-start border-b p-4 text-left text-sm transition-all hover:bg-accent",
-              mail.selected === item.id && "bg-muted hover:opacity-100",
-              isCompact && mail.selected !== item.id ? "gap-0" : "gap-2",
-              item.read && mail.selected !== item.id
-                ? "opacity-70 hover:opacity-100"
-                : "opacity-100",
-            )}
-            onClick={() => handleMailClick(item)}
-            onKeyUp={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                handleMailClick(item);
-              }
-            }}
-          >
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center">
-                <div
-                  className={cn(
-                    "flex gap-2",
-                    isCompact && mail.selected !== item.id ? "items-center" : "flex-col flex-wrap",
-                  )}
-                >
-                  <div className="flex w-32 items-center gap-2 2xl:w-40">
-                    <div className={cn(item.read ? "font-normal" : "font-bold")}>{item.name}</div>
-                    {item.muted && <BellOff className="h-4 w-4 text-muted-foreground" />}
-                    {!item.read && <span className="flex h-2 w-2 rounded-full bg-blue-600" />}
-                  </div>
-
-                  <div
-                    className={cn(
-                      "max-w-32 truncate text-xs md:max-w-full",
-                      item.read ? "font-normal" : "font-bold",
-                      isCompact && mail.selected !== item.id ? "truncate" : "max-w-full",
-                    )}
-                  >
-                    {item.subject}
-                  </div>
-                </div>
-
-                <div
-                  className={cn(
-                    "ml-auto whitespace-nowrap text-right text-xs",
-                    mail.selected === item.id ? "text-foreground" : "text-muted-foreground",
-                  )}
-                >
-                  {formatDate(item.date)}
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={cn(
-                "line-clamp-2 select-none text-xs text-muted-foreground transition-all",
-                isCompact && mail.selected !== item.id ? "h-0" : "h-8",
-              )}
-            >
-              {item.text.substring(0, 300)}
-            </div>
-
-            <MailLabels
-              labels={item.labels}
-              activeTags={activeTags}
-              isCompact={isCompact}
-              isSelected={mail.selected === item.id}
-            />
-          </button>
+          <Thread key={item.id} message={item} />
         ))}
       </div>
     </ScrollArea>
   );
 }
 
-// things were turning into a ?:?:?: fest had to dip out
-const MailBadge = ({ label, isActive }: { label: string; isActive?: boolean }) => {
-  return <Badge variant={isActive ? "default" : getDefaultBadgeStyle(label)}>{label}</Badge>;
-};
-
-function MailLabels({
-  labels,
-  activeTags,
-  isCompact,
-  isSelected,
-}: {
-  labels: string[];
-  activeTags: Tag[];
-  isCompact: boolean;
-  isSelected: boolean;
-}) {
+function MailLabels({ labels }: { labels: string[] }) {
   if (!labels.length) return null;
 
-  const activeLabels = labels.filter((label) =>
-    activeTags.some((tag) => tag.label.toLowerCase() === label.toLowerCase()),
-  );
-
   return (
-    <div
-      className={cn("flex select-none items-center gap-2", isCompact && !isSelected && "hidden")}
-    >
-      {activeTags.length > 0
-        ? activeLabels.map((label) => <MailBadge key={label} label={label} isActive />)
-        : labels.map((label) => <MailBadge key={label} label={label} />)}
+    <div className={cn("mt-2 flex select-none items-center gap-2")}>
+      {labels.map((label) => (
+        <Badge key={label} className="rounded-md" variant={getDefaultBadgeStyle(label)}>
+          <p className="text-xs font-medium lowercase opacity-70">{label.replace(/_/g, " ")}</p>
+        </Badge>
+      ))}
     </div>
   );
 }
 
 function getDefaultBadgeStyle(label: string): ComponentProps<typeof Badge>["variant"] {
-  switch (label.toLowerCase()) {
-    case "work":
+  // TODO: styling for each tag type
+  switch (true) {
+    case label.toLowerCase() === "work":
       return "default";
-    case "personal":
+    case label.toLowerCase().startsWith("category_"):
       return "outline";
     default:
       return "secondary";
