@@ -107,51 +107,45 @@ export function Mail({ folder }: MailProps) {
         >
           <ResizablePanel defaultSize={isMobile ? 100 : 35} minSize={isMobile ? 100 : 35}>
             <div className="flex-1 overflow-y-auto">
-              <div>
-                <div className="sticky top-0 z-10 rounded-t-md bg-background pt-[6px]">
-                  <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-1">
-                      <SidebarToggle className="h-fit px-2" />
-                      <React.Suspense>
-                        <ComposeButton />
-                      </React.Suspense>
-                    </div>
-                    <SearchBar />
-                    <div className="flex items-center space-x-1.5">
-                      <Button
-                        variant="ghost"
-                        className="md:h-fit md:px-2"
-                        onClick={() => setIsCompact(!isCompact)}
-                      >
-                        <AlignVerticalSpaceAround />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="md:h-fit md:px-2">
-                            <ListFilter className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setFilterValue("all")}>
-                            All mail {filterValue === "all" && <Check />}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setFilterValue("unread")}>
-                            Unread {filterValue === "unread" && <Check />}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+              <div className="sticky top-0 z-10 rounded-t-md bg-background pt-[6px]">
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center gap-1">
+                    <SidebarToggle className="h-fit px-2" />
+                    <React.Suspense>
+                      <ComposeButton />
+                    </React.Suspense>
                   </div>
-                  <Separator className="mt-2" />
+                  <SearchBar />
+                  <div className="flex items-center space-x-1.5">
+                    <Button
+                      variant="ghost"
+                      className="md:h-fit md:px-2"
+                      onClick={() => setIsCompact(!isCompact)}
+                    >
+                      <AlignVerticalSpaceAround />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="md:h-fit md:px-2">
+                          <ListFilter className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setFilterValue("all")}>
+                          All mail {filterValue === "all" && <Check />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setFilterValue("unread")}>
+                          Unread {filterValue === "unread" && <Check />}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
+                <Separator className="mt-2" />
+              </div>
 
-                <div className="h-[calc(93vh)]">
-                  {isLoading ? (
-                    <p>Loading</p>
-                  ) : (
-                    <MailList items={threadsResponse?.messages || []} />
-                  )}
-                </div>
+              <div className="h-[calc(93vh)]">
+                {isLoading ? <p>Loading</p> : <MailList items={threadsResponse?.messages || []} />}
               </div>
             </div>
           </ResizablePanel>
