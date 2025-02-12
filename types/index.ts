@@ -39,9 +39,19 @@ export interface ParsedMessage {
   };
   receivedOn: string;
   unread: boolean;
-  body: string; // base64 encoded HTML
+  body: string;
+  processedHtml: string;
+  blobUrl: string;
 }
 
 export interface InitialThread {
   id: string;
+  title: string;
+  tags: string[];
+  sender: {
+    name: string;
+    email: string;
+  };
+  receivedOn: string;
+  unread: boolean;
 }

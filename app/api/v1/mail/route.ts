@@ -13,7 +13,7 @@ export const GET = async ({ headers, nextUrl }: NextRequest) => {
   const [foundAccount] = await db.select().from(account).where(eq(account.userId, session.user.id));
   if (!foundAccount?.accessToken || !foundAccount.refreshToken)
     return new Response("Unauthorized, reconnect", { status: 402 });
-  const gmail = createDriver("google", {
+  const driver = createDriver(foundAccount.providerId, {
     auth: {
       access_token: foundAccount.accessToken,
       refresh_token: foundAccount.refreshToken,
@@ -22,7 +22,7 @@ export const GET = async ({ headers, nextUrl }: NextRequest) => {
   if (!searchParams.has("folder")) return new Response("Bad Request", { status: 400 });
   return new Response(
     JSON.stringify(
-      await gmail.list(
+      await driver.list(
         searchParams.get("folder")!,
         searchParams.get("q") ?? undefined,
         Number(searchParams.get("max")) ? +searchParams.get("max")! : undefined,

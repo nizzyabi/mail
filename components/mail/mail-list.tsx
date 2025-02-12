@@ -1,27 +1,28 @@
+import { ComponentProps, useMemo, useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMail } from "@/components/mail/use-mail";
-import { useThread } from "@/hooks/use-threads";
-import { ComponentProps, useMemo } from "react";
+import { preloadThread } from "@/hooks/use-threads";
+import { useSession } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "../ui/skeleton";
-import { format } from "date-fns/format";
 import { InitialThread } from "@/types";
 import { cn } from "@/lib/utils";
+
 interface MailListProps {
   items: InitialThread[];
 }
 
-const Thread = ({ id }: { id: string }) => {
-  const [mail, setMail] = useMail();
-  const { data } = useThread(id);
+const HOVER_DELAY = 300; // ms before prefetching
 
-  const isMailSelected = useMemo(
-    () => (data ? data.id === mail.selected : false),
-    [data, mail.selected],
-  );
+const Thread = ({ message }: { message: InitialThread }) => {
+  const [mail, setMail] = useMail();
+  const { data: session } = useSession();
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const isHovering = useRef<boolean>(false);
+  const hasPrefetched = useRef<boolean>(false);
+
+  const isMailSelected = useMemo(() => message.id === mail.selected, [message.id, mail.selected]);
 
   const handleMailClick = () => {
-    if (!data) return;
     if (isMailSelected) {
       setMail({
         selected: null,
@@ -29,17 +30,61 @@ const Thread = ({ id }: { id: string }) => {
     } else {
       setMail({
         ...mail,
-        selected: data.id,
+        selected: message.id,
       });
     }
   };
-  return data ? (
+
+  const handleMouseEnter = () => {
+    isHovering.current = true;
+    if (session?.user.id && !hasPrefetched.current) {
+      // Clear any existing timeout
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+
+      // Set new timeout for prefetch
+      hoverTimeoutRef.current = setTimeout(() => {
+        if (isHovering.current) {
+          // Only prefetch if still hovering and hasn't been prefetched
+          console.log(`🕒 Hover threshold reached for email ${message.id}, initiating prefetch...`);
+          preloadThread(session.user.id, message.id);
+          hasPrefetched.current = true;
+        }
+      }, HOVER_DELAY);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    isHovering.current = false;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+  };
+
+  // Reset prefetch flag when message changes
+  useEffect(() => {
+    hasPrefetched.current = false;
+  }, [message.id]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
     <div
       onClick={handleMailClick}
-      key={data.id}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      key={message.id}
       className={cn(
         "group flex cursor-pointer flex-col items-start border-b px-4 py-4 text-left text-sm transition-all hover:bg-accent",
-        data.unread && "",
+        message.unread && "",
         isMailSelected ? "bg-accent" : "",
       )}
     >
@@ -48,29 +93,24 @@ const Thread = ({ id }: { id: string }) => {
           <div className="flex items-center gap-2">
             <p
               className={cn(
-                data.unread ? "font-bold" : "font-medium",
+                message.unread ? "font-bold" : "font-medium",
                 "text-md flex items-center gap-1 opacity-70 group-hover:opacity-100",
               )}
             >
-              {data.sender.name}{" "}
-              {data.unread ? <span className="size-2 rounded-full bg-red-500" /> : null}
+              {message.sender.name}{" "}
+              {message.unread ? <span className="ml-1 size-2 rounded-full bg-blue-500" /> : null}
             </p>
           </div>
           <p className="pr-2 text-xs font-normal opacity-70 group-hover:opacity-100">
-            {format(new Date(data.receivedOn), "MMM d")}
+            {new Date(message.receivedOn).toLocaleDateString()}
           </p>
         </div>
         <p className="mt-1 text-xs font-medium opacity-70 group-hover:opacity-100">
-          Meeting tommorrow
-        </p>
-        <p className="text-[12px] font-medium leading-tight opacity-40 group-hover:opacity-100">
-          {data.title}
+          {message.title}
         </p>
       </div>
-      <MailLabels labels={data.tags} />
+      <MailLabels labels={message.tags} />
     </div>
-  ) : (
-    <Skeleton />
   );
 };
 
@@ -80,12 +120,13 @@ export function MailList({ items }: MailListProps) {
     <ScrollArea className="" type="auto">
       <div className="flex flex-col pt-0">
         {items.map((item) => (
-          <Thread key={item.id} id={item.id} />
+          <Thread key={item.id} message={item} />
         ))}
       </div>
     </ScrollArea>
   );
 }
+
 function MailLabels({ labels }: { labels: string[] }) {
   if (!labels.length) return null;
 

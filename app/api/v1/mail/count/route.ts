@@ -5,22 +5,17 @@ import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 
-export const GET = async (
-  { headers }: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) => {
-  const { id } = await params;
+export const GET = async ({ headers, nextUrl }: NextRequest) => {
   const session = await auth.api.getSession({ headers });
   if (!session) return new Response("Unauthorized", { status: 401 });
   const [foundAccount] = await db.select().from(account).where(eq(account.userId, session.user.id));
   if (!foundAccount?.accessToken || !foundAccount.refreshToken)
-    return new Response("Unauthorized", { status: 401 });
-  const gmail = createDriver("google", {
+    return new Response("Unauthorized, reconnect", { status: 402 });
+  const driver = createDriver(foundAccount.providerId, {
     auth: {
       access_token: foundAccount.accessToken,
       refresh_token: foundAccount.refreshToken,
     },
   });
-  const res = await gmail.get(id);
-  return new Response(JSON.stringify(res));
+  return new Response(JSON.stringify(await driver.count()));
 };

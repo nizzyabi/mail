@@ -10,6 +10,7 @@ import { Search, SlidersHorizontal, CalendarIcon } from "lucide-react";
 import { useSearchValue } from "@/hooks/use-search-value";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
+import { useDebouncedCallback } from "use-debounce";
 import { type DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,11 +78,23 @@ export function SearchBar() {
     },
   });
 
+  // Debounce the search submission to prevent rapid calls
+  const debouncedSubmitSearch = useDebouncedCallback(
+    (data: { subject: string; from: string; to: string; q: string }) => {
+      setSearchValue({
+        value: data.q,
+      });
+    },
+    300, // Adjust debounce delay
+  );
+
+  // TODO: please throttle this Nizzy, please
   const submitSearch = (data: { subject: string; from: string; to: string; q: string }) => {
     // add logic for other fields
-    setSearchValue({
-      value: data.q,
-    });
+    debouncedSubmitSearch(data);
+    // setSearchValue({
+    //   value: data.q,
+    // });
   };
 
   const resetSearch = () => {
@@ -218,7 +231,7 @@ export function SearchBar() {
                     <Button onClick={resetSearch} variant="ghost" size="sm" className="h-7 text-xs">
                       Reset
                     </Button>
-                    <Button size="sm" className="h-7 text-xs">
+                    <Button type="submit" size="sm" className="h-7 text-xs">
                       Apply Filters
                     </Button>
                   </div>

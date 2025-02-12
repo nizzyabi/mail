@@ -143,9 +143,8 @@ export function Mail({ folder }: MailProps) {
                 </div>
                 <Separator className="mt-2" />
               </div>
-
               <div className="h-[calc(93vh)]">
-                {isLoading ? <p>Loading</p> : <MailList items={threadsResponse?.messages || []} />}
+                {isLoading ? null : <MailList items={threadsResponse?.messages || []} />}
               </div>
             </div>
           </ResizablePanel>
@@ -155,7 +154,7 @@ export function Mail({ folder }: MailProps) {
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75} minSize={25}>
                 <div className="hidden h-full flex-1 overflow-y-auto md:block">
-                  <MailDisplay mailId={mail.selected} onClose={handleClose} />
+                  <MailDisplay mail={mail.selected} onClose={handleClose} />
                 </div>
               </ResizablePanel>
             </>
@@ -170,7 +169,7 @@ export function Mail({ folder }: MailProps) {
                 <DrawerTitle>Email Details</DrawerTitle>
               </DrawerHeader>
               <div className="flex h-full flex-col overflow-hidden">
-                <MailDisplay mailId={mail.selected} onClose={handleClose} isMobile={true} />
+                <MailDisplay mail={mail.selected} onClose={handleClose} isMobile={true} />
               </div>
             </DrawerContent>
           </Drawer>
