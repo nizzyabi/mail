@@ -1,5 +1,5 @@
+import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { Button } from "../ui/button";
 
 export function UserButton() {
   return (
