@@ -54,7 +54,8 @@ export function Mail({ mails }: MailProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [filterValue, setFilterValue] = useState<"all" | "unread">("all");
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 1281px)");
+  const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1280px)");
 
   // Check if we're on mobile on mount and when window resizes
   React.useEffect(() => {
@@ -161,10 +162,10 @@ export function Mail({ mails }: MailProps) {
             </div>
           </ResizablePanel>
 
-          {isDesktop && mail.selected && (
+          {(isDesktop || isTablet) && mail.selected && (
             <>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={75} minSize={25}>
+              <ResizablePanel defaultSize={75} minSize={isTablet ? 40 : 25}>
                 <div className="hidden h-full flex-1 overflow-y-auto md:block">
                   <MailDisplay mail={selectedMail} onClose={handleClose} />
                 </div>
@@ -174,7 +175,7 @@ export function Mail({ mails }: MailProps) {
         </ResizablePanelGroup>
 
         {/* Mobile Drawer */}
-        {!isDesktop && (
+        {isMobile && (
           <Drawer open={open} onOpenChange={setOpen}>
             <DrawerContent className="h-[calc(100vh-3rem)] p-0">
               <DrawerHeader className="sr-only">
