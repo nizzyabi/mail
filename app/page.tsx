@@ -173,10 +173,10 @@ export default function BetaSignup() {
         <footer className="w-full">
           <div className="container mx-auto py-4">
             <nav className="flex justify-center space-x-6">
-              <Link href="/privacy" className="text-sm text-muted-foreground" target="_blank">
+              <Link href="/privacy" className="text-sm text-muted-foreground">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-sm text-muted-foreground" target="_blank">
+              <Link href="/terms" className="text-sm text-muted-foreground">
                 Terms of Service
               </Link>
             </nav>

@@ -1,23 +1,85 @@
+"use client";
+
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Github, Mail, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import React from "react";
 
+const LAST_UPDATED = "February 13, 2025";
+
 export default function PrivacyPolicy() {
+  const router = useRouter();
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Privacy Policy</h1>
+    <div className="relative min-h-screen w-full bg-background">
+      {/* Back Button */}
+      <div className="absolute left-4 top-4 md:left-8 md:top-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2 text-muted-foreground hover:text-foreground"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
 
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Our Commitment to Privacy</h2>
-        <p className="mb-4">
-          At Mail0.io, we believe that privacy is a fundamental right. Our open-source email
-          solution is built with privacy at its core, and we&apos;re committed to being transparent
-          about how we handle your data.
-        </p>
-      </section>
+      <div className="container mx-auto max-w-4xl px-4 py-16">
+        <Card className="overflow-hidden border-none py-0 shadow-none">
+          <CardHeader className="space-y-4">
+            <div className="space-y-2 text-center">
+              <CardTitle className="text-4xl font-bold tracking-tight">Privacy Policy</CardTitle>
+              <p className="text-sm text-muted-foreground">Last updated: {LAST_UPDATED}</p>
+            </div>
+          </CardHeader>
 
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Google Account Integration</h2>
+          <div className="space-y-6 px-6 pb-6">
+            {sections.map((section, index) => (
+              <div
+                key={section.title}
+                className="group rounded-xl border bg-card/50 p-6 shadow-sm transition-all hover:bg-card/80"
+              >
+                <h2 className="mb-4 text-xl font-semibold tracking-tight">{section.title}</h2>
+                <div className="prose prose-sm prose-zinc dark:prose-invert max-w-none">
+                  {section.content}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
+              <Button variant="outline" size="lg" className="gap-2" asChild>
+                <a href="https://github.com/nizzyabi/mail0">
+                  <Github className="h-4 w-4" />
+                  View on GitHub
+                </a>
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+const sections = [
+  {
+    title: "Our Commitment to Privacy",
+    content: (
+      <p>
+        At Mail0.io, we believe that privacy is a fundamental right. Our open-source email solution
+        is built with privacy at its core, and we're committed to being transparent about how we
+        handle your data.
+      </p>
+    ),
+  },
+  {
+    title: "Google Account Integration",
+    content: (
+      <>
         <p className="mb-4">When you use Mail0.io with your Google Account:</p>
-        <ul className="mb-4 list-disc pl-6">
+        <ul className="ml-4 list-disc space-y-2">
           <li>We request access to your Gmail data only after receiving your explicit consent</li>
           <li>We access only the necessary Gmail API scopes required for email functionality</li>
           <li>Your Google account credentials are never stored on our servers</li>
@@ -27,89 +89,120 @@ export default function PrivacyPolicy() {
             settings
           </li>
         </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Data Collection and Usage</h2>
-        <h3 className="mb-2 text-xl font-medium">Google Services Data Handling</h3>
-        <ul className="mb-4 list-disc pl-6">
-          <li>Email data is processed in accordance with Google API Services User Data Policy</li>
-          <li>
-            We only process and display email data - we don&apos;t store copies of your emails
-          </li>
-          <li>
-            All data transmission between our service and Google is encrypted using
-            industry-standard protocols
-          </li>
-          <li>
-            We maintain limited temporary caches only as necessary for application functionality
-          </li>
-        </ul>
-
-        <h3 className="mb-2 text-xl font-medium">Self-Hosted Instances</h3>
-        <ul className="mb-4 list-disc pl-6">
-          <li>When you self-host Mail0.io, your email data remains entirely under your control</li>
-          <li>No data is sent to our servers or third parties without your explicit consent</li>
-          <li>You maintain complete ownership and responsibility for your data</li>
-        </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Data Protection and Security</h2>
-        <ul className="mb-4 list-disc pl-6">
-          <li>End-to-end encryption for all email communications</li>
-          <li>Secure OAuth 2.0 authentication for Google services</li>
-          <li>Regular security audits and updates</li>
-          <li>Open-source codebase for transparency and community review</li>
-          <li>Compliance with Google API Services User Data Policy</li>
-        </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Limited Use Disclosure</h2>
-        <p className="mb-4">
-          Our use and transfer to any other app of information received from Google APIs will adhere
-          to the{" "}
+      </>
+    ),
+  },
+  {
+    title: "Data Collection and Usage",
+    content: (
+      <div className="space-y-6">
+        <div>
+          <h3 className="mb-3 text-lg font-medium">Google Services Data Handling</h3>
+          <ul className="ml-4 list-disc space-y-2">
+            <li>Email data is processed in accordance with Google API Services User Data Policy</li>
+            <li>We only process and display email data - we don't store copies of your emails</li>
+            <li>
+              All data transmission between our service and Google is encrypted using
+              industry-standard protocols
+            </li>
+            <li>
+              We maintain limited temporary caches only as necessary for application functionality
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="mb-3 text-lg font-medium">Self-Hosted Instances</h3>
+          <ul className="ml-4 list-disc space-y-2">
+            <li>
+              When you self-host Mail0.io, your email data remains entirely under your control
+            </li>
+            <li>No data is sent to our servers or third parties without your explicit consent</li>
+            <li>You maintain complete ownership and responsibility for your data</li>
+          </ul>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Data Protection and Security",
+    content: (
+      <ul className="ml-4 list-disc space-y-2">
+        <li>End-to-end encryption for all email communications</li>
+        <li>Secure OAuth 2.0 authentication for Google services</li>
+        <li>Regular security audits and updates</li>
+        <li>Open-source codebase for transparency and community review</li>
+        <li>Compliance with Google API Services User Data Policy</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Limited Use Disclosure",
+    content: (
+      <div>
+        Our use and transfer to any other app of information received from Google APIs will adhere
+        to the{" "}
+        <a
+          href="https://developers.google.com/terms/api-services-user-data-policy"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Google API Services User Data Policy
+          <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+        </a>
+        , including the Limited Use requirements.
+      </div>
+    ),
+  },
+  {
+    title: "Your Rights and Controls",
+    content: (
+      <ul className="ml-4 list-disc space-y-2">
+        <li>Right to revoke access to your Google account at any time</li>
+        <li>Right to request deletion of any cached data</li>
+        <li>Right to export your data</li>
+        <li>Right to lodge complaints about data handling</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Contact Us",
+    content: (
+      <div className="space-y-3">
+        <p>For privacy-related questions or concerns:</p>
+        <div className="flex flex-col space-y-2">
           <a
-            href="https://developers.google.com/terms/api-services-user-data-policy"
-            className="text-blue-600 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:privacy@mail0.io"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800"
           >
-            Google API Services User Data Policy
+            <Mail className="mr-2 h-4 w-4" />
+            privacy@mail0.io
           </a>
-          , including the Limited Use requirements.
-        </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Your Rights and Controls</h2>
-        <ul className="mb-4 list-disc pl-6">
-          <li>Right to revoke access to your Google account at any time</li>
-          <li>Right to request deletion of any cached data</li>
-          <li>Right to export your data</li>
-          <li>Right to lodge complaints about data handling</li>
-        </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Contact Us</h2>
-        <p className="mb-4">For privacy-related questions or concerns:</p>
-        <ul className="mb-4 list-disc pl-6">
-          <li>Email: privacy@mail0.io</li>
-          <li>Open an issue on our GitHub repository</li>
-          <li>Contact our development team via GitHub</li>
-        </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Updates to This Policy</h2>
-        <p className="mb-4">
-          We may update this privacy policy from time to time. We will notify users of any material
-          changes through our application or website.
-        </p>
-        <p>Last updated: {new Date().toLocaleDateString()}</p>
-      </section>
-    </div>
-  );
-}
+          <a
+            href="https://github.com/nizzyabi/mail0"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800"
+          >
+            <Github className="mr-2 h-4 w-4" />
+            Open an issue on GitHub
+          </a>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Updates to This Policy",
+    content: (
+      <p>
+        We may update this privacy policy from time to time. We will notify users of any material
+        changes through our application or website.
+      </p>
+    ),
+  },
+];
