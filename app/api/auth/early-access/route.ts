@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { earlyAccess } from "@/db/schema";
 import { randomUUID } from "node:crypto";
+import { env } from "@/lib/env";
 import { db } from "@/db";
 
 type PostgresError = {
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Return more detailed error in development
-    if (process.env.NODE_ENV === "development") {
+    if (env.NODE_ENV === "development") {
       return NextResponse.json(
         {
           error: "Internal server error",

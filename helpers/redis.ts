@@ -1,10 +1,4 @@
 import { Redis } from "@upstash/redis";
+import { env } from "@/lib/env";
 
-const url = process.env.REDIS_URL;
-const token = process.env.REDIS_TOKEN;
-
-if (!url || !token) {
-  throw new Error("Missing Redis URL or token");
-}
-
-export const redis = new Redis({ url, token });
+export const redis = new Redis({ url: env.REDIS_URL, token: env.REDIS_TOKEN });

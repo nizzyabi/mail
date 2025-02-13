@@ -2,16 +2,38 @@ services:
   db:
     container_name: mail0-db
     image: postgres:17
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mail0
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  valkey:
+    container_name: mail0-redis
+    image: docker.io/bitnami/valkey:8.0
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - VALKEY_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - 6379:6379
+    volumes:
+      - valkey-data:/bitnami/valkey/data
+
+  upstash-proxy:
+    container_name: mail0-upstash-proxy
+    image: hiett/serverless-redis-http:latest
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: upstash-local-token
+      SRH_CONNECTION_STRING: "redis://valkey:6379"
+    ports:
+      - 8079:80
+
 volumes:
+  valkey-data:
   postgres-data:
