@@ -1,7 +1,7 @@
-import { ComponentProps, useMemo, useEffect, useRef } from "react";
+import { ComponentProps, useMemo, useEffect, useRef, useState } from "react";
+import { preloadThread, useMarkAsRead } from "@/hooks/use-threads";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMail } from "@/components/mail/use-mail";
-import { preloadThread } from "@/hooks/use-threads";
 import { useSession } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
 import { InitialThread } from "@/types";
@@ -13,8 +13,10 @@ interface MailListProps {
 
 const HOVER_DELAY = 300; // ms before prefetching
 
-const Thread = ({ message }: { message: InitialThread }) => {
+const Thread = ({ message: initialMessage }: { message: InitialThread }) => {
+  const [message, setMessage] = useState(initialMessage);
   const [mail, setMail] = useMail();
+  const { markAsRead } = useMarkAsRead();
   const { data: session } = useSession();
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isHovering = useRef<boolean>(false);
@@ -22,7 +24,7 @@ const Thread = ({ message }: { message: InitialThread }) => {
 
   const isMailSelected = useMemo(() => message.id === mail.selected, [message.id, mail.selected]);
 
-  const handleMailClick = () => {
+  const handleMailClick = async () => {
     if (isMailSelected) {
       setMail({
         selected: null,
@@ -32,6 +34,19 @@ const Thread = ({ message }: { message: InitialThread }) => {
         ...mail,
         selected: message.id,
       });
+      try {
+        const response = await fetch(`/api/v1/mail/${message.id}/read`, {
+          method: "POST",
+        });
+        if (response.ok) {
+          setMessage((prev) => ({ ...prev, unread: false }));
+          await markAsRead(message.id);
+        } else {
+          console.error("Failed to mark message as read");
+        }
+      } catch (error) {
+        console.error("Error marking message as read:", error);
+      }
     }
   };
 

@@ -32,6 +32,19 @@ const threadsCache = {
       console.error("Failed to cache email:", err);
     }
   },
+  markAsRead: async (id: string) => {
+    try {
+      const thread = await idb.threads.get(id);
+      if (thread) {
+        await idb.threads.update(id, {
+          ...thread,
+          unread: false,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to mark email as read in cache:", err);
+    }
+  },
   put: async (data: ParsedMessage) => {
     try {
       await idb.threads.put(data);
@@ -78,7 +91,7 @@ const threadsCache = {
 const fetchEmails = async (args: any[]) => {
   const [_, folder, query, max, labelIds, connectionId] = args;
 
-  let searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams();
   if (max) searchParams.set("max", max.toString());
   if (query) searchParams.set("q", query);
   if (folder) searchParams.set("folder", folder.toString());
@@ -95,7 +108,7 @@ const fetchEmails = async (args: any[]) => {
 
 const fetchEmailsFromCache = async (args: any[]) => {
   const [, , folder, query, max, labelIds, connectionId] = args;
-  let searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams();
   if (max) searchParams.set("max", max.toString());
   if (query) searchParams.set("q", query);
   if (folder) searchParams.set("folder", folder.toString());
@@ -171,4 +184,25 @@ export const useThread = (id: string) => {
   );
 
   return { data, isLoading, error };
+};
+
+export const useMarkAsRead = () => {
+  const markAsRead = async (id: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/mail/${id}/read`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        await threadsCache.markAsRead(id);
+      }
+
+      return response.ok;
+    } catch (error) {
+      console.error("Error marking email as read:", error);
+      return false;
+    }
+  };
+
+  return { markAsRead };
 };

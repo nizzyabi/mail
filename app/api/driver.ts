@@ -16,6 +16,7 @@ interface MailManager {
   ): Promise<{ tokens: { access_token?: any; refresh_token?: any; expiry_date?: number } }>;
   getUserInfo(tokens: IConfig["auth"]): Promise<any>;
   getScope(): string;
+  markAsRead(id: string): Promise<void>;
 }
 
 interface IConfig {
@@ -110,6 +111,15 @@ const googleDriver = async (config: IConfig): Promise<MailManager> => {
   };
   const gmail = google.gmail({ version: "v1", auth });
   return {
+    markAsRead: async (id: string) => {
+      await gmail.users.messages.modify({
+        userId: "me",
+        id,
+        requestBody: {
+          removeLabelIds: ["UNREAD"],
+        },
+      });
+    },
     getScope,
     getUserInfo: (tokens: { access_token: string; refresh_token: string }) => {
       auth.setCredentials({ ...tokens, scope: getScope() });
