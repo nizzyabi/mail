@@ -9,3 +9,5 @@ export interface DraftType {
 }
 export const draftsAtom = atomWithStorage<DraftType[]>("emailDrafts", []);
 export const draftCountAtom = atom((get) => get(draftsAtom).length);
+export const subjectAtom = atom<string>("");
+export const messageContentAtom = atom<string>("");
