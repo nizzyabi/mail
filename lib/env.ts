@@ -2,6 +2,12 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
+  emptyStringAsUndefined: true,
+  onValidationError: (issues) => {
+    console.error("Failed to validate environment variables, Please make sure these are valid:");
+    console.error(issues.map((issue) => `${issue.path}: ${issue.message}`).join("\n"));
+    process.exit(1);
+  },
   server: {
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     DATABASE_URL: z.string().min(1),
